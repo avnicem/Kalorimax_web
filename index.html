@@ -3,14 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kalori Takip Uygulaması</title>
+    <title>KaloriMax - Kalori Takip Uygulaması</title>
+    <meta name="description" content="Günlük kalori ve makro besin takibi yapın, sağlıklı yaşam hedeflerinize ulaşın.">
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
 </head>
 <body>
     <div class="container">
         <header>
-            <h1>Kalori Takip Uygulaması</h1>
+            <h1>KaloriMax</h1>
             <div class="date">5 Haziran 2025</div>
         </header>
 
@@ -21,22 +25,25 @@
                     <div class="calorie-count">0</div>
                     <div class="calorie-goal">Hedef: 2000 kcal</div>
                 </div>
+                
                 <div class="macros">
-                    <div class="macro">
+                    <div class="macro macro-protein">
                         <span class="macro-name">Protein</span>
                         <div class="macro-bar">
                             <div class="macro-fill" style="width: 0%;"></div>
                         </div>
                         <span class="macro-amount">0g</span>
                     </div>
-                    <div class="macro">
+                    
+                    <div class="macro macro-carbs">
                         <span class="macro-name">Karbonhidrat</span>
                         <div class="macro-bar">
                             <div class="macro-fill" style="width: 0%;"></div>
                         </div>
                         <span class="macro-amount">0g</span>
                     </div>
-                    <div class="macro">
+                    
+                    <div class="macro macro-fat">
                         <span class="macro-name">Yağ</span>
                         <div class="macro-bar">
                             <div class="macro-fill" style="width: 0%;"></div>
@@ -48,17 +55,40 @@
 
             <section class="add-food">
                 <h2>Yemek Ekle</h2>
-                <div class="food-input">
-                    <input type="text" id="food-name" placeholder="Yemek adı">
-                    <input type="number" id="food-calories" placeholder="Kalori (kcal)">
-                    <button id="add-food-btn">Ekle</button>
-                </div>
+                <form class="food-input" id="food-form">
+                    <input 
+                        type="text" 
+                        id="food-name" 
+                        placeholder="Yemek adı" 
+                        required
+                        aria-label="Yemek adı"
+                    >
+                    <input 
+                        type="number" 
+                        id="food-calories" 
+                        placeholder="Kalori (kcal)" 
+                        min="0"
+                        required
+                        aria-label="Kalori miktarı"
+                    >
+                    <button type="submit" id="add-food-btn">
+                        <span class="button-text">Ekle</span>
+                        <span class="button-icon">+</span>
+                    </button>
+                </form>
             </section>
 
+
             <section class="food-list">
-                <h2>Bugünkü Öğünler</h2>
+                <div class="food-list-header">
+                    <h2>Bugünkü Öğünler</h2>
+                    <span class="food-count">0 öğün</span>
+                </div>
                 <ul id="food-items">
-                    <!-- Yemekler buraya eklenecek -->
+                    <li class="empty-state">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTMgM0gyMVY1SDFWM1pNMSA5SDExVjExSDFWOVpNMSAxM0gxNVYxNUgxVjEzWk0xIDE3SDE5VjE5SDFWMTdaTTE5IDEzSDE3VjE5SDE5VjEzWk0xOSA5SDE3VjExSDE5VjlaTTE1IDlIMTNWMTFIMTVWOVpNMTEgOUg5VjExSDExVjlaTTcgOUg1VjExSDdWOVoiIGZpbGw9IiNiZGJkYmQiLz4KPC9zdmc+Cg==" alt="">
+                        <p>Henüz yemek eklenmedi</p>
+                    </li>
                 </ul>
             </section>
         </main>

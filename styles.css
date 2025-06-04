@@ -1,158 +1,287 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
 }
 
 :root {
-    --primary-color: #4CAF50;
-    --secondary-color: #388E3C;
-    --background: #f5f5f5;
-    --card-bg: #ffffff;
-    --text: #333333;
-    --text-light: #757575;
-    --border: #e0e0e0;
+    --primary: #6366F1;
+    --primary-light: #818CF8;
+    --primary-dark: #4F46E5;
+    --secondary: #10B981;
+    --danger: #EF4444;
+    --warning: #F59E0B;
+    --background: #F9FAFB;
+    --surface: #FFFFFF;
+    --text: #1F2937;
+    --text-secondary: #6B7280;
+    --border: #E5E7EB;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --radius-sm: 0.375rem;
+    --radius: 0.5rem;
+    --radius-lg: 0.75rem;
+    --transition: all 0.2s ease-in-out;
 }
 
 body {
     background-color: var(--background);
     color: var(--text);
     line-height: 1.6;
+    min-height: 100vh;
+    padding: 1rem;
 }
 
 .container {
-    max-width: 800px;
+    max-width: 100%;
+    width: 100%;
     margin: 0 auto;
-    padding: 20px;
+    padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+    .container {
+        max-width: 640px;
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width: 768px;
+    }
+}
+
+@media (min-width: 1024px) {
+    .container {
+        max-width: 1024px;
+    }
 }
 
 header {
     text-align: center;
-    margin-bottom: 30px;
+    margin: 2rem 0 3rem;
+    animation: fadeInDown 0.6s ease-out;
 }
 
 h1 {
-    color: var(--primary-color);
-    margin-bottom: 5px;
+    color: var(--primary);
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: var(--text);
+}
+
+h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+    color: var(--text);
 }
 
 .date {
-    color: var(--text-light);
-    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    font-weight: 400;
 }
 
 .calorie-summary {
-    background-color: var(--card-bg);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+    transition: var(--transition);
+    border: 1px solid var(--border);
 }
 
+.calorie-summary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+}
+
+/* Animations */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Summary Card */
 .summary-card {
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 2rem;
+    animation: fadeIn 0.6s ease-out;
 }
 
 .calorie-count {
-    font-size: 3rem;
+    font-size: 3.5rem;
     font-weight: 700;
-    color: var(--primary-color);
-    margin: 10px 0;
+    color: var(--primary);
+    margin: 0.5rem 0;
+    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
 }
 
 .calorie-goal {
-    color: var(--text-light);
-    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-size: 1.1rem;
 }
 
+/* Macros */
 .macros {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
 }
 
 .macro {
-    flex: 1;
+    background: var(--background);
+    padding: 1.25rem;
+    border-radius: var(--radius);
     text-align: center;
-    padding: 0 10px;
+    transition: var(--transition);
+}
+
+.macro:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-sm);
 }
 
 .macro-name {
     display: block;
-    color: var(--text-light);
-    font-size: 0.9rem;
-    margin-bottom: 5px;
+    font-weight: 500;
+    margin-bottom: 0.75rem;
+    color: var(--text);
 }
 
 .macro-bar {
     height: 8px;
-    background-color: #e0e0e0;
+    background: var(--border);
     border-radius: 4px;
-    margin-bottom: 5px;
     overflow: hidden;
+    margin-bottom: 0.5rem;
 }
 
 .macro-fill {
     height: 100%;
-    background-color: var(--primary-color);
     width: 0%;
-    transition: width 0.3s ease;
+    border-radius: 4px;
+    transition: width 0.6s ease-out;
 }
 
+.macro-amount {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+}
+
+/* Food Form */
 .add-food {
-    background-color: var(--card-bg);
-    border-radius: 10px;
-    padding: 20px;
-    margin-bottom: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.add-food h2 {
-    margin-bottom: 15px;
-    color: var(--primary-color);
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    animation: fadeIn 0.6s ease-out 0.2s both;
 }
 
 .food-input {
-    display: flex;
-    gap: 10px;
+    display: grid;
+    grid-template-columns: 1fr 1fr auto;
+    gap: 1rem;
+}
+
+@media (max-width: 640px) {
+    .food-input {
+        grid-template-columns: 1fr;
+    }
 }
 
 input[type="text"],
 input[type="number"] {
-    flex: 1;
-    padding: 10px;
+    width: 100%;
+    padding: 0.75rem 1rem;
     border: 1px solid var(--border);
-    border-radius: 5px;
+    border-radius: var(--radius);
     font-size: 1rem;
+    transition: var(--transition);
+    background: var(--background);
+    color: var(--text);
+}
+
+input[type="text"]:focus,
+input[type="number"]:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
 button {
-    background-color: var(--primary-color);
+    background: var(--primary);
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
+    padding: 0 1.5rem;
+    border-radius: var(--radius);
+    font-weight: 500;
     cursor: pointer;
+    transition: var(--transition);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 48px;
     font-size: 1rem;
-    transition: background-color 0.3s ease;
 }
 
 button:hover {
-    background-color: var(--secondary-color);
+    background: var(--primary-dark);
+    transform: translateY(-1px);
 }
 
+button:active {
+    transform: translateY(0);
+}
+
+#add-food-btn {
+    white-space: nowrap;
+}
+
+/* Food List */
 .food-list {
-    background-color: var(--card-bg);
-    border-radius: 10px;
-    padding: 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.food-list h2 {
-    color: var(--primary-color);
-    margin-bottom: 15px;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    padding: 2rem;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--border);
+    animation: fadeIn 0.6s ease-out 0.4s both;
 }
 
 #food-items {
@@ -162,8 +291,10 @@ button:hover {
 .food-item {
     display: flex;
     justify-content: space-between;
-    padding: 10px 0;
+    align-items: center;
+    padding: 1rem 0;
     border-bottom: 1px solid var(--border);
+    animation: fadeIn 0.4s ease-out;
 }
 
 .food-item:last-child {
@@ -171,38 +302,296 @@ button:hover {
 }
 
 .food-info {
-    display: flex;
-    flex-direction: column;
+    flex: 1;
 }
 
 .food-name {
+    display: block;
     font-weight: 500;
+    margin-bottom: 0.25rem;
+    color: var(--text);
 }
 
 .food-calories {
-    color: var(--text-light);
-    font-size: 0.9rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
 }
 
 .delete-btn {
-    background-color: #f44336;
+    background: var(--danger);
     color: white;
     border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.875rem;
     cursor: pointer;
-    font-size: 0.9rem;
+    transition: var(--transition);
 }
 
 .delete-btn:hover {
-    background-color: #d32f2f;
+    background: #DC2626;
 }
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .calorie-summary,
+    .add-food,
+    .food-list {
+        padding: 1.5rem;
+    }
+    
+    h1 {
+        font-size: 1.75rem;
+    }
+    
+    h2 {
+        font-size: 1.25rem;
+    }
+    
+    .calorie-count {
+        font-size: 2.5rem;
+    }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --background: #111827;
+        --surface: #1F2937;
+        --text: #F9FAFB;
+        --text-secondary: #9CA3AF;
+        --border: #374151;
+    }
+    
+    input[type="text"],
+    input[type="number"] {
+        background: #111827;
+        color: var(--text);
+        border-color: #374151;
+    }
+}
+
+/* Notifications */
+.notification {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius);
+    color: white;
+    font-weight: 500;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+    z-index: 1000;
+    box-shadow: var(--shadow-md);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    max-width: 320px;
+}
+
+.notification.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+.notification::before {
+    content: '';
+    width: 1.5rem;
+    height: 1.5rem;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    flex-shrink: 0;
+}
+
+.notification.success {
+    background: var(--secondary);
+}
+
+.notification.error {
+    background: var(--danger);
+}
+
+.notification.info {
+    background: var(--primary);
+}
+
+/* Undo notification */
+.undo-notification {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 1.25rem;
+    gap: 1.5rem;
+}
+
+.undo-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.875rem;
+    white-space: nowrap;
+}
+
+.undo-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: translateY(-1px);
+}
+
+.undo-btn:active {
+    transform: translateY(0);
+}
+
+/* Delete button styles */
+.delete-btn {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    padding: 0.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    opacity: 0.7;
+}
+
+.delete-btn:hover {
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+    opacity: 1;
+}
+
+.delete-btn:active {
+    transform: scale(0.95);
+}
+
+/* Food item hover effect */
+.food-item {
+    transition: all 0.2s ease;
+}
+
+.food-item:hover {
+    background: rgba(0, 0, 0, 0.02);
+}
+
+.food-item:active {
+    transform: scale(0.99);
+}
+
+/* Focus styles for better accessibility */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+}
+
+/* Print styles */
+@media print {
+    .add-food,
+    .delete-btn,
+    .food-count {
+        display: none !important;
+    }
+    
+    .container {
+        max-width: 100%;
+        padding: 0;
+    }
+    
+    .calorie-summary,
+    .food-list {
+        box-shadow: none;
+        border: 1px solid #eee;
+        break-inside: avoid;
+    }
+    
+    @page {
+        margin: 1cm;
+    }
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text-secondary);
+}
+
+.empty-state img {
+    width: 64px;
+    height: 64px;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state p {
+    margin: 0;
+    font-size: 1.1rem;
+}
+
+/* Food list header */
+.food-list-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.food-count {
+    background: var(--background);
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+/* Button loading state */
+button:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none !important;
+}
+
+/* Focus styles */
+*:focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+}
+
+/* Remove number input arrows */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    appearance: none;
+    margin: 0;
+}
+
+input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* Removed duplicate styles */
+
+/* Removed unused styles */
 
 @media (max-width: 600px) {
     .food-input {
         flex-direction: column;
     }
-    
     .macros {
         flex-direction: column;
         gap: 15px;
