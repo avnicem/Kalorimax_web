@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalori Takip Uygulaması</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Kalori Takip Uygulaması</h1>
+            <div class="date">5 Haziran 2025</div>
+        </header>
+
+        <main>
+            <section class="calorie-summary">
+                <div class="summary-card">
+                    <h3>Günlük Kalori</h3>
+                    <div class="calorie-count">0</div>
+                    <div class="calorie-goal">Hedef: 2000 kcal</div>
+                </div>
+                <div class="macros">
+                    <div class="macro">
+                        <span class="macro-name">Protein</span>
+                        <div class="macro-bar">
+                            <div class="macro-fill" style="width: 0%;"></div>
+                        </div>
+                        <span class="macro-amount">0g</span>
+                    </div>
+                    <div class="macro">
+                        <span class="macro-name">Karbonhidrat</span>
+                        <div class="macro-bar">
+                            <div class="macro-fill" style="width: 0%;"></div>
+                        </div>
+                        <span class="macro-amount">0g</span>
+                    </div>
+                    <div class="macro">
+                        <span class="macro-name">Yağ</span>
+                        <div class="macro-bar">
+                            <div class="macro-fill" style="width: 0%;"></div>
+                        </div>
+                        <span class="macro-amount">0g</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="add-food">
+                <h2>Yemek Ekle</h2>
+                <div class="food-input">
+                    <input type="text" id="food-name" placeholder="Yemek adı">
+                    <input type="number" id="food-calories" placeholder="Kalori (kcal)">
+                    <button id="add-food-btn">Ekle</button>
+                </div>
+            </section>
+
+            <section class="food-list">
+                <h2>Bugünkü Öğünler</h2>
+                <ul id="food-items">
+                    <!-- Yemekler buraya eklenecek -->
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

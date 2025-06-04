@@ -1,0 +1,214 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Roboto', sans-serif;
+}
+
+:root {
+    --primary-color: #4CAF50;
+    --secondary-color: #388E3C;
+    --background: #f5f5f5;
+    --card-bg: #ffffff;
+    --text: #333333;
+    --text-light: #757575;
+    --border: #e0e0e0;
+}
+
+body {
+    background-color: var(--background);
+    color: var(--text);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+h1 {
+    color: var(--primary-color);
+    margin-bottom: 5px;
+}
+
+.date {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.calorie-summary {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.summary-card {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.calorie-count {
+    font-size: 3rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 10px 0;
+}
+
+.calorie-goal {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.macros {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.macro {
+    flex: 1;
+    text-align: center;
+    padding: 0 10px;
+}
+
+.macro-name {
+    display: block;
+    color: var(--text-light);
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.macro-bar {
+    height: 8px;
+    background-color: #e0e0e0;
+    border-radius: 4px;
+    margin-bottom: 5px;
+    overflow: hidden;
+}
+
+.macro-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    width: 0%;
+    transition: width 0.3s ease;
+}
+
+.add-food {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.add-food h2 {
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+.food-input {
+    display: flex;
+    gap: 10px;
+}
+
+input[type="text"],
+input[type="number"] {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: var(--secondary-color);
+}
+
+.food-list {
+    background-color: var(--card-bg);
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.food-list h2 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+}
+
+#food-items {
+    list-style: none;
+}
+
+.food-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.food-item:last-child {
+    border-bottom: none;
+}
+
+.food-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.food-name {
+    font-weight: 500;
+}
+
+.food-calories {
+    color: var(--text-light);
+    font-size: 0.9rem;
+}
+
+.delete-btn {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+}
+
+.delete-btn:hover {
+    background-color: #d32f2f;
+}
+
+@media (max-width: 600px) {
+    .food-input {
+        flex-direction: column;
+    }
+    
+    .macros {
+        flex-direction: column;
+        gap: 15px;
+    }
+    
+    .macro {
+        padding: 0;
+    }
+}
