@@ -2,6 +2,7 @@
 const firebaseConfig = {
     apiKey: "AIzaSyCpiXP1B7hhnOUD9Xb6FM4mLg6nFADnwE0",
     authDomain: "kalorimax-cbaf3.firebaseapp.com",
+    databaseURL: "https://kalorimax-cbaf3-default-rtdb.firebaseio.com",
     projectId: "kalorimax-cbaf3",
     storageBucket: "kalorimax-cbaf3.appspot.com",
     messagingSenderId: "127418740425",
@@ -23,11 +24,24 @@ service cloud.firestore {
 }
 */
 
+// Firebase değişkenlerini global olarak tanımla
+let db, auth, analytics;
+
 // Firebase'i başlat
-const app = firebase.initializeApp(firebaseConfig);
-const db = firebase.firestore();
-const auth = firebase.auth();
-const analytics = firebase.analytics();
+try {
+    const app = firebase.initializeApp(firebaseConfig);
+    console.log('Firebase başarıyla başlatıldı');
+    
+    // Firebase servislerini başlat
+    db = firebase.firestore();
+    auth = firebase.auth();
+    analytics = firebase.analytics();
+    
+    console.log('Firebase servisleri başlatıldı');
+} catch (error) {
+    console.error('Firebase başlatma hatası:', error);
+    alert('Firebase başlatılırken bir hata oluştu: ' + error.message);
+}
 
 // State yönetimi
 const state = {
