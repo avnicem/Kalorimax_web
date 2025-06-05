@@ -44,16 +44,33 @@ const state = {
 
 // Kimlik doğrulama durumunu dinle
 function initAuth() {
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            state.userId = user.uid;
+    console.log('Auth başlatılıyor...');
+    
+    // Doğrudan anonim giriş yapmayı dene
+    auth.signInAnonymously()
+        .then((userCredential) => {
+            console.log('Anonim giriş başarılı:', userCredential.user.uid);
+            state.userId = userCredential.user.uid;
             loadUserData();
-        } else {
-            // Misafir girişi
-            auth.signInAnonymously().catch(error => {
-                console.error("Anonim giriş hatası:", error);
-                showNotification("Giriş yapılamadı. Lütfen sayfayı yenileyin.", "error");
-            });
+        })
+        .catch((error) => {
+            console.error('Anonim giriş hatası:', error);
+            showNotification('Giriş yapılamadı: ' + error.message, 'error');
+            
+            // Hata detaylarını göster
+            if (error.code === 'auth/operation-not-allowed') {
+                console.error('HATA: Anonim giriş Firebase konsolda etkin değil!');
+                showNotification('Lütfen Firebase konsolundan anonim girişi etkinleştirin.', 'error');
+            }
+        });
+    
+    // Auth state değişikliklerini de dinle
+    auth.onAuthStateChanged(user => {
+        console.log('Auth state değişti:', user ? 'Kullanıcı giriş yaptı' : 'Kullanıcı çıkış yaptı');
+        if (user) {
+            console.log('Kullanıcı ID:', user.uid);
+            state.userId = user.uid;
+            // loadUserData() zaten çağrıldığı için burada tekrar çağırmıyoruz
         }
     });
 }
