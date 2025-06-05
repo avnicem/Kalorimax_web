@@ -57,82 +57,190 @@ const state = {
 };
 
 // Kimlik doğrulama durumunu dinle
-function initAuth() {
+async function initAuth() {
     console.log('Auth başlatılıyor...');
     
-    // Doğrudan anonim giriş yapmayı dene
-    auth.signInAnonymously()
-        .then((userCredential) => {
-            console.log('Anonim giriş başarılı:', userCredential.user.uid);
-            state.userId = userCredential.user.uid;
-            loadUserData();
-        })
-        .catch((error) => {
-            console.error('Anonim giriş hatası:', error);
-            showNotification('Giriş yapılamadı: ' + error.message, 'error');
-            
-            // Hata detaylarını göster
-            if (error.code === 'auth/operation-not-allowed') {
-                console.error('HATA: Anonim giriş Firebase konsolda etkin değil!');
-                showNotification('Lütfen Firebase konsolundan anonim girişi etkinleştirin.', 'error');
-            }
-        });
+    if (!auth) {
+        throw new Error('Firebase Auth başlatılamadı!');
+    }
     
-    // Auth state değişikliklerini de dinle
-    auth.onAuthStateChanged(user => {
-        console.log('Auth state değişti:', user ? 'Kullanıcı giriş yaptı' : 'Kullanıcı çıkış yaptı');
+    try {
+        // Önce mevcut oturum durumunu kontrol et
+        const currentUser = auth.currentUser;
+        
+        if (currentUser) {
+            console.log('Mevcut kullanıcı bulundu:', currentUser.uid);
+            state.userId = currentUser.uid;
+            await loadUserData();
+            return;
+        }
+        
+        // Eğer oturum yoksa anonim giriş yap
+        console.log('Anonim giriş deneniyor...');
+        const userCredential = await auth.signInAnonymously();
+        
+        console.log('Anonim giriş başarılı:', userCredential.user.uid);
+        state.userId = userCredential.user.uid;
+        await loadUserData();
+        
+    } catch (error) {
+        console.error('Kimlik doğrulama hatası:', error);
+        
+        // Daha detaylı hata mesajı oluştur
+        let errorMessage = 'Giriş yapılamadı: ';
+        
+        switch(error.code) {
+            case 'auth/operation-not-allowed':
+                errorMessage += 'Anonim giriş etkin değil. Lütfen Firebase konsolundan etkinleştirin.';
+                break;
+            case 'auth/network-request-failed':
+                errorMessage += 'Ağ bağlantı hatası. Lütfen internet bağlantınızı kontrol edin.';
+                break;
+            default:
+                errorMessage += error.message || 'Bilinmeyen bir hata oluştu.';
+        }
+        
+        showNotification(errorMessage, 'error');
+        throw error; // Hatanın yukarıya iletilmesi için
+    }
+    
+    // Auth state değişikliklerini dinle
+    const unsubscribe = auth.onAuthStateChanged(user => {
         if (user) {
-            console.log('Kullanıcı ID:', user.uid);
+            console.log('Auth state değişti: Kullanıcı giriş yaptı', user.uid);
             state.userId = user.uid;
-            // loadUserData() zaten çağrıldığı için burada tekrar çağırmıyoruz
+        } else {
+            console.log('Auth state değişti: Kullanıcı çıkış yaptı');
+            state.userId = null;
         }
     });
+    
+    // Cleanup fonksiyonunu döndür (isteğe bağlı)
+    return () => unsubscribe();
 }
 
 // Kullanıcı verilerini yükle
 async function loadUserData() {
-    if (!state.userId) return;
+    console.log('Kullanıcı verileri yükleniyor...');
+    
+    if (!state.userId) {
+        console.warn('Kullanıcı ID bulunamadı, veri yüklenemiyor');
+        return;
+    }
+    
+    if (!db) {
+        throw new Error('Firestore başlatılamadı!');
+    }
     
     try {
+        console.log(`Kullanıcı verileri çekiliyor: users/${state.userId}`);
         const userDoc = await db.collection('users').doc(state.userId).get();
         
-        if (userDoc.exists) {
-            const userData = userDoc.data();
-            state.dailyCalories = userData.dailyCalories || 0;
-            state.dailyGoal = userData.dailyGoal || 2000;
-            state.foods = userData.foods || [];
-            state.macros = userData.macros || {
-                protein: { current: 0, goal: 150 },
-                carbs: { current: 0, goal: 200 },
-                fat: { current: 0, goal: 65 }
-            };
-        } else {
-            // Yeni kullanıcı için varsayılan verileri kaydet
+        if (!userDoc.exists) {
+            console.log('Kullanıcı verisi bulunamadı, yeni kullanıcı oluşturuluyor...');
             await saveUserData();
+            return;
         }
         
+        const userData = userDoc.data();
+        console.log('Kullanıcı verileri alındı:', userData);
+        
+        // State'i güncelle
+        state.dailyCalories = typeof userData.dailyCalories === 'number' ? userData.dailyCalories : 0;
+        state.dailyGoal = typeof userData.dailyGoal === 'number' ? userData.dailyGoal : 2000;
+        state.foods = Array.isArray(userData.foods) ? userData.foods : [];
+        
+        // Makro besinleri kontrol et ve varsayılan değerleri ayarla
+        state.macros = {
+            protein: {
+                current: userData.macros?.protein?.current || 0,
+                goal: userData.macros?.protein?.goal || 150
+            },
+            carbs: {
+                current: userData.macros?.carbs?.current || 0,
+                goal: userData.macros?.carbs?.goal || 200
+            },
+            fat: {
+                current: userData.macros?.fat?.current || 0,
+                goal: userData.macros?.fat?.goal || 65
+            }
+        };
+        
+        console.log('State güncellendi:', state);
         updateUI();
+        
     } catch (error) {
-        console.error("Veri yüklenirken hata oluştu:", error);
-        showNotification("Veriler yüklenirken bir hata oluştu.", "error");
+        console.error('Veri yükleme hatası:', error);
+        
+        let errorMessage = 'Veriler yüklenirken bir hata oluştu.';
+        
+        if (error.code === 'permission-denied') {
+            errorMessage = 'Bu işlem için yetkiniz yok. Lütfen tekrar giriş yapın.';
+        } else if (error.code === 'unavailable') {
+            errorMessage = 'Sunucuya bağlanılamıyor. Lütfen internet bağlantınızı kontrol edin.';
+        }
+        
+        showNotification(errorMessage, 'error');
+        throw error; // Hatanın yukarıya iletilmesi için
     }
 }
 
 // Kullanıcı verilerini kaydet
 async function saveUserData() {
-    if (!state.userId) return;
+    console.log('Kullanıcı verileri kaydediliyor...');
+    
+    if (!state.userId) {
+        console.warn('Kullanıcı ID bulunamadı, veri kaydedilemiyor');
+        return;
+    }
+    
+    if (!db) {
+        throw new Error('Firestore başlatılamadı!');
+    }
     
     try {
-        await db.collection('users').doc(state.userId).set({
-            dailyCalories: state.dailyCalories,
-            dailyGoal: state.dailyGoal,
-            foods: state.foods,
-            macros: state.macros,
-            lastUpdated: new Date()
-        }, { merge: true });
+        const userData = {
+            dailyCalories: typeof state.dailyCalories === 'number' ? state.dailyCalories : 0,
+            dailyGoal: typeof state.dailyGoal === 'number' ? state.dailyGoal : 2000,
+            foods: Array.isArray(state.foods) ? state.foods : [],
+            macros: {
+                protein: {
+                    current: Number(state.macros?.protein?.current) || 0,
+                    goal: Number(state.macros?.protein?.goal) || 150
+                },
+                carbs: {
+                    current: Number(state.macros?.carbs?.current) || 0,
+                    goal: Number(state.macros?.carbs?.goal) || 200
+                },
+                fat: {
+                    current: Number(state.macros?.fat?.current) || 0,
+                    goal: Number(state.macros?.fat?.goal) || 65
+                }
+            },
+            lastUpdated: new Date(),
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+        };
+        
+        console.log('Kaydedilecek veri:', userData);
+        
+        await db.collection('users').doc(state.userId).set(userData, { merge: true });
+        
+        console.log('Veri başarıyla kaydedildi');
+        return true;
+        
     } catch (error) {
-        console.error("Veri kaydedilirken hata oluştu:", error);
-        throw error;
+        console.error('Veri kaydetme hatası:', error);
+        
+        let errorMessage = 'Veri kaydedilirken bir hata oluştu.';
+        
+        if (error.code === 'permission-denied') {
+            errorMessage = 'Bu işlem için yetkiniz yok. Lütfen tekrar giriş yapın.';
+        } else if (error.code === 'unavailable') {
+            errorMessage = 'Sunucuya bağlanılamıyor. Lütfen internet bağlantınızı kontrol edin.';
+        }
+        
+        showNotification(errorMessage, 'error');
+        throw error; // Hatanın yukarıya iletilmesi için
     }
 }
 
@@ -530,9 +638,50 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+// Uygulama başlatma fonksiyonu
+async function initializeApp() {
+    console.log('Uygulama başlatılıyor...');
+    
+    try {
+        // Tüm başlangıç işlemlerini sırayla yap
+        console.log('Tarih güncelleniyor...');
+        updateDate();
+        
+        console.log('Event listenerlar ekleniyor...');
+        initEventListeners();
+        
+        console.log('Kimlik doğrulama başlatılıyor...');
+        await initAuth();
+        
+        console.log('UI güncelleniyor...');
+        updateUI();
+        
+        console.log('Uygulama başarıyla başlatıldı');
+    } catch (error) {
+        console.error('Uygulama başlatılırken kritik hata:', error);
+        showNotification('Uygulama başlatılırken bir hata oluştu: ' + (error.message || 'Bilinmeyen hata'), 'error');
+        
+        // Hata detaylarını kullanıcıya göstermek için
+        const errorContainer = document.createElement('div');
+        errorContainer.style.position = 'fixed';
+        errorContainer.style.bottom = '10px';
+        errorContainer.style.right = '10px';
+        errorContainer.style.padding = '15px';
+        errorContainer.style.background = '#ffebee';
+        errorContainer.style.border = '1px solid #f44336';
+        errorContainer.style.borderRadius = '4px';
+        errorContainer.style.maxWidth = '400px';
+        errorContainer.style.zIndex = '10000';
+        errorContainer.innerHTML = `
+            <h3 style="margin-top: 0; color: #d32f2f;">Uygulama Hatası</h3>
+            <p>${error.message || 'Bilinmeyen hata'}</p>
+            <p><small>Lütfen bu ekran görüntüsünü destek ekibiyle paylaşın.</small></p>
+            <button onclick="this.parentNode.remove()" style="margin-top: 10px; padding: 5px 10px; cursor: pointer;">Kapat</button>
+        `;
+        document.body.appendChild(errorContainer);
+    }
+}
+
 // Sayfa yüklendiğinde uygulamayı başlat
-window.addEventListener('load', () => {
-    updateDate();
-    initEventListeners();
-    updateUI();
-});
+console.log('DOM yüklendi, uygulama başlatılıyor...');
+document.addEventListener('DOMContentLoaded', initializeApp);
