@@ -29,18 +29,57 @@ let db, auth, analytics;
 
 // Firebase'i başlat
 try {
+    console.log('Firebase başlatılıyor...');
     const app = firebase.initializeApp(firebaseConfig);
     console.log('Firebase başarıyla başlatıldı');
     
     // Firebase servislerini başlat
+    console.log('Firestore başlatılıyor...');
     db = firebase.firestore();
-    auth = firebase.auth();
-    analytics = firebase.analytics();
     
-    console.log('Firebase servisleri başlatıldı');
+    console.log('Auth başlatılıyor...');
+    auth = firebase.auth();
+    
+    // Analytics opsiyonel olarak başlatılıyor
+    try {
+        if (firebase.analytics) {
+            console.log('Analytics başlatılıyor...');
+            analytics = firebase.analytics();
+            console.log('Analytics başlatıldı');
+        } else {
+            console.warn('Firebase Analytics mevcut değil, atlanıyor...');
+        }
+    } catch (analyticsError) {
+        console.warn('Analytics başlatılırken hata oluştu:', analyticsError);
+    }
+    
+    console.log('Tüm Firebase servisleri başlatıldı');
 } catch (error) {
+    const errorMessage = 'Firebase başlatılırken bir hata oluştu: ' + (error.message || 'Bilinmeyen hata');
     console.error('Firebase başlatma hatası:', error);
-    alert('Firebase başlatılırken bir hata oluştu: ' + error.message);
+    
+    // Hata mesajını kullanıcıya göster
+    const errorDiv = document.createElement('div');
+    errorDiv.style.position = 'fixed';
+    errorDiv.style.top = '0';
+    errorDiv.style.left = '0';
+    errorDiv.style.right = '0';
+    errorDiv.style.padding = '15px';
+    errorDiv.style.backgroundColor = '#ffebee';
+    errorDiv.style.color = '#c62828';
+    errorDiv.style.borderBottom = '1px solid #ef9a9a';
+    errorDiv.style.zIndex = '9999';
+    errorDiv.style.textAlign = 'center';
+    errorDiv.style.fontFamily = 'Poppins, sans-serif';
+    errorDiv.innerHTML = `
+        <strong>Hata:</strong> ${errorMessage}
+        <br>
+        <small>Lütfen sayfayı yenileyin veya daha sonra tekrar deneyin.</small>
+    `;
+    
+    document.body.prepend(errorDiv);
+    
+    throw error; // Hatanın yukarıya iletilmesi için
 }
 
 // State yönetimi
@@ -277,65 +316,142 @@ function animateValue(element, start, end, duration = 800) {
 
 // Yemek ekleme işlevi
 async function addFood(e) {
-    e.preventDefault();
+    console.log('Yemek ekleme işlemi başlatılıyor...');
     
-    const name = foodNameInput.value.trim();
-    const calories = parseInt(foodCaloriesInput.value);
-    
-    if (name === '' || isNaN(calories) || calories <= 0) {
-        showNotification('Lütfen geçerli bir yemek adı ve kalori girin.', 'error');
-        return;
+    // Eğer event parametresi varsa (form submit durumu için)
+    if (e && typeof e.preventDefault === 'function') {
+        e.preventDefault();
     }
     
-    const addButton = document.getElementById('add-food-btn');
-    const buttonText = addButton.querySelector('.button-text');
-    const originalText = buttonText.textContent;
-    
     try {
-        if (!state.userId) {
-            throw new Error('Kullanıcı girişi yapılamadı. Lütfen sayfayı yenileyin.');
+        // Input değerlerini al ve kontrol et
+        if (!foodNameInput || !foodCaloriesInput) {
+            throw new Error('Form alanları bulunamadı. Lütfen sayfayı yenileyin.');
         }
         
-        addButton.disabled = true;
-        buttonText.textContent = 'Ekleniyor...';
+        const name = foodNameInput.value ? foodNameInput.value.trim() : '';
+        const calories = parseInt(foodCaloriesInput.value);
         
-        const food = {
-            id: Date.now(),
-            name,
-            calories,
-            timestamp: new Date()
-        };
+        if (name === '') {
+            showNotification('Lütfen bir yemek adı girin.', 'error');
+            foodNameInput.focus();
+            return;
+        }
         
-        // State'i güncelle
-        state.foods.unshift(food);
-        state.dailyCalories += calories;
+        if (isNaN(calories) || calories <= 0) {
+            showNotification('Lütfen geçerli bir kalori değeri girin.', 'error');
+            foodCaloriesInput.focus();
+            return;
+        }
         
-        // Makro besinleri güncelle
-        state.macros.protein.current += Math.floor(Math.random() * 5) + 2;
-        state.macros.carbs.current += Math.floor(calories * 0.6 / 4);
-        state.macros.fat.current += Math.floor(Math.random() * 3) + 1;
+        const addButton = document.getElementById('add-food-btn');
+        if (!addButton) {
+            throw new Error('Ekleme butonu bulunamadı!');
+        }
         
-        // Firebase'e kaydet
-        await saveUserData();
+        const buttonText = addButton.querySelector('.button-text') || { textContent: '' };
+        const originalText = buttonText.textContent;
         
-        // UI'ı güncelle
-        updateUI();
-        
-        showNotification(`${name} başarıyla eklendi!`, 'success');
-        foodForm.reset();
+        try {
+            if (!state.userId) {
+                throw new Error('Kullanıcı girişi yapılamadı. Lütfen sayfayı yenileyin.');
+            }
+            
+            console.log(`Yemek ekleniyor: ${name}, ${calories} kcal`);
+            
+            addButton.disabled = true;
+            buttonText.textContent = 'Ekleniyor...';
+            
+            const food = {
+                id: Date.now(),
+                name,
+                calories,
+                timestamp: new Date()
+            };
+            
+            console.log('Yeni yemek nesnesi oluşturuldu:', food);
+            
+            // State'i güncelle
+            if (!Array.isArray(state.foods)) {
+                state.foods = [];
+            }
+            
+            state.foods.unshift(food);
+            state.dailyCalories = (state.dailyCalories || 0) + calories;
+            
+            // Makro besinleri güncelle (eğer yoksa başlat)
+            if (!state.macros) {
+                state.macros = {
+                    protein: { current: 0, goal: 150 },
+                    carbs: { current: 0, goal: 200 },
+                    fat: { current: 0, goal: 65 }
+                };
+            }
+            
+            state.macros.protein.current = (state.macros.protein.current || 0) + Math.floor(Math.random() * 5) + 2;
+            state.macros.carbs.current = (state.macros.carbs.current || 0) + Math.floor(calories * 0.6 / 4);
+            state.macros.fat.current = (state.macros.fat.current || 0) + Math.floor(Math.random() * 3) + 1;
+            
+            console.log('State güncellendi, Firebase\'e kaydediliyor...');
+            
+            // Firebase'e kaydet
+            await saveUserData();
+            console.log('Veri başarıyla kaydedildi, UI güncelleniyor...');
+            
+            // UI'ı güncelle
+            updateUI();
+            
+            showNotification(`${name} başarıyla eklendi!`, 'success');
+            
+            // Formu sıfırla
+            if (foodForm) {
+                foodForm.reset();
+            }
+            
+            // İlk inputa odaklan
+            if (foodNameInput) {
+                foodNameInput.focus();
+            }
+            
+        } catch (error) {
+            console.error('Yemek eklenirken hata oluştu:', error);
+            
+            let errorMessage = error.message || 'Bir hata oluştu, lütfen tekrar deneyin.';
+            
+            // Firebase hataları için özel mesajlar
+            if (error.code === 'permission-denied') {
+                errorMessage = 'Bu işlem için yetkiniz yok. Lütfen tekrar giriş yapın.';
+            } else if (error.code === 'unavailable') {
+                errorMessage = 'Sunucuya bağlanılamıyor. Lütfen internet bağlantınızı kontrol edin.';
+            }
+            
+            showNotification(errorMessage, 'error');
+            
+            // Hata durumunda state'i yeniden yükle
+            if (state.userId) {
+                console.log('Hata durumunda kullanıcı verileri yeniden yükleniyor...');
+                try {
+                    await loadUserData();
+                } catch (loadError) {
+                    console.error('Kullanıcı verileri yüklenirken hata oluştu:', loadError);
+                }
+            }
+            
+            // Hata durumunda formu sıfırlama, kullanıcının girdiği veriler kalsın
+            return; // finally bloğundan önce çık
+            
+        } finally {
+            if (addButton) {
+                addButton.disabled = false;
+                if (buttonText) {
+                    buttonText.textContent = originalText;
+                }
+            }
+        }
         
     } catch (error) {
-        console.error('Yemek eklenirken hata oluştu:', error);
-        showNotification(error.message || 'Bir hata oluştu, lütfen tekrar deneyin.', 'error');
-        
-        // Hata durumunda state'i yeniden yükle
-        if (state.userId) {
-            await loadUserData();
-        }
-    } finally {
-        addButton.disabled = false;
-        buttonText.textContent = originalText;
-        foodNameInput.focus();
+        console.error('Yemek ekleme işleminde beklenmeyen hata:', error);
+        showNotification('Beklenmeyen bir hata oluştu. Lütfen sayfayı yenileyin.', 'error');
     }
 }
 
@@ -594,14 +710,42 @@ function updateDate() {
 
 // Event listener'ları ekle
 function initEventListeners() {
-    addFoodBtn.addEventListener('click', addFood);
+    console.log('Event listenerlar ekleniyor...');
     
-    // Enter tuşu ile form gönderme
-    foodForm.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            addFood(e);
+    try {
+        // Yemek ekleme formu
+        if (foodForm) {
+            console.log('Yemek ekleme formu bulundu, event listener ekleniyor...');
+            foodForm.addEventListener('submit', addFood);
+        } else {
+            console.error('Yemek ekleme formu bulunamadı!');
         }
-    });
+        
+        // Silme butonlarına tıklama olayı (delegation kullanarak)
+        if (foodList) {
+            console.log('Yemek listesi bulundu, silme işlemleri için event listener ekleniyor...');
+            foodList.addEventListener('click', (e) => {
+                const deleteBtn = e.target.closest('.delete-btn');
+                if (deleteBtn) {
+                    const foodId = parseInt(deleteBtn.dataset.id);
+                    if (!isNaN(foodId)) {
+                        console.log('Silinecek yemek ID:', foodId);
+                        deleteFood(foodId);
+                    } else {
+                        console.error('Geçersiz yemek ID:', deleteBtn.dataset.id);
+                    }
+                }
+            });
+        } else {
+            console.error('Yemek listesi bulunamadı!');
+        }
+        
+        console.log('Tüm event listenerlar başarıyla eklendi');
+    } catch (error) {
+        console.error('Event listener eklenirken hata oluştu:', error);
+        showNotification('Sayfa öğeleri yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.', 'error');
+        throw error; // Hatanın yukarıya iletilmesi için
+    }
 }
 
 // Sayfa yüklendiğinde çalışacak kod
