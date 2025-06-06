@@ -91,18 +91,28 @@ async function loadUserState() {
 
 // Kullanıcı durumunu kaydet
 async function saveUserState() {
-    if (!state.userId) return;
+    if (!state.userId) {
+        const error = new Error('Kullanıcı ID\'si bulunamadı!');
+        console.error(error);
+        throw error;
+    }
     
     try {
-        await saveUserData(state.userId, {
+        const userData = {
             foods: state.foods,
             dailyCalories: state.dailyCalories,
             dailyGoal: state.dailyGoal,
             macros: state.macros,
             lastUpdated: new Date().toISOString()
-        });
+        };
+        
+        console.log('Kullanıcı verileri kaydediliyor:', userData);
+        
+        await saveUserData(state.userId, userData);
+        console.log('Kullanıcı verileri başarıyla kaydedildi');
+        
     } catch (error) {
-        console.error('Kullanıcı verileri kaydedilirken hata:', error);
+        console.error('Kullanıcı verileri kaydedilirken hata oluştu:', error);
         throw error;
     }
 }
@@ -110,26 +120,56 @@ async function saveUserState() {
 // Event listener'ları ekle
 function setupEventListeners() {
     if (elements.foodForm) {
-        elements.foodForm.addEventListener('submit', handleAddFood);
+        elements.foodForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Sayfanın yenilenmesini engelle
+            await handleAddFood(e);
+        });
     }
     
-    // Diğer event listener'lar buraya eklenecek
+    // Silme butonları için event delegation kullan
+    document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('delete-btn')) {
+            handleDeleteFood(e);
+        }
+    });
 }
 
 // Yemek ekleme işlemi
 async function handleAddFood(e) {
-    e.preventDefault();
+    console.log('Yemek ekleme işlemi başlatıldı');
     
     try {
+        // Form değerlerini al
+        const foodName = elements.foodNameInput.value.trim();
+        const calories = parseInt(elements.foodCaloriesInput.value) || 0;
+        const protein = parseInt(elements.foodProteinInput.value) || 0;
+        const carbs = parseInt(elements.foodCarbsInput.value) || 0;
+        const fat = parseInt(elements.foodFatInput.value) || 0;
+
+        // Giriş doğrulama
+        if (!foodName) {
+            showNotification('Lütfen bir yemek adı girin', 'error');
+            elements.foodNameInput.focus();
+            return;
+        }
+
+        if (calories <= 0) {
+            showNotification('Lütfen geçerli bir kalori değeri girin', 'error');
+            elements.foodCaloriesInput.focus();
+            return;
+        }
+
         const food = {
             id: Date.now().toString(),
-            name: elements.foodNameInput.value.trim(),
-            calories: parseInt(elements.foodCaloriesInput.value) || 0,
-            protein: parseInt(elements.foodProteinInput.value) || 0,
-            carbs: parseInt(elements.foodCarbsInput.value) || 0,
-            fat: parseInt(elements.foodFatInput.value) || 0,
+            name: foodName,
+            calories: calories,
+            protein: protein,
+            carbs: carbs,
+            fat: fat,
             timestamp: new Date().toISOString()
         };
+        
+        console.log('Eklenecek yemek:', food);
         
         // State'i güncelle
         state.foods.push(food);
@@ -137,6 +177,8 @@ async function handleAddFood(e) {
         state.macros.protein.current += food.protein;
         state.macros.carbs.current += food.carbs;
         state.macros.fat.current += food.fat;
+        
+        console.log('State güncellendi:', state);
         
         // Veritabanını güncelle
         await saveUserState();
@@ -149,6 +191,9 @@ async function handleAddFood(e) {
         
         // Başarı mesajı göster
         showNotification(`${food.name} başarıyla eklendi`, 'success');
+        
+        // İlk inputa odaklan
+        elements.foodNameInput.focus();
         
     } catch (error) {
         console.error('Yemek eklenirken hata oluştu:', error);

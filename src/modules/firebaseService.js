@@ -43,19 +43,47 @@ const loadUserData = async (userId) => {
 
 // Kullanıcı verilerini kaydet
 const saveUserData = async (userId, data) => {
-    console.log('Kullanıcı verileri kaydediliyor...', { userId, data });
+    console.log('Firestore\'a veri kaydediliyor...', { userId, data });
+    
+    if (!userId) {
+        const error = new Error('Geçersiz kullanıcı ID\'si');
+        console.error(error);
+        throw error;
+    }
+    
+    if (!data) {
+        const error = new Error('Kaydedilecek veri bulunamadı');
+        console.error(error);
+        throw error;
+    }
+    
+    if (!db) {
+        const error = new Error('Firestore bağlantısı kurulamadı!');
+        console.error(error);
+        throw error;
+    }
+    
     try {
-        if (!db) {
-            throw new Error('Firestore bağlantısı yok!');
-        }
-        await setDoc(doc(db, 'users', userId), {
+        const userRef = doc(db, 'users', userId);
+        console.log('Firestore doküman referansı oluşturuldu:', userRef.path);
+        
+        const dataToSave = {
             ...data,
             updatedAt: serverTimestamp()
-        }, { merge: true });
+        };
+        
+        console.log('Kaydedilecek veri:', dataToSave);
+        
+        await setDoc(userRef, dataToSave, { merge: true });
         console.log('Veri başarıyla kaydedildi');
+        
+        return true;
     } catch (error) {
-        console.error('Veri kaydetme hatası:', error);
-        throw error;
+        console.error('Veri kaydedilirken hata oluştu:', {
+            error: error.message,
+            stack: error.stack
+        });
+        throw new Error(`Veri kaydedilemedi: ${error.message}`);
     }
 };
 
