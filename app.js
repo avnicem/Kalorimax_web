@@ -265,20 +265,19 @@ async function addFood(e) {
     e.preventDefault();
     
     try {
-        // GiriÅŸ deÄŸerlerini al ve doÄŸrula
-        const name = foodNameInput ? foodNameInput.value.trim() : '';
-        const calories = foodCaloriesInput ? parseInt(foodCaloriesInput.value) : 0;
+        const name = foodNameInput.value.trim();
+        const calories = parseInt(foodCaloriesInput.value) || 0;
+        const protein = parseInt(document.getElementById('food-protein')?.value) || 0;
+        const carbs = parseInt(document.getElementById('food-carbs')?.value) || 0;
+        const fat = parseInt(document.getElementById('food-fat')?.value) || 0;
         
-        // GiriÅŸ doÄŸrulama
         if (!name) {
             showNotification('LÃ¼tfen bir yemek adÄ± girin.', 'error');
-            foodNameInput?.focus();
             return;
         }
         
-        if (isNaN(calories) || calories <= 0) {
+        if (calories <= 0) {
             showNotification('LÃ¼tfen geÃ§erli bir kalori deÄŸeri girin.', 'error');
-            foodCaloriesInput?.focus();
             return;
         }
         
@@ -287,15 +286,22 @@ async function addFood(e) {
             id: Date.now().toString(),
             name,
             calories,
-            date: new Date().toISOString(),
-            macros: {
-                protein: 0,
-                carbs: 0,
-                fat: 0
-            }
+            protein,
+            carbs,
+            fat,
+            date: new Date().toISOString()
         };
         
-        console.log('Yeni yemek eklendi:', newFood);
+        // Makro besinleri gÃ¼ncelle
+        if (!state.macros) state.macros = {
+            protein: { current: 0, goal: 150 },
+            carbs: { current: 0, goal: 200 },
+            fat: { current: 0, goal: 65 }
+        };
+        
+        state.macros.protein.current = (state.macros.protein.current || 0) + protein;
+        state.macros.carbs.current = (state.macros.carbs.current || 0) + carbs;
+        state.macros.fat.current = (state.macros.fat.current || 0) + fat;
         
         // State'i gÃ¼ncelle
         if (!state.foods) state.foods = [];
@@ -323,6 +329,9 @@ async function addFood(e) {
             // Hata durumunda state'i geri al
             state.foods = state.foods.filter(f => f.id !== newFood.id);
             state.dailyCalories -= calories;
+            state.macros.protein.current -= protein;
+            state.macros.carbs.current -= carbs;
+            state.macros.fat.current -= fat;
             throw error;
         }
         
@@ -378,6 +387,13 @@ async function deleteFood(id) {
         state.foods.splice(foodIndex, 1);
         state.dailyCalories = Math.max(0, (state.dailyCalories || 0) - (deletedFood.calories || 0));
         
+        // Makro besinlerden de Ã§Ä±kar
+        if (state.macros && deletedFood.protein) {
+            state.macros.protein.current = Math.max(0, (state.macros.protein.current || 0) - (deletedFood.protein || 0));
+            state.macros.carbs.current = Math.max(0, (state.macros.carbs.current || 0) - (deletedFood.carbs || 0));
+            state.macros.fat.current = Math.max(0, (state.macros.fat.current || 0) - (deletedFood.fat || 0));
+        }
+        
         try {
             // Firestore'a kaydet
             await saveUserData();
@@ -393,6 +409,11 @@ async function deleteFood(id) {
             // Hata durumunda state'i geri al
             state.foods.splice(foodIndex, 0, deletedFood);
             state.dailyCalories = (state.dailyCalories || 0) + (deletedFood.calories || 0);
+            if (state.macros && deletedFood.protein) {
+                state.macros.protein.current = (state.macros.protein.current || 0) + (deletedFood.protein || 0);
+                state.macros.carbs.current = (state.macros.carbs.current || 0) + (deletedFood.carbs || 0);
+                state.macros.fat.current = (state.macros.fat.current || 0) + (deletedFood.fat || 0);
+            }
             throw error;
         }
         
@@ -781,28 +802,31 @@ function updateDate() {
     }
 }
 
-// Event listener'larÄ± ekle
+// Event listener'ları ekle
 function initEventListeners() {
     try {
         // Yemek ekleme formu
         if (foodForm) {
             foodForm.addEventListener('submit', addFood);
         } else {
-            console.error('Yemek formu bulunamadÄ±!');
+            console.error('Yemek formu bulunamadı!');
         }
         
-        // Silme butonlarÄ± iÃ§in event delegation
+        // Silme butonları için event delegation
         if (foodList) {
             foodList.addEventListener('click', (e) => {
-                if (e.target.classList.contains('delete-button')) {
+                // Silme butonuna tıklandığında
+                if (e.target.closest('.delete-food')) {
                     const foodItem = e.target.closest('.food-item');
                     if (foodItem && foodItem.dataset.id) {
                         deleteFood(foodItem.dataset.id);
                     }
+                    e.preventDefault();
+                    e.stopPropagation();
                 }
             });
         } else {
-            console.error('Yemek listesi bulunamadÄ±!');
+            console.error('Yemek listesi bulunamadı!');
         }
         
         console.log('TÃ¼m event listenerlar baÅŸarÄ±yla eklendi');

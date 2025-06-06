@@ -80,7 +80,30 @@
                         required
                         aria-label="Kalori miktarı"
                     >
-                    <button type="submit" id="add-food-btn">
+                    <div class="macro-inputs">
+                        <input 
+                            type="number" 
+                            id="food-protein" 
+                            placeholder="Protein (g)" 
+                            min="0"
+                            aria-label="Protein miktarı"
+                        >
+                        <input 
+                            type="number" 
+                            id="food-carbs" 
+                            placeholder="Karbonhidrat (g)" 
+                            min="0"
+                            aria-label="Karbonhidrat miktarı"
+                        >
+                        <input 
+                            type="number" 
+                            id="food-fat" 
+                            placeholder="Yağ (g)" 
+                            min="0"
+                            aria-label="Yağ miktarı"
+                        >
+                    </div>
+                    <button type="submit" id="add-food-btn" class="add-button">
                         <span class="button-text">Ekle</span>
                         <span class="button-icon">+</span>
                     </button>
