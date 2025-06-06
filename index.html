@@ -9,19 +9,163 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Uygulama JavaScript'i -->
-    <script src="src/app-new.js"></script>
-    
+    <!-- Basit çalışan JavaScript -->
     <script>
-        // Hata ayıklama için global değişkenler
-        window.addEventListener('error', (event) => {
-            console.error('Global hata yakalandı:', event.error || event.message || 'Bilinmeyen hata');
+        // Uygulama durumu
+        const state = {
+            foods: [],
+            dailyCalories: 0,
+            macros: { protein: 0, carbs: 0, fat: 0 }
+        };
+
+        // Bildirim göster
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px; z-index: 1000;
+                background: ${type === 'error' ? '#f44336' : '#4CAF50'};
+                color: white; padding: 15px 20px; border-radius: 5px;
+                font-family: 'Poppins', sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // UI güncelle
+        function updateUI() {
+            // Kalori güncelle
+            const calorieElement = document.querySelector('.calorie-count');
+            if (calorieElement) calorieElement.textContent = state.dailyCalories;
+            
+            // Yemek sayısını güncelle
+            const countElement = document.querySelector('.food-count');
+            if (countElement) countElement.textContent = `${state.foods.length} öğün`;
+            
+            // Makro çubukları güncelle
+            ['protein', 'carbs', 'fat'].forEach(macro => {
+                const bar = document.querySelector(`.macro-${macro} .macro-fill`);
+                const amount = document.querySelector(`.macro-${macro} .macro-amount`);
+                if (bar && amount) {
+                    const goal = macro === 'protein' ? 150 : macro === 'carbs' ? 200 : 65;
+                    const percentage = Math.min((state.macros[macro] / goal) * 100, 100);
+                    bar.style.width = percentage + '%';
+                    amount.textContent = state.macros[macro] + 'g';
+                }
+            });
+            
+            // Yemek listesini güncelle
+            const foodList = document.getElementById('food-items');
+            if (foodList) {
+                if (state.foods.length === 0) {
+                    foodList.innerHTML = `
+                        <li class="empty-state">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTMgM0gyMVY1SDFWM1pNMSA5SDExVjExSDFWOVpNMSAxM0gxNVYxNUgxVjEzWk0xIDE3SDE5VjE5SDFWMTdaTTE5IDEzSDE3VjE5SDE5VjEzWk0xOSA5SDE3VjExSDE5VjlaTTE1IDlIMTNWMTFIMTVWOVpNMTEgOUg5VjExSDExVjlaTTcgOUg1VjExSDdWOVoiIGZpbGw9IiNiZGJkYmQiLz4KPC9zdmc+Cg==" alt="">
+                            <p>Henüz yemek eklenmedi</p>
+                        </li>
+                    `;
+                } else {
+                    foodList.innerHTML = state.foods.map(food => `
+                        <li class="food-item">
+                            <span class="food-name">${food.name}</span>
+                            <div class="food-macros">
+                                <span class="food-calories">${food.calories} kcal</span>
+                                <span class="food-protein">P: ${food.protein}g</span>
+                                <span class="food-carbs">K: ${food.carbs}g</span>
+                                <span class="food-fat">Y: ${food.fat}g</span>
+                            </div>
+                            <button class="delete-btn" onclick="deleteFood('${food.id}')">×</button>
+                        </li>
+                    `).join('');
+                }
+            }
+        }
+
+        // Yemek sil
+        function deleteFood(id) {
+            const index = state.foods.findIndex(f => f.id === id);
+            if (index > -1) {
+                const deleted = state.foods[index];
+                state.foods.splice(index, 1);
+                state.dailyCalories -= deleted.calories;
+                state.macros.protein -= deleted.protein;
+                state.macros.carbs -= deleted.carbs;
+                state.macros.fat -= deleted.fat;
+                updateUI();
+                showNotification(`${deleted.name} silindi!`);
+            }
+        }
+
+        // Tarihi güncelle
+        function updateDate() {
+            const dateElement = document.querySelector('.date');
+            if (dateElement) {
+                const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+                dateElement.textContent = new Date().toLocaleDateString('tr-TR', options);
+            }
+        }
+
+        // DOM yüklendiğinde
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 KaloriMax başlatılıyor...');
+            
+            // Tarihi güncelle
+            updateDate();
+            
+            // Form event listener
+            const form = document.getElementById('food-form');
+            if (form) {
+                console.log('✅ Form bulundu');
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('📝 Form gönderildi');
+                    
+                    const name = document.getElementById('food-name').value.trim();
+                    const calories = parseInt(document.getElementById('food-calories').value) || 0;
+                    const protein = parseInt(document.getElementById('food-protein').value) || 0;
+                    const carbs = parseInt(document.getElementById('food-carbs').value) || 0;
+                    const fat = parseInt(document.getElementById('food-fat').value) || 0;
+                    
+                    if (!name) {
+                        showNotification('Lütfen yemek adı girin!', 'error');
+                        return;
+                    }
+                    
+                    if (calories <= 0) {
+                        showNotification('Lütfen geçerli kalori değeri girin!', 'error');
+                        return;
+                    }
+                    
+                    const food = {
+                        id: Date.now().toString(),
+                        name, calories, protein, carbs, fat
+                    };
+                    
+                    state.foods.push(food);
+                    state.dailyCalories += calories;
+                    state.macros.protein += protein;
+                    state.macros.carbs += carbs;
+                    state.macros.fat += fat;
+                    
+                    updateUI();
+                    form.reset();
+                    document.getElementById('food-name').focus();
+                    showNotification(`${name} eklendi! 🎉`);
+                    
+                    console.log('✅ Yemek eklendi:', food);
+                });
+            } else {
+                console.error('❌ Form bulunamadı!');
+            }
+            
+            // İlk güncelleme
+            updateUI();
+            showNotification('Uygulama hazır! 🚀');
         });
-        
-        // Promise hatalarını yakala
-        window.addEventListener('unhandledrejection', (event) => {
-            console.error('Yakalanmamış Promise hatası:', event.reason);
-        });
+
+        // Global erişim
+        window.deleteFood = deleteFood;
+        window.appState = state;
     </script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
 </head>

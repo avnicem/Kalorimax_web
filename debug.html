@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Debug Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .form-container { background: #f0f0f0; padding: 20px; border-radius: 5px; max-width: 500px; }
+        input, button { margin: 5px 0; padding: 10px; width: 100%; }
+        button { background: #4CAF50; color: white; border: none; cursor: pointer; }
+        .result { margin-top: 20px; padding: 10px; background: #e8f5e8; border-radius: 5px; }
+        .error { background: #ffe8e8; color: #d8000c; }
+        .log { font-family: monospace; background: #f8f8f8; padding: 10px; margin: 10px 0; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>🐛 Debug Test Sayfası</h1>
+    
+    <div class="form-container">
+        <h2>Yemek Ekleme Testi</h2>
+        <form id="test-form">
+            <input type="text" id="food-name" placeholder="Yemek adı" required>
+            <input type="number" id="food-calories" placeholder="Kalori" required>
+            <button type="submit">TEST EKLE</button>
+        </form>
+    </div>
+    
+    <div id="result" class="result" style="display:none;">
+        <h3>Sonuç:</h3>
+        <div id="result-content"></div>
+    </div>
+    
+    <div class="log">
+        <h3>Console Log:</h3>
+        <div id="log-content">Sayfa yükleniyor...</div>
+    </div>
+
+    <script>
+        // Console override için log yakalama
+        const logDiv = document.getElementById('log-content');
+        const originalLog = console.log;
+        const originalError = console.error;
+        
+        function addLog(message, type = 'log') {
+            const timestamp = new Date().toLocaleTimeString();
+            const logLine = `[${timestamp}] ${type.toUpperCase()}: ${message}`;
+            logDiv.innerHTML += logLine + '\n';
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        console.log = function(...args) {
+            addLog(args.join(' '), 'log');
+            originalLog.apply(console, args);
+        };
+        
+        console.error = function(...args) {
+            addLog(args.join(' '), 'error');
+            originalError.apply(console, args);
+        };
+
+        // Hata yakalama
+        window.addEventListener('error', (event) => {
+            addLog(`ERROR: ${event.message} at ${event.filename}:${event.lineno}`, 'error');
+        });
+
+        console.log('Debug sayfası yüklendi');
+
+        // DOM yüklenme testi
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM yüklendi');
+            
+            const form = document.getElementById('test-form');
+            const resultDiv = document.getElementById('result');
+            const resultContent = document.getElementById('result-content');
+            
+            if (form) {
+                console.log('Form bulundu, event listener ekleniyor');
+                
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('Form submit olayı tetiklendi!');
+                    
+                    const foodName = document.getElementById('food-name').value;
+                    const calories = document.getElementById('food-calories').value;
+                    
+                    console.log('Form değerleri alındı:', { foodName, calories });
+                    
+                    if (!foodName) {
+                        addLog('Hata: Yemek adı boş!', 'error');
+                        return;
+                    }
+                    
+                    if (!calories || calories <= 0) {
+                        addLog('Hata: Kalori değeri geçersiz!', 'error');
+                        return;
+                    }
+                    
+                    // Başarılı
+                    resultDiv.style.display = 'block';
+                    resultContent.innerHTML = `
+                        <strong>✅ BAŞARILI!</strong><br>
+                        Yemek: ${foodName}<br>
+                        Kalori: ${calories} kcal<br>
+                        Zaman: ${new Date().toLocaleTimeString()}
+                    `;
+                    
+                    console.log('Yemek başarıyla eklendi!');
+                    
+                    // Form temizle
+                    form.reset();
+                });
+                
+            } else {
+                console.error('Form bulunamadı!');
+            }
+        });
+        
+        console.log('Script yükleme tamamlandı');
+    </script>
+</body>
+</html> 
