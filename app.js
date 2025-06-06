@@ -371,6 +371,7 @@ requestAnimationFrame(updateValue);
 
 // Yemek ekleme işlevi
 async function addFood(e) {
+    console.log('addFood fonksiyonu çalıştı');
     e.preventDefault();
     
     if (!state.userId) {
