@@ -1,7 +1,20 @@
 //
-KaloriMax
-Uygulaması
-// Firebase yapÄ±landÄ±rmasÄ±
+// Firebase modüllerini import et
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-app.js';
+import { 
+    getFirestore, 
+    doc, 
+    getDoc, 
+    setDoc, 
+    serverTimestamp 
+} from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore.js';
+import { 
+    getAuth, 
+    signInAnonymously, 
+    onAuthStateChanged 
+} from 'https://www.gstatic.com/firebasejs/9.22.0/firebase-auth.js';
+
+// Firebase yapılandırması
 const firebaseConfig = {
     apiKey: "AIzaSyCpiXP1B7hhnOUD9Xb6FM4mLg6nFADnwE0",
     authDomain: "kalorimax-cbaf3.firebaseapp.com",
@@ -13,19 +26,23 @@ const firebaseConfig = {
     measurementId: "G-4W0TVYEH43"
 };
 
-// Firebase uygulamasÄ±nÄ±n zaten baÅŸlatÄ±lÄ±p baÅŸlatÄ±lmadÄ±ÄŸÄ±nÄ± kontrol et
-function getFirebaseApp() {
+// Firebase servislerini başlat
+function initFirebase() {
     try {
-        const apps = firebase.apps;
-        if (apps.length === 0) {
-            console.log('Firebase uygulamasÄ± baÅŸlatÄ±lÄ±yor...');
-            return firebase.initializeApp(firebaseConfig);
-        } else {
-            console.log('Mevcut Firebase uygulamasÄ± kullanÄ±lÄ±yor');
-            return apps[0];
-        }
+        console.log('Firebase başlatılıyor...');
+        
+        // Uygulamayı başlat
+        const app = initializeApp(firebaseConfig);
+        
+        // Servisleri başlat
+        db = getFirestore(app);
+        auth = getAuth(app);
+        
+        console.log('Firebase başarıyla başlatıldı');
+        return { app, db, auth };
+        
     } catch (error) {
-        console.error('Firebase uygulamasÄ± alÄ±nÄ±rken hata oluÅŸtu:', error);
+        console.error('Firebase başlatılırken hata oluştu:', error);
         throw error;
     }
 }
@@ -88,81 +105,82 @@ async function initFirebase() {
     }
 }
 
-// Kimlik doÄŸrulama durumunu dinle
+// Kimlik doğrulama durumunu dinle
 async function initAuth() {
-    console.log('Auth baÅŸlatÄ±lÄ±yor...');
+    console.log('Auth başlatılıyor...');
     
     if (!auth) {
-        throw new Error('Firebase Auth baÅŸlatÄ±lamadÄ±!');
+        throw new Error('Firebase Auth başlatılamadı!');
     }
     
     try {
+        // Mevcut kullanıcıyı kontrol et
         const currentUser = auth.currentUser;
         
         if (currentUser) {
-            console.log('Mevcut kullanÄ±cÄ± bulundu:', currentUser.uid);
+            console.log('Mevcut kullanıcı bulundu:', currentUser.uid);
             state.userId = currentUser.uid;
             await loadUserData();
             return;
         }
         
-        console.log('Anonim giriÅŸ deneniyor...');
-        const userCredential = await auth.signInAnonymously();
+        // Anonim giriş yap
+        console.log('Anonim giriş deneniyor...');
+        const userCredential = await signInAnonymously(auth);
         
-        console.log('Anonim giriÅŸ baÅŸarÄ±lÄ±:', userCredential.user.uid);
+        console.log('Anonim giriş başarılı:', userCredential.user.uid);
         state.userId = userCredential.user.uid;
         await loadUserData();
         
-    } catch (error) {
-        console.error('Kimlik doÄŸrulama hatasÄ±:', error);
+        // Auth state değişikliklerini dinle
+        return onAuthStateChanged(auth, (user) => {
+            if (user) {
+                console.log('Auth state değişti: Kullanıcı giriş yaptı', user.uid);
+                state.userId = user.uid;
+            } else {
+                console.log('Auth state değişti: Kullanıcı çıkış yaptı');
+                state.userId = null;
+            }
+        });
         
-        let errorMessage = 'GiriÅŸ yapÄ±lamadÄ±: ';
+    } catch (error) {
+        console.error('Kimlik doğrulama hatası:', error);
+        
+        let errorMessage = 'Giriş yapılamadı: ';
         
         switch(error.code) {
             case 'auth/operation-not-allowed':
-                errorMessage += 'Anonim giriÅŸ etkin deÄŸil. LÃ¼tfen Firebase konsolundan etkinleÅŸtirin.';
+                errorMessage += 'Anonim giriş etkin değil. Lütfen Firebase konsolundan etkinleştirin.';
                 break;
             case 'auth/network-request-failed':
-                errorMessage += 'AÄŸ baÄŸlantÄ± hatasÄ±. LÃ¼tfen internet baÄŸlantÄ±nÄ±zÄ± kontrol edin.';
+                errorMessage += 'Ağ bağlantı hatası. Lütfen internet bağlantınızı kontrol edin.';
                 break;
             default:
-                errorMessage += error.message || 'Bilinmeyen bir hata oluÅŸtu.';
+                errorMessage += error.message || 'Bilinmeyen bir hata oluştu.';
         }
         
         showNotification(errorMessage, 'error');
         throw error;
     }
-    
-    const unsubscribe = auth.onAuthStateChanged(user => {
-        if (user) {
-            console.log('Auth state deÄŸiÅŸti: KullanÄ±cÄ± giriÅŸ yaptÄ±', user.uid);
-            state.userId = user.uid;
-        } else {
-            console.log('Auth state deÄŸiÅŸti: KullanÄ±cÄ± Ã§Ä±kÄ±ÅŸ yaptÄ±');
-            state.userId = null;
-        }
-    });
-    
-    return () => unsubscribe();
 }
 
-// KullanÄ±cÄ± verilerini yÃ¼kle
+// Kullanıcı verilerini yükle
 async function loadUserData() {
+    console.log('Kullanıcı verileri yükleniyor...');
+    
     if (!state.userId) {
-        console.error('KullanÄ±cÄ± giriÅŸi yapÄ±lmadan veri yÃ¼klenemez!');
+        console.error('Kullanıcı ID\'si bulunamadı!');
         return;
     }
     
-    console.log('KullanÄ±cÄ± verileri yÃ¼kleniyor...');
-    
     try {
-        const userDoc = await db.collection('users').doc(state.userId).get();
+        const userDoc = await getDoc(doc(db, 'users', state.userId));
         
-        if (userDoc.exists) {
+        if (userDoc.exists()) {
             const userData = userDoc.data();
-            console.log('KullanÄ±cÄ± verileri alÄ±ndÄ±:', userData);
+            console.log('Kullanıcı verileri alındı:', userData);
             
-            // State'i gÃ¼ncelle
+            // State'i güncelle
             state.foods = userData.foods || [];
             state.dailyCalories = userData.dailyCalories || 0;
             state.dailyGoal = userData.dailyGoal || 2000;
@@ -172,78 +190,169 @@ async function loadUserData() {
                 fat: { current: 0, goal: 65 }
             };
             
-            console.log('KullanÄ±cÄ± verileri yÃ¼klendi');
+            console.log('State güncellendi:', state);
         } else {
-            console.log('KullanÄ±cÄ± verileri bulunamadÄ±, varsayÄ±lan deÄŸerlerle baÅŸlatÄ±lÄ±yor...');
+            console.log('Kullanıcı verisi bulunamadı, yeni veri oluşturulacak.');
+            // Yeni kullanıcı için varsayılan değerlerle state'i sıfırla
+            state.foods = [];
+            state.dailyCalories = 0;
+            state.dailyGoal = 2000;
+            state.macros = {
+                protein: { current: 0, goal: 150 },
+                carbs: { current: 0, goal: 200 },
+                fat: { current: 0, goal: 65 }
+            };
             
-            // VarsayÄ±lan deÄŸerlerle yeni bir kullanÄ±cÄ± belgesi oluÅŸtur
+            // Firestore'a kaydet
             await saveUserData();
         }
         
-        // UI'Ä± gÃ¼ncelle
+        // UI'ı güncelle
         updateUI();
         
     } catch (error) {
-        console.error('KullanÄ±cÄ± verileri yÃ¼klenirken hata oluÅŸtu:', error);
-        showNotification('Veriler yÃ¼klenirken bir hata oluÅŸtu. LÃ¼tfen sayfayÄ± yenileyin.', 'error');
-        throw error;
+        console.error('Kullanıcı verileri yüklenirken hata oluştu:', error);
+        showNotification('Veriler yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.', 'error');
     }
 }
 
-// KullanÄ±cÄ± verilerini kaydet
+// Kullanıcı verilerini kaydet
 async function saveUserData() {
     if (!state.userId) {
-        console.error('KullanÄ±cÄ± giriÅŸi yapÄ±lmadan veri kaydedilemez!');
-        return;
+        console.error('Kullanıcı girişi yapılmadan veri kaydedilemez!');
+        return false;
     }
     
-    console.log('KullanÄ±cÄ± verileri kaydediliyor...');
+    console.log('Kullanıcı verileri kaydediliyor...');
     
     try {
-        await db.collection('users').doc(state.userId).set({
+        await setDoc(doc(db, 'users', state.userId), {
             foods: state.foods,
             dailyCalories: state.dailyCalories,
             dailyGoal: state.dailyGoal,
             macros: state.macros,
-            lastUpdated: new Date()
-        });
+            lastUpdated: serverTimestamp()
+        }, { merge: true });
         
-        console.log('KullanÄ±cÄ± verileri baÅŸarÄ±yla kaydedildi');
+        console.log('Kullanıcı verileri başarıyla kaydedildi');
         return true;
         
     } catch (error) {
-        console.error('KullanÄ±cÄ± verileri kaydedilirken hata oluÅŸtu:', error);
-        showNotification('Veriler kaydedilirken bir hata oluÅŸtu. LÃ¼tfen tekrar deneyin.', 'error');
+        console.error('Kullanıcı verileri kaydedilirken hata oluştu:', error);
+        showNotification('Veriler kaydedilirken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
         throw error;
     }
 }
 
-// DOM elementleri
-const foodForm = document.getElementById('food-form');
-const foodNameInput = document.getElementById('food-name');
-const foodCaloriesInput = document.getElementById('food-calories');
-const foodList = document.getElementById('food-items'); // DÃ¼zeltildi: 'food-list' yerine 'food-items' kullanÄ±lÄ±yor
-const calorieCountElement = document.querySelector('.calorie-count'); // Yeni eklendi
-const progressBar = document.querySelector('.macro-fill'); // DÃ¼zeltildi: '.progress-bar' yerine '.macro-fill' kullanÄ±lÄ±yor
-const macroBars = {
-    protein: {
-        bar: document.querySelector('.macro-protein .macro-fill'),
-        text: document.querySelector('.macro-protein .macro-amount')
-    },
-    carbs: {
-        bar: document.querySelector('.macro-carbs .macro-fill'),
-        text: document.querySelector('.macro-carbs .macro-amount')
-    },
-    fat: {
-        bar: document.querySelector('.macro-fat .macro-fill'),
-        text: document.querySelector('.macro-fat .macro-amount')
+// Uygulamayı başlatma fonksiyonu
+async function initializeApp() {
+    try {
+        console.log('Uygulama başlatılıyor...');
+        
+        // State'i başlat
+        initializeState();
+        
+        // Firebase'i başlat
+        await initFirebase();
+        
+        // Kimlik doğrulamasını başlat
+        await initAuth();
+        
+        // DOM elementlerini yükle
+        initDOM();
+        
+        // Event listener'ları ekle
+        initEventListeners();
+        
+        // Tarihi güncelle
+        updateDate();
+        
+        console.log('Uygulama başarıyla başlatıldı');
+        
+    } catch (error) {
+        console.error('Uygulama başlatılırken hata oluştu:', error);
+        showNotification('Uygulama başlatılırken bir hata oluştu. Lütfen sayfayı yenileyin.', 'error');
     }
-};
+}
+
+// Sayfa yüklendiğinde uygulamayı başlat
+console.log('Uygulama başlatılıyor...');
+
+// DOM yüklendikten sonra uygulamayı başlat
+if (document.readyState === 'loading') {
+    // DOM henüz yüklenmediyse, event listener ekle
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    // DOM zaten yüklendiyse, doğrudan başlat
+    initializeApp();
+}
+
+// DOM elementlerini seç
+let foodForm, foodNameInput, foodCaloriesInput, foodList, calorieCountElement, progressBar, macroBars;
+let proteinInput, carbsInput, fatInput;  // Makro besin inputları
+
+// DOM yüklendikten sonra çalışacak fonksiyon
+function initDOM() {
+    try {
+        console.log('DOM elementleri yükleniyor...');
+        
+        // Form elementleri
+        foodForm = document.getElementById('food-form');
+        foodNameInput = document.getElementById('food-name');
+        foodCaloriesInput = document.getElementById('food-calories');
+        foodList = document.getElementById('food-items');
+        
+        // Makro besin inputları
+        proteinInput = document.getElementById('food-protein');
+        carbsInput = document.getElementById('food-carbs');
+        fatInput = document.getElementById('food-fat');
+        
+        // İlerleme çubuğu ve sayaç
+        calorieCountElement = document.querySelector('.calorie-count');
+        progressBar = document.querySelector('.macro-fill');
+        
+        // Makro çubukları
+        macroBars = {
+            protein: {
+                bar: document.querySelector('.macro-protein .macro-fill'),
+                text: document.querySelector('.macro-protein .macro-amount')
+            },
+            carbs: {
+                bar: document.querySelector('.macro-carbs .macro-fill'),
+                text: document.querySelector('.macro-carbs .macro-amount')
+            },
+            fat: {
+                bar: document.querySelector('.macro-fat .macro-fill'),
+                text: document.querySelector('.macro-fat .macro-amount')
+            }
+        };
+        
+        console.log('DOM elementleri başarıyla yüklendi');
+        
+    } catch (error) {
+        console.error('DOM elementleri yüklenirken hata oluştu:', error);
+        throw error;
+    }
+}
 
 // Animasyonlu sayma efekti
 function animateValue(element, start, end, duration = 800) {
-    const range = end - start;
-    const startTime = performance.now();
+const range = end - start;
+const startTime = performance.now();
+
+function updateValue(currentTime) {
+const elapsed = currentTime - startTime;
+const progress = Math.min(elapsed / duration, 1);
+
+const currentValue = Math.floor(start + (progress * range));
+element.textContent = currentValue;
+
+if (progress < 1) {
+requestAnimationFrame(updateValue);
+}
+}
+
+requestAnimationFrame(updateValue);
     
     function updateValue(currentTime) {
         const elapsed = currentTime - startTime;
@@ -260,28 +369,35 @@ function animateValue(element, start, end, duration = 800) {
     requestAnimationFrame(updateValue);
 }
 
-// Yemek ekleme iÅŸlevi
+// Yemek ekleme işlevi
 async function addFood(e) {
     e.preventDefault();
+    
+    if (!state.userId) {
+        showNotification('Lütfen giriş yapın!', 'error');
+        return;
+    }
     
     try {
         const name = foodNameInput.value.trim();
         const calories = parseInt(foodCaloriesInput.value) || 0;
-        const protein = parseInt(document.getElementById('food-protein')?.value) || 0;
-        const carbs = parseInt(document.getElementById('food-carbs')?.value) || 0;
-        const fat = parseInt(document.getElementById('food-fat')?.value) || 0;
+        const protein = parseInt(proteinInput?.value) || 0;
+        const carbs = parseInt(carbsInput?.value) || 0;
+        const fat = parseInt(fatInput?.value) || 0;
         
         if (!name) {
-            showNotification('LÃ¼tfen bir yemek adÄ± girin.', 'error');
+            showNotification('Lütfen bir yemek adı girin!', 'error');
+            foodNameInput.focus();
             return;
         }
         
         if (calories <= 0) {
-            showNotification('LÃ¼tfen geÃ§erli bir kalori deÄŸeri girin.', 'error');
+            showNotification('Lütfen geçerli bir kalori değeri girin!', 'error');
+            foodCaloriesInput.focus();
             return;
         }
         
-        // Yeni yemeÄŸi oluÅŸtur
+        // Yeni yemeği oluştur
         const newFood = {
             id: Date.now().toString(),
             name,
@@ -292,7 +408,12 @@ async function addFood(e) {
             date: new Date().toISOString()
         };
         
-        // Makro besinleri gÃ¼ncelle
+        // State'i güncelle
+        if (!state.foods) state.foods = [];
+        state.foods.push(newFood);
+        state.dailyCalories = (state.dailyCalories || 0) + calories;
+        
+        // Makro besinleri güncelle
         if (!state.macros) state.macros = {
             protein: { current: 0, goal: 150 },
             carbs: { current: 0, goal: 200 },
@@ -303,46 +424,40 @@ async function addFood(e) {
         state.macros.carbs.current = (state.macros.carbs.current || 0) + carbs;
         state.macros.fat.current = (state.macros.fat.current || 0) + fat;
         
-        // State'i gÃ¼ncelle
-        if (!state.foods) state.foods = [];
-        state.foods.push(newFood);
-        state.dailyCalories = (state.dailyCalories || 0) + calories;
-        
         try {
             // Firestore'a kaydet
             await saveUserData();
             
-            // UI'Ä± gÃ¼ncelle
+            // UI'ı güncelle
             updateUI();
             
             // Formu temizle
-            if (foodForm) foodForm.reset();
+            foodForm.reset();
+            foodNameInput.focus();
             
-            // Ä°mleci ilk alana taÅŸÄ±
-            if (foodNameInput) foodNameInput.focus();
-            
-            // BaÅŸarÄ± bildirimi gÃ¶ster
-            showNotification(`âœ“ ${name} baÅŸarÄ±yla eklendi!`, 'success');
+            showNotification('Yemek başarıyla eklendi!', 'success');
             
         } catch (error) {
-            console.error('Veri kaydedilirken hata oluÅŸtu:', error);
+            console.error('Veri kaydedilirken hata oluştu:', error);
             // Hata durumunda state'i geri al
             state.foods = state.foods.filter(f => f.id !== newFood.id);
             state.dailyCalories -= calories;
             state.macros.protein.current -= protein;
             state.macros.carbs.current -= carbs;
             state.macros.fat.current -= fat;
-            throw error;
+            
+            showNotification('Veri kaydedilirken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
         }
         
     } catch (error) {
-        console.error('Yemek eklenirken hata oluÅŸtu:', error);
-        showNotification('Yemek eklenirken bir hata oluÅŸtu. LÃ¼tfen tekrar deneyin.', 'error');
+        console.error('Yemek eklenirken hata oluştu:', error);
+        showNotification('Yemek eklenirken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
     }
 }
 
 // Bildirim gÃ¶sterme fonksiyonu
 function showNotification(message, type = 'info') {
+    // ... (diğer kodlar)
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     notification.textContent = message;
@@ -366,29 +481,36 @@ function showNotification(message, type = 'info') {
     }, 100);
 }
 
-// Yemek silme iÅŸlevi
+// Yemek silme işlevi
 async function deleteFood(id) {
     try {
+        if (!state.userId) {
+            showNotification('Lütfen giriş yapın!', 'error');
+            return;
+        }
+        
         if (!state.foods || !Array.isArray(state.foods)) {
-            console.error('Yemek listesi geÃ§ersiz');
+            console.error('Yemek listesi geçersiz');
+            showNotification('Yemek listesi yüklenirken bir hata oluştu. Lütfen sayfayı yenileyin.', 'error');
             return;
         }
         
         const foodIndex = state.foods.findIndex(food => food.id === id);
         
         if (foodIndex === -1) {
-            console.error('Silinecek yemek bulunamadÄ±:', id);
+            console.error('Silinecek yemek bulunamadı:', id);
+            showNotification('Silinecek yemek bulunamadı!', 'error');
             return;
         }
         
         const deletedFood = state.foods[foodIndex];
         
-        // State'ten kaldÄ±r
+        // State'ten kaldır
         state.foods.splice(foodIndex, 1);
         state.dailyCalories = Math.max(0, (state.dailyCalories || 0) - (deletedFood.calories || 0));
         
-        // Makro besinlerden de Ã§Ä±kar
-        if (state.macros && deletedFood.protein) {
+        // Makro besinlerden de çıkar
+        if (state.macros) {
             state.macros.protein.current = Math.max(0, (state.macros.protein.current || 0) - (deletedFood.protein || 0));
             state.macros.carbs.current = Math.max(0, (state.macros.carbs.current || 0) - (deletedFood.carbs || 0));
             state.macros.fat.current = Math.max(0, (state.macros.fat.current || 0) - (deletedFood.fat || 0));
@@ -398,36 +520,37 @@ async function deleteFood(id) {
             // Firestore'a kaydet
             await saveUserData();
             
-            // UI'Ä± gÃ¼ncelle
+            // UI'ı güncelle
             updateUI();
             
-            // Geri alma bildirimi gÃ¶ster
-            showUndoNotification(deletedFood);
+            // Geri alma bildirimi göster
+            showUndoNotification(deletedFood, foodIndex);
             
         } catch (error) {
-            console.error('Silme iÅŸlemi kaydedilirken hata oluÅŸtu:', error);
+            console.error('Silme işlemi kaydedilirken hata oluştu:', error);
             // Hata durumunda state'i geri al
             state.foods.splice(foodIndex, 0, deletedFood);
             state.dailyCalories = (state.dailyCalories || 0) + (deletedFood.calories || 0);
-            if (state.macros && deletedFood.protein) {
+            if (state.macros) {
                 state.macros.protein.current = (state.macros.protein.current || 0) + (deletedFood.protein || 0);
                 state.macros.carbs.current = (state.macros.carbs.current || 0) + (deletedFood.carbs || 0);
                 state.macros.fat.current = (state.macros.fat.current || 0) + (deletedFood.fat || 0);
             }
-            throw error;
+            
+            showNotification('Yemek silinirken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
         }
         
     } catch (error) {
-        console.error('Yemek silinirken hata oluÅŸtu:', error);
-        showNotification('Yemek silinirken bir hata oluÅŸtu. LÃ¼tfen tekrar deneyin.', 'error');
+        console.error('Yemek silinirken hata oluştu:', error);
+        showNotification('Yemek silinirken bir hata oluştu. Lütfen tekrar deneyin.', 'error');
     }
 }
 
-// Geri alma bildirimi gÃ¶sterme
-function showUndoNotification(food) {
+// Geri alma bildirimi gösterme
+function showUndoNotification(food, originalIndex) {
     try {
         if (!food || !food.name) {
-            console.error('GeÃ§ersiz yemek bilgisi:', food);
+            console.error('Geçersiz yemek bilgisi:', food);
             return;
         }
         
@@ -442,110 +565,69 @@ function showUndoNotification(food) {
         const undoButton = document.createElement('button');
         undoButton.className = 'undo-button';
         undoButton.textContent = 'Geri Al';
-        undoButton.setAttribute('aria-label', `${food.name} yemeÄŸini geri al`);
+        undoButton.setAttribute('aria-label', `${food.name} yemeğini geri al`);
         
-        const removeNotification = () => {
+        // Geri alma işlevi
+        const undoDeletion = async () => {
+            try {
+                // Yemeği eski yerine ekle
+                state.foods.splice(originalIndex, 0, food);
+                state.dailyCalories = (state.dailyCalories || 0) + (food.calories || 0);
+                
+                // Makro besinleri geri ekle
+                if (state.macros) {
+                    state.macros.protein.current = (state.macros.protein.current || 0) + (food.protein || 0);
+                    state.macros.carbs.current = (state.macros.carbs.current || 0) + (food.carbs || 0);
+                    state.macros.fat.current = (state.macros.fat.current || 0) + (food.fat || 0);
+                }
+                
+                // Veritabanını güncelle
+                await saveUserData();
+                
+                // UI'ı güncelle
+                updateUI();
+                
+                // Bildirimi kaldır
+                if (document.body.contains(notification)) {
+                    document.body.removeChild(notification);
+                }
+                
+            } catch (error) {
+                console.error('Geri alma işlemi sırasında hata oluştu:', error);
+                showNotification('Geri alma işlemi başarısız oldu. Lütfen tekrar deneyin.', 'error');
+            }
+        };
+        
+        // Geri alma butonuna tıklama olayı ekle
+        undoButton.addEventListener('click', undoDeletion);
+        
+        // Bildirimi oluştur
+        notification.appendChild(message);
+        notification.appendChild(undoButton);
+        
+        // Sayfaya ekle
+        document.body.appendChild(notification);
+        
+        // 5 saniye sonra otomatik kaldır
+        setTimeout(() => {
             if (document.body.contains(notification)) {
-                notification.classList.remove('show');
+                notification.classList.add('fade-out');
+                
+                // Animasyon bittikten sonra kaldır
                 setTimeout(() => {
                     if (document.body.contains(notification)) {
                         document.body.removeChild(notification);
                     }
                 }, 300);
             }
-        };
-        
-        undoButton.onclick = async (e) => {
-            e.stopPropagation();
-            try {
-                await undoDelete(food);
-                removeNotification();
-            } catch (error) {
-                console.error('Geri alma iÅŸlemi sÄ±rasÄ±nda hata:', error);
-            }
-        };
-        
-        notification.appendChild(message);
-        notification.appendChild(undoButton);
-        
-        document.body.appendChild(notification);
-        
-        // EriÅŸilebilirlik iÃ§in ekran okuyucuya bildir
-        const liveRegion = document.createElement('div');
-        liveRegion.setAttribute('role', 'status');
-        liveRegion.setAttribute('aria-live', 'polite');
-        liveRegion.className = 'sr-only';
-        liveRegion.textContent = `${food.name} silindi. Geri almak iÃ§in Geri Al butonuna basÄ±n.`;
-        notification.appendChild(liveRegion);
-        
-        // Bildirimi gÃ¶ster
-        setTimeout(() => {
-            notification.classList.add('show');
-        }, 100);
-        
-        // Bildirimi otomatik kaldÄ±r
-        const timeoutId = setTimeout(() => {
-            removeNotification();
         }, 5000);
         
-        // Fare Ã¼zerine gelindiÄŸinde otomatik kaldÄ±rmayÄ± durdur
-        notification.addEventListener('mouseenter', () => {
-            clearTimeout(timeoutId);
-        });
-        
-        // Fare ayrÄ±ldÄ±ÄŸÄ±nda tekrar baÅŸlat
-        notification.addEventListener('mouseleave', () => {
-            setTimeout(removeNotification, 2000);
-        });
-        
     } catch (error) {
-        console.error('Bildirim gÃ¶sterilirken hata oluÅŸtu:', error);
+        console.error('Bildirim gösterilirken hata oluştu:', error);
     }
 }
 
-// Silme iÅŸlemini geri alma
-async function undoDelete(food) {
-    try {
-        if (!food || !food.id) {
-            throw new Error('GeÃ§ersiz yemek bilgisi');
-        }
-        
-        // EÄŸer yemek zaten listede varsa iÅŸlem yapma
-        if (state.foods.some(f => f.id === food.id)) {
-            console.warn('Bu yemek zaten listede mevcut:', food.id);
-            return;
-        }
-        
-        // YemeÄŸi tekrar ekle
-        state.foods.push(food);
-        state.dailyCalories = (state.dailyCalories || 0) + (food.calories || 0);
-        
-        try {
-            // Firestore'a kaydet
-            await saveUserData();
-            
-            // UI'Ä± gÃ¼ncelle
-            updateUI();
-            
-            // BaÅŸarÄ± bildirimi gÃ¶ster
-            showNotification(`âœ“ ${food.name} geri yÃ¼klendi!`, 'success');
-            
-        } catch (error) {
-            console.error('Geri alma iÅŸlemi kaydedilirken hata oluÅŸtu:', error);
-            // Hata durumunda state'i geri al
-            state.foods = state.foods.filter(f => f.id !== food.id);
-            state.dailyCalories = Math.max(0, (state.dailyCalories || 0) - (food.calories || 0));
-            throw error;
-        }
-        
-    } catch (error) {
-        console.error('Geri alma iÅŸlemi sÄ±rasÄ±nda hata oluÅŸtu:', error);
-        showNotification('Geri alma iÅŸlemi sÄ±rasÄ±nda bir hata oluÅŸtu.', 'error');
-        throw error;
-    }
-}
-
-// UI'Ä± gÃ¼ncelleme iÅŸlevi
+// UI'ı güncelleme işlevi
 function updateUI() {
     try {
         console.log('UI gÃ¼ncelleniyor...');
@@ -780,19 +862,19 @@ function updateFoodCount() {
             return sum + (Number(food.calories) || 0);
         }, 0);
         
-        // GÃ¼ncelle
+        // Güncelle
         foodCountElement.innerHTML = `
             <span class="count">${count} ${mealText}</span>
-            <span class="divider">â€¢</span>
+            <span class="divider">•</span>
             <span class="calories">Toplam ${totalCalories} kcal</span>
         `;
         
     } catch (error) {
-        console.error('Yemek sayÄ±sÄ± gÃ¼ncellenirken hata oluÅŸtu:', error);
+        console.error('Yemek sayısı güncellenirken hata oluştu:', error);
     }
 }
 
-// Tarihi gÃ¼ncelleme iÅŸlevi
+// Tarihi güncelleme işlevi
 function updateDate() {
     const dateElement = document.getElementById('current-date');
     if (dateElement) {
@@ -891,8 +973,6 @@ async function initializeApp() {
         `;
         document.body.appendChild(errorContainer);
         
-        // Hata detaylarÄ±nÄ± konsola yazdÄ±r
-        console.error('Hata detaylarÄ±:', error);
     }
 }
 
