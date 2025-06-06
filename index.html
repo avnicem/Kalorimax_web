@@ -222,9 +222,41 @@
             showNotification('Uygulama hazır! 🚀');
         });
 
+        // Test fonksiyonları
+        function testSave() {
+            saveData();
+            showNotification('Test: Veriler kaydedildi! 💾');
+        }
+        
+        function testLoad() {
+            const loaded = loadData();
+            if (loaded) {
+                updateUI();
+                showNotification('Test: Veriler yüklendi! 📂');
+            } else {
+                showNotification('Test: Kaydedilmiş veri bulunamadı! ❌', 'error');
+            }
+        }
+        
+        function showStorage() {
+            const data = localStorage.getItem('kalorimax-data');
+            if (data) {
+                const parsed = JSON.parse(data);
+                console.log('💾 localStorage verisi:', parsed);
+                alert(`Storage'da ${parsed.foods.length} yemek var!\n\nKonsol'u açın (F12) detayları görmek için.`);
+            } else {
+                alert('Storage boş! ❌');
+                console.log('❌ localStorage boş');
+            }
+        }
+
         // Global erişim
         window.deleteFood = deleteFood;
         window.appState = state;
+        window.testSave = testSave;
+        window.testLoad = testLoad;
+        window.showStorage = showStorage;
+        window.clearData = clearData;
     </script>
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
 </head>
@@ -313,6 +345,14 @@
                     </div>
                     <button type="submit" class="add-button">Ekle</button>
                 </form>
+                
+                <!-- Test butonları -->
+                <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="testSave()" style="background: #2196F3; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">💾 Test Kaydet</button>
+                    <button onclick="testLoad()" style="background: #FF9800; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">📂 Test Yükle</button>
+                    <button onclick="showStorage()" style="background: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">🔍 Storage Kontrol</button>
+                    <button onclick="clearData()" style="background: #f44336; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">🗑️ Temizle</button>
+                </div>
             </section>
 
 
