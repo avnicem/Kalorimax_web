@@ -1,4 +1,4 @@
-import { DEFAULT_GOALS } from './config';
+import { DEFAULT_GOALS } from './config.js';
 
 // Bildirim göster
 const showNotification = (message, type = 'info') => {

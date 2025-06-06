@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KaloriMax Test</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+        }
+        .notification-error {
+            background: #f44336;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>KaloriMax Test</h1>
+            <div class="date">Test Modu</div>
+        </header>
+
+        <main>
+            <section class="calorie-summary">
+                <div class="summary-card">
+                    <h3>Günlük Kalori</h3>
+                    <div class="calorie-count">0</div>
+                    <div class="calorie-goal">Hedef: 2000 kcal</div>
+                </div>
+                
+                <div class="macros">
+                    <div class="macro macro-protein">
+                        <span class="macro-name">Protein</span>
+                        <div class="macro-bar">
+                            <div class="macro-fill" style="width: 0%;"></div>
+                        </div>
+                        <span class="macro-amount">0g</span>
+                    </div>
+                    
+                    <div class="macro macro-carbs">
+                        <span class="macro-name">Karbonhidrat</span>
+                        <div class="macro-bar">
+                            <div class="macro-fill" style="width: 0%;"></div>
+                        </div>
+                        <span class="macro-amount">0g</span>
+                    </div>
+                    
+                    <div class="macro macro-fat">
+                        <span class="macro-name">Yağ</span>
+                        <div class="macro-bar">
+                            <div class="macro-fill" style="width: 0%;"></div>
+                        </div>
+                        <span class="macro-amount">0g</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="add-food">
+                <h2>Yemek Ekle</h2>
+                <form class="food-input" id="food-form">
+                    <input 
+                        type="text" 
+                        id="food-name" 
+                        placeholder="Yemek adı" 
+                        required
+                    >
+                    <input 
+                        type="number" 
+                        id="food-calories" 
+                        placeholder="Kalori (kcal)" 
+                        min="0"
+                        required
+                    >
+                    <div class="macro-inputs">
+                        <input 
+                            type="number" 
+                            id="food-protein" 
+                            placeholder="Protein (g)" 
+                            min="0"
+                        >
+                        <input 
+                            type="number" 
+                            id="food-carbs" 
+                            placeholder="Karbonhidrat (g)" 
+                            min="0"
+                        >
+                        <input 
+                            type="number" 
+                            id="food-fat" 
+                            placeholder="Yağ (g)" 
+                            min="0"
+                        >
+                    </div>
+                    <button type="submit" class="add-button">Ekle</button>
+                </form>
+            </section>
+
+            <section class="food-list">
+                <div class="food-list-header">
+                    <h2>Bugünkü Öğünler</h2>
+                    <span class="food-count">0 öğün</span>
+                </div>
+                <ul id="food-items">
+                    <li class="empty-state">
+                        <p>Henüz yemek eklenmedi</p>
+                    </li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Basit test versiyonu - Firebase yok
+        const state = {
+            foods: [],
+            dailyCalories: 0,
+            macros: { protein: 0, carbs: 0, fat: 0 }
+        };
+
+        // DOM elementleri
+        const elements = {
+            foodForm: document.getElementById('food-form'),
+            foodNameInput: document.getElementById('food-name'),
+            foodCaloriesInput: document.getElementById('food-calories'),
+            foodProteinInput: document.getElementById('food-protein'),
+            foodCarbsInput: document.getElementById('food-carbs'),
+            foodFatInput: document.getElementById('food-fat'),
+            foodList: document.getElementById('food-items'),
+            dailyCalories: document.querySelector('.calorie-count'),
+            foodCount: document.querySelector('.food-count')
+        };
+
+        // Bildirim göster
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // UI güncelle
+        function updateUI() {
+            // Kalori güncelle
+            elements.dailyCalories.textContent = state.dailyCalories;
+            
+            // Yemek sayısını güncelle
+            elements.foodCount.textContent = `${state.foods.length} öğün`;
+            
+            // Makro çubukları güncelle
+            ['protein', 'carbs', 'fat'].forEach(macro => {
+                const bar = document.querySelector(`.macro-${macro} .macro-fill`);
+                const amount = document.querySelector(`.macro-${macro} .macro-amount`);
+                if (bar && amount) {
+                    const goal = macro === 'protein' ? 150 : macro === 'carbs' ? 200 : 65;
+                    const percentage = Math.min((state.macros[macro] / goal) * 100, 100);
+                    bar.style.width = percentage + '%';
+                    amount.textContent = state.macros[macro] + 'g';
+                }
+            });
+            
+            // Yemek listesini güncelle
+            renderFoodList();
+        }
+
+        // Yemek listesini oluştur
+        function renderFoodList() {
+            if (state.foods.length === 0) {
+                elements.foodList.innerHTML = `
+                    <li class="empty-state">
+                        <p>Henüz yemek eklenmedi</p>
+                    </li>
+                `;
+            } else {
+                elements.foodList.innerHTML = state.foods.map(food => `
+                    <li class="food-item" data-id="${food.id}">
+                        <span class="food-name">${food.name}</span>
+                        <div class="food-macros">
+                            <span class="food-calories">${food.calories} kcal</span>
+                            <span class="food-protein">P: ${food.protein}g</span>
+                            <span class="food-carbs">K: ${food.carbs}g</span>
+                            <span class="food-fat">Y: ${food.fat}g</span>
+                        </div>
+                        <button class="delete-btn" onclick="deleteFood('${food.id}')">×</button>
+                    </li>
+                `).join('');
+            }
+        }
+
+        // Yemek ekle
+        function addFood(e) {
+            e.preventDefault();
+            
+            console.log('Form submit olayı tetiklendi');
+            
+            const foodName = elements.foodNameInput.value.trim();
+            const calories = parseInt(elements.foodCaloriesInput.value) || 0;
+            const protein = parseInt(elements.foodProteinInput.value) || 0;
+            const carbs = parseInt(elements.foodCarbsInput.value) || 0;
+            const fat = parseInt(elements.foodFatInput.value) || 0;
+
+            console.log('Form değerleri:', { foodName, calories, protein, carbs, fat });
+
+            if (!foodName) {
+                showNotification('Lütfen bir yemek adı girin', 'error');
+                return;
+            }
+
+            if (calories <= 0) {
+                showNotification('Lütfen geçerli bir kalori değeri girin', 'error');
+                return;
+            }
+
+            const food = {
+                id: Date.now().toString(),
+                name: foodName,
+                calories: calories,
+                protein: protein,
+                carbs: carbs,
+                fat: fat
+            };
+
+            console.log('Eklenen yemek:', food);
+
+            // State güncelle
+            state.foods.push(food);
+            state.dailyCalories += calories;
+            state.macros.protein += protein;
+            state.macros.carbs += carbs;
+            state.macros.fat += fat;
+
+            console.log('Güncellenmiş state:', state);
+
+            // UI güncelle
+            updateUI();
+
+            // Form temizle
+            elements.foodForm.reset();
+
+            // Başarı mesajı
+            showNotification(`${food.name} başarıyla eklendi!`);
+        }
+
+        // Yemek sil
+        function deleteFood(id) {
+            const foodIndex = state.foods.findIndex(food => food.id === id);
+            if (foodIndex === -1) return;
+
+            const deletedFood = state.foods[foodIndex];
+            
+            state.foods.splice(foodIndex, 1);
+            state.dailyCalories -= deletedFood.calories;
+            state.macros.protein -= deletedFood.protein;
+            state.macros.carbs -= deletedFood.carbs;
+            state.macros.fat -= deletedFood.fat;
+
+            updateUI();
+            showNotification(`${deletedFood.name} silindi`);
+        }
+
+        // Event listener ekle
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('DOM yüklendi');
+            
+            if (elements.foodForm) {
+                console.log('Form bulundu, event listener ekleniyor');
+                elements.foodForm.addEventListener('submit', addFood);
+            } else {
+                console.error('Form bulunamadı!');
+            }
+            
+            // İlk UI güncellemesi
+            updateUI();
+            
+            console.log('Başlangıç state:', state);
+        });
+    </script>
+</body>
+</html> 
