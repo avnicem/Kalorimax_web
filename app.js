@@ -809,9 +809,9 @@ function renderFoodList() {
                         <span class="food-name">${food.name || 'İsimsiz'}</span>
                         <div class="food-details">
                             <span class="food-calories">${food.calories || 0} kcal</span>
-                            ${food.protein !== undefined ? `<span class="food-macro">P: ${food.protein}g</span>` : ''}
-                            ${food.carbs !== undefined ? `<span class="food-macro">K: ${food.carbs}g</span>` : ''}
-                            ${food.fat !== undefined ? `<span class="food-macro">Y: ${food.fat}g</span>` : ''}
+                            <span class="food-macro">P: ${food.protein || 0}g</span>
+                            <span class="food-macro">K: ${food.carbs || 0}g</span>
+                            <span class="food-macro">Y: ${food.fat || 0}g</span>
                         </div>
                     </div>
                     <button class="delete-food" data-id="${food.id}" aria-label="${food.name || 'Bu yemeği'} sil">
