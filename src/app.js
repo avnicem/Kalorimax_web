@@ -229,25 +229,35 @@ function updateUI() {
 function renderFoodList() {
     if (!elements.foodList) return;
     
-    elements.foodList.innerHTML = state.foods
-        .map(food => `
-            <div class="food-item" data-id="${food.id}">
-                <span class="food-name">${food.name}</span>
-                <div class="food-macros">
-                    <span class="food-calories">${food.calories} kcal</span>
-                    <span class="food-protein">P: ${food.protein}g</span>
-                    <span class="food-carbs">K: ${food.carbs}g</span>
-                    <span class="food-fat">Y: ${food.fat}g</span>
-                </div>
-                <button class="delete-btn" data-id="${food.id}" aria-label="Sil">×</button>
-            </div>
-        `)
-        .join('');
+    if (state.foods.length === 0) {
+        elements.foodList.innerHTML = `
+            <li class="empty-state">
+                <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTMgM0gyMVY1SDFWM1pNMSA5SDExVjExSDFWOVpNMSAxM0gxNVYxNUgxVjEzWk0xIDE3SDE5VjE5SDFWMTdaTTE5IDEzSDE3VjE5SDE5VjEzWk0xOSA5SDE3VjExSDE5VjlaTTE1IDlIMTNWMTFIMTVWOVpNMTEgOUg5VjExSDExVjlaTTcgOUg1VjExSDdWOVoiIGZpbGw9IiNiZGJkYmQiLz4KPC9zdmc+Cg==" alt="">
+                <p>Henüz yemek eklenmedi</p>
+            </li>
+        `;
+    } else {
+        elements.foodList.innerHTML = state.foods
+            .map(food => `
+                <li class="food-item" data-id="${food.id}">
+                    <span class="food-name">${food.name}</span>
+                    <div class="food-macros">
+                        <span class="food-calories">${food.calories} kcal</span>
+                        <span class="food-protein">P: ${food.protein}g</span>
+                        <span class="food-carbs">K: ${food.carbs}g</span>
+                        <span class="food-fat">Y: ${food.fat}g</span>
+                    </div>
+                    <button class="delete-btn" data-id="${food.id}" aria-label="Sil">×</button>
+                </li>
+            `)
+            .join('');
+    }
     
-    // Silme butonlarına event listener ekle
-    document.querySelectorAll('.delete-btn').forEach(button => {
-        button.addEventListener('click', handleDeleteFood);
-    });
+    // Yemek sayısını güncelle
+    const foodCountElement = document.querySelector('.food-count');
+    if (foodCountElement) {
+        foodCountElement.textContent = `${state.foods.length} öğün`;
+    }
 }
 
 // Yemek silme işlemi

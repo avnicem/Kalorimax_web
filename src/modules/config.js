@@ -22,7 +22,7 @@ export const getDomElements = () => ({
     foodProteinInput: document.getElementById('food-protein'),
     foodCarbsInput: document.getElementById('food-carbs'),
     foodFatInput: document.getElementById('food-fat'),
-    foodList: document.getElementById('food-list'),
+    foodList: document.getElementById('food-items'),
     dailyCalories: document.querySelector('.calorie-count'),
     dailyGoal: document.querySelector('.calorie-goal'),
     dateElement: document.querySelector('.date'),
