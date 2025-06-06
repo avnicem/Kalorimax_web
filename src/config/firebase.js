@@ -12,11 +12,23 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+let app;
+let auth;
+let db;
+
+try {
+    app = initializeApp(firebaseConfig);
+    auth = getAuth(app);
+    db = getFirestore(app);
+    
+    console.log('Firebase başarıyla başlatıldı');
+} catch (error) {
+    console.error('Firebase başlatılırken hata oluştu:', error);
+    throw error;
+}
 
 export { 
+    app,
     auth, 
     db, 
     signInAnonymously, 

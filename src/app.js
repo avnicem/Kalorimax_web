@@ -12,8 +12,12 @@ const state = {
         carbs: { current: 0, goal: DEFAULT_GOALS.macros.carbs },
         fat: { current: 0, goal: DEFAULT_GOALS.macros.fat }
     },
-    userId: null
+    userId: null,
+    isInitialized: false
 };
+
+// Hata ayıklama için state'i global yap
+window.appState = state;
 
 // DOM elementleri
 const elements = getDomElements();
@@ -282,4 +286,10 @@ function showUndoNotification(food, originalIndex) {
 }
 
 // Uygulamayı başlat
-document.addEventListener('DOMContentLoaded', initializeApp);
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM yüklendi, uygulama başlatılıyor...');
+    initializeApp().catch(error => {
+        console.error('Uygulama başlatılırken kritik hata:', error);
+        showNotification('Uygulama başlatılamadı. Lütfen sayfayı yenileyin.', 'error');
+    });
+});
