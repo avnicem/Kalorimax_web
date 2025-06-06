@@ -402,11 +402,13 @@ async function addFood(e) {
             id: Date.now().toString(),
             name,
             calories,
-            protein,
-            carbs,
-            fat,
+            protein: protein || 0,
+            carbs: carbs || 0,
+            fat: fat || 0,
             date: new Date().toISOString()
         };
+        
+        console.log('Yeni yemek eklendi:', newFood); // Debug için
         
         // State'i güncelle
         if (!state.foods) state.foods = [];
@@ -793,21 +795,23 @@ function renderFoodList() {
         }
         
         try {
-            // Yemek listesini tarihe gÃ¶re sÄ±rala (en yeni en Ã¼stte)
+            // Yemek listesini tarihe göre sırala (en yeni en üstte)
             const sortedFoods = [...state.foods].sort((a, b) => {
                 return new Date(b.date || 0) - new Date(a.date || 0);
             });
             
-            // Yemek listesini oluÅŸtur
-            foodList.innerHTML = sortedFoods.map(food => `
+            // Yemek listesini oluştur
+            foodList.innerHTML = sortedFoods.map(food => {
+                console.log('Rendering food item:', food); // Debug için
+                return `
                 <li class="food-item" data-id="${food.id}">
                     <div class="food-info">
                         <span class="food-name">${food.name || 'İsimsiz'}</span>
                         <div class="food-details">
                             <span class="food-calories">${food.calories || 0} kcal</span>
-                            ${food.protein ? `<span class="food-macro">P: ${food.protein}g</span>` : ''}
-                            ${food.carbs ? `<span class="food-macro">K: ${food.carbs}g</span>` : ''}
-                            ${food.fat ? `<span class="food-macro">Y: ${food.fat}g</span>` : ''}
+                            ${food.protein !== undefined ? `<span class="food-macro">P: ${food.protein}g</span>` : ''}
+                            ${food.carbs !== undefined ? `<span class="food-macro">K: ${food.carbs}g</span>` : ''}
+                            ${food.fat !== undefined ? `<span class="food-macro">Y: ${food.fat}g</span>` : ''}
                         </div>
                     </div>
                     <button class="delete-food" data-id="${food.id}" aria-label="${food.name || 'Bu yemeği'} sil">
@@ -816,14 +820,14 @@ function renderFoodList() {
                             <line x1="6" y1="6" x2="18" y2="18"></line>
                         </svg>
                     </button>
-                </li>
-            `).join('');
+                </li>`;
+            }).join('');
             
-            // Yemek sayÄ±sÄ±nÄ± gÃ¼ncelle
+            // Yemek sayısını güncelle
             updateFoodCount();
             
         } catch (error) {
-            console.error('Yemek listesi oluÅŸturulurken hata oluÅŸtu:', error);
+            console.error('Yemek listesi oluşturulurken hata oluştu:', error);
             foodList.innerHTML = `
                 <div class="empty-state error">
                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
