@@ -524,56 +524,91 @@ async function undoDelete(food) {
 // UI'ı güncelleme işlevi
 function updateUI() {
     try {
+        console.log('UI güncelleniyor...');
+        
+        // State kontrolü
+        if (!state) {
+            console.error('State tanımlı değil');
+            return;
+        }
+        
         // Toplam kaloriyi güncelle
-        if (calorieCountElement) {
-            calorieCountElement.textContent = state.dailyCalories;
+        const calorieCountEl = document.querySelector('.calorie-count');
+        if (calorieCountEl) {
+            calorieCountEl.textContent = state.dailyCalories || 0;
+        } else {
+            console.warn('Kalori sayacı elementi bulunamadı');
+        }
+        
+        // Hedef kaloriyi güncelle
+        const calorieGoalEl = document.querySelector('.calorie-goal');
+        if (calorieGoalEl) {
+            calorieGoalEl.textContent = `Hedef: ${state.dailyGoal || 2000} kcal`;
         }
         
         // İlerleme çubuğunu güncelle
+        const progressBar = document.querySelector('.macro-fill');
         if (progressBar) {
-            const progress = Math.min((state.dailyCalories / state.dailyGoal) * 100, 100);
+            const progress = Math.min(((state.dailyCalories || 0) / (state.dailyGoal || 2000)) * 100, 100);
             progressBar.style.width = `${progress}%`;
         }
         
         // Makro besinleri güncelle
-        updateMacroBar('protein', state.macros.protein.current, state.macros.protein.goal);
-        updateMacroBar('carbs', state.macros.carbs.current, state.macros.carbs.goal);
-        updateMacroBar('fat', state.macros.fat.current, state.macros.fat.goal);
+        if (state.macros) {
+            updateMacroBar('protein', state.macros.protein?.current || 0, state.macros.protein?.goal || 0);
+            updateMacroBar('carbs', state.macros.carbs?.current || 0, state.macros.carbs?.goal || 0);
+            updateMacroBar('fat', state.macros.fat?.current || 0, state.macros.fat?.goal || 0);
+        }
         
         // Yemek listesini güncelle
         renderFoodList();
+        
+        console.log('UI güncellemesi tamamlandı');
     } catch (error) {
         console.error('UI güncellenirken hata oluştu:', error);
     }
 }
 
-// Makro çubuklarını güncelleme işlevi
+// Makro çubuğu güncelleme işlevi
 function updateMacroBar(macro, current, goal) {
     try {
-        const macroBar = macroBars[macro];
-        if (!macroBar || !macroBar.bar || !macroBar.text) {
-            console.warn(`${macro} için gerekli elementler bulunamadı`);
+        // Geçerli değerleri kontrol et
+        current = Number(current) || 0;
+        goal = Number(goal) || 0;
+        
+        // Elementleri seç
+        const macroContainer = document.querySelector(`.macro.${macro}`);
+        if (!macroContainer) {
+            console.warn(`${macro} makro elementi bulunamadı`);
             return;
         }
         
+        const bar = macroContainer.querySelector('.macro-fill');
+        const text = macroContainer.querySelector('.macro-amount');
+        
+        if (!bar || !text) {
+            console.warn(`${macro} için gerekli çubuk veya metin elementleri bulunamadı`);
+            return;
+        }
+        
+        // Yüzde hesapla
         const percentage = goal > 0 ? Math.min((current / goal) * 100, 100) : 0;
         
-        // Çubuğu güncelle
-        macroBar.bar.style.width = `${percentage}%`;
+        // Görsel güncellemeleri yap
+        bar.style.width = `${percentage}%`;
+        text.textContent = `${current.toFixed(0)}g / ${goal.toFixed(0)}g`;
         
-        // Metni güncelle
-        macroBar.text.textContent = `${current}g / ${goal}g`;
-        
-        // Renk ayarı
-        if (percentage > 100) {
-            macroBar.bar.style.backgroundColor = '#f44336'; // Kırmızı
-        } else if (percentage > 80) {
-            macroBar.bar.style.backgroundColor = '#ff9800'; // Turuncu
+        // Renk güncelleme
+        if (percentage >= 100) {
+            bar.style.backgroundColor = '#ef4444'; // Kırmızı
+        } else if (percentage >= 75) {
+            bar.style.backgroundColor = '#f59e0b'; // Turuncu
         } else {
-            macroBar.bar.style.backgroundColor = '#4caf50'; // Yeşil
+            bar.style.backgroundColor = '#10b981'; // Yeşil
         }
+        
     } catch (error) {
-        console.error(`${macro} çubuğu güncellenirken hata:`, error);
+        console.error(`${macro} çubuğu güncellenirken hata oluştu:`, error);
     }
 }
 
@@ -599,54 +634,100 @@ function renderFoodList() {
             return;
         }
         
-        // Yemekleri ekle
-        state.foods.forEach(food => {
-            const foodItem = document.createElement('li');
-            foodItem.className = 'food-item';
-            foodItem.dataset.id = food.id;
-            
-            const foodInfo = document.createElement('div');
-            foodInfo.className = 'food-info';
-            
-            const foodName = document.createElement('span');
-            foodName.className = 'food-name';
-            foodName.textContent = food.name;
-            
-            const foodCalories = document.createElement('span');
-            foodCalories.className = 'food-calories';
-            foodCalories.textContent = `${food.calories} kcal`;
-            
-            const deleteButton = document.createElement('button');
-            deleteButton.className = 'delete-button';
-            deleteButton.innerHTML = '&times;';
-            deleteButton.onclick = (e) => {
-                e.stopPropagation();
-                deleteFood(food.id);
-            };
-            
-            foodInfo.appendChild(foodName);
-            foodInfo.appendChild(foodCalories);
-            
-            foodItem.appendChild(foodInfo);
-            foodItem.appendChild(deleteButton);
-            
-            foodList.appendChild(foodItem);
-        });
+        // Eğer yemek yoksa boş durum mesajını göster
+        if (state.foods.length === 0) {
+            foodList.innerHTML = `
+                <div class="empty-state">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M3 3h18v18H3z"></path>
+                        <path d="M9 9h6v6H9z"></path>
+                    </svg>
+                    <p>Henüz yemek eklenmedi</p>
+                    <small>Yeni bir yemek eklemek için yukarıdaki formu kullanın</small>
+                </div>
+            `;
+            return;
+        }
         
-        // Yemek sayısını güncelle
-        updateFoodCount();
+        try {
+            // Yemek listesini tarihe göre sırala (en yeni en üstte)
+            const sortedFoods = [...state.foods].sort((a, b) => {
+                return new Date(b.date || 0) - new Date(a.date || 0);
+            });
+            
+            // Yemek listesini oluştur
+            foodList.innerHTML = sortedFoods.map(food => `
+                <li class="food-item" data-id="${food.id}">
+                    <div class="food-info">
+                        <span class="food-name">${food.name || 'İsimsiz'}</span>
+                        <span class="food-calories">${food.calories || 0} kcal</span>
+                    </div>
+                    <button class="delete-food" data-id="${food.id}" aria-label="${food.name || 'Bu yemeği'} sil">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="18" y1="6" x2="6" y2="18"></line>
+                            <line x1="6" y1="6" x2="18" y2="18"></line>
+                        </svg>
+                    </button>
+                </li>
+            `).join('');
+            
+            // Yemek sayısını güncelle
+            updateFoodCount();
+            
+        } catch (error) {
+            console.error('Yemek listesi oluşturulurken hata oluştu:', error);
+            foodList.innerHTML = `
+                <div class="empty-state error">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <p>Yemek listesi yüklenirken bir hata oluştu</p>
+                    <button class="retry-button" onclick="location.reload()">Yeniden Dene</button>
+                </div>
+            `;
+        }
         
     } catch (error) {
-        console.error('Yemek listesi oluşturulurken hata oluştu:', error);
+        console.error('Yemek listesi oluşturulurken beklenmeyen bir hata oluştu:', error);
     }
 }
 
 // Yemek sayısını güncelleme işlevi
 function updateFoodCount() {
-    const foodCountElement = document.querySelector('.food-count');
-    if (foodCountElement) {
-        const count = state.foods ? state.foods.length : 0;
-        foodCountElement.textContent = `${count} öğün`;
+    try {
+        const foodCountElement = document.querySelector('.food-count');
+        if (!foodCountElement) {
+            console.warn('Yemek sayacı elementi bulunamadı');
+            return;
+        }
+        
+        // State kontrolü
+        if (!state || !Array.isArray(state.foods)) {
+            foodCountElement.textContent = '0 öğün';
+            return;
+        }
+        
+        const count = state.foods.length;
+        
+        // Çoğul/tekil form kontrolü
+        const mealText = count === 1 ? 'öğün' : 'öğün';
+        
+        // Toplam kaloriyi hesapla
+        const totalCalories = state.foods.reduce((sum, food) => {
+            return sum + (Number(food.calories) || 0);
+        }, 0);
+        
+        // Güncelle
+        foodCountElement.innerHTML = `
+            <span class="count">${count} ${mealText}</span>
+            <span class="divider">•</span>
+            <span class="calories">Toplam ${totalCalories} kcal</span>
+        `;
+        
+    } catch (error) {
+        console.error('Yemek sayısı güncellenirken hata oluştu:', error);
     }
 }
 
