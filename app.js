@@ -802,10 +802,15 @@ function renderFoodList() {
             foodList.innerHTML = sortedFoods.map(food => `
                 <li class="food-item" data-id="${food.id}">
                     <div class="food-info">
-                        <span class="food-name">${food.name || 'Ä°simsiz'}</span>
-                        <span class="food-calories">${food.calories || 0} kcal</span>
+                        <span class="food-name">${food.name || 'İsimsiz'}</span>
+                        <div class="food-details">
+                            <span class="food-calories">${food.calories || 0} kcal</span>
+                            ${food.protein ? `<span class="food-macro">P: ${food.protein}g</span>` : ''}
+                            ${food.carbs ? `<span class="food-macro">K: ${food.carbs}g</span>` : ''}
+                            ${food.fat ? `<span class="food-macro">Y: ${food.fat}g</span>` : ''}
+                        </div>
                     </div>
-                    <button class="delete-food" data-id="${food.id}" aria-label="${food.name || 'Bu yemeÄŸi'} sil">
+                    <button class="delete-food" data-id="${food.id}" aria-label="${food.name || 'Bu yemeği'} sil">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="18" y1="6" x2="6" y2="18"></line>
                             <line x1="6" y1="6" x2="18" y2="18"></line>

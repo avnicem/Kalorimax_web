@@ -319,6 +319,37 @@ button:active {
     flex: 1;
 }
 
+.food-details {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 0.25rem;
+}
+
+.food-calories {
+    font-weight: 600;
+    color: var(--primary);
+    font-size: 0.9rem;
+}
+
+.food-macro {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    background-color: var(--background);
+    padding: 0.2rem 0.5rem;
+    border-radius: 1rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.food-macro::before {
+    content: '•';
+    color: var(--primary-light);
+    font-weight: bold;
+}
+
 .food-name {
     display: block;
     font-weight: 500;
