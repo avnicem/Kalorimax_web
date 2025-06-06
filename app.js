@@ -588,11 +588,11 @@ function updateUI() {
 // Makro Ã§ubuÄŸu gÃ¼ncelleme iÅŸlevi
 function updateMacroBar(macro, current, goal) {
     try {
-        // GeÃ§erli deÄŸerleri kontrol et
+        // Geçerli değerleri kontrol et
         current = Number(current) || 0;
         goal = Number(goal) || 0;
         
-        // Makro tÃ¼rÃ¼ne gÃ¶re doÄŸru sÄ±nÄ±fÄ± seÃ§
+        // Makro türüne göre doğru sınıfı seç
         let macroClass = '';
         switch(macro) {
             case 'protein':
@@ -605,47 +605,54 @@ function updateMacroBar(macro, current, goal) {
                 macroClass = '.macro-fat';
                 break;
             default:
-                console.warn('Bilinmeyen makro tÃ¼rÃ¼:', macro);
+                console.warn('Bilinmeyen makro türü:', macro);
                 return;
         }
         
-        // Elementleri seÃ§
-        const macroContainer = document.querySelector(`.macro${macroClass}`);
+        // Elementleri seç - Sadece sınıf adını kullanarak seç
+        const macroContainer = document.querySelector(macroClass);
         if (!macroContainer) {
-            console.warn(`${macro} makro elementi bulunamadÄ±`);
+            console.warn(`${macro} makro elementi bulunamadı (${macroClass})`);
             return;
         }
         
         const bar = macroContainer.querySelector('.macro-fill');
         const text = macroContainer.querySelector('.macro-amount');
         
-        if (!bar || !text) {
-            console.warn(`${macro} iÃ§in gerekli Ã§ubuk veya metin elementleri bulunamadÄ±`);
+        if (!bar) {
+            console.warn(`${macro} için çubuk elementi bulunamadı`);
             return;
         }
         
-        // YÃ¼zde hesapla
+        if (!text) {
+            console.warn(`${macro} için miktar metni bulunamadı`);
+            return;
+        }
+        
+        // Yüzde hesapla
         const percentage = goal > 0 ? Math.min((current / goal) * 100, 100) : 0;
         
-        // GÃ¶rsel gÃ¼ncellemeleri yap
+        // Görsel güncellemeleri yap
         bar.style.width = `${percentage}%`;
         text.textContent = `${current.toFixed(0)}g / ${goal.toFixed(0)}g`;
         
-        // Renk gÃ¼ncelleme
+        // Renk güncelleme
         if (percentage >= 100) {
-            bar.style.backgroundColor = '#ef4444'; // KÄ±rmÄ±zÄ±
+            bar.style.backgroundColor = '#ef4444'; // Kırmızı
         } else if (percentage >= 75) {
             bar.style.backgroundColor = '#f59e0b'; // Turuncu
         } else {
-            bar.style.backgroundColor = '#10b981'; // YeÅŸil
+            bar.style.backgroundColor = '#10b981'; // Yeşil
         }
         
+        console.log(`${macro} çubuğu güncellendi: ${current}g / ${goal}g (${percentage.toFixed(1)}%)`);
+        
     } catch (error) {
-        console.error(`${macro} Ã§ubuÄŸu gÃ¼ncellenirken hata oluÅŸtu:`, error);
+        console.error(`${macro} çubuğu güncellenirken hata oluştu:`, error);
     }
 }
 
-// Yemek listesini oluÅŸturma iÅŸlevi
+// Yemek listesini oluşturma işlevi
 function renderFoodList() {
     try {
         if (!foodList) {
