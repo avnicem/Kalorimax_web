@@ -18,6 +18,52 @@
             macros: { protein: 0, carbs: 0, fat: 0 }
         };
 
+        // Verileri localStorage'a kaydet
+        function saveData() {
+            try {
+                const dataToSave = {
+                    foods: state.foods,
+                    dailyCalories: state.dailyCalories,
+                    macros: state.macros,
+                    lastSaved: new Date().toISOString()
+                };
+                localStorage.setItem('kalorimax-data', JSON.stringify(dataToSave));
+                console.log('💾 Veriler kaydedildi');
+            } catch (error) {
+                console.error('❌ Veri kaydetme hatası:', error);
+            }
+        }
+
+        // Verileri localStorage'dan yükle
+        function loadData() {
+            try {
+                const savedData = localStorage.getItem('kalorimax-data');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    state.foods = data.foods || [];
+                    state.dailyCalories = data.dailyCalories || 0;
+                    state.macros = data.macros || { protein: 0, carbs: 0, fat: 0 };
+                    console.log('📂 Veriler yüklendi:', data.foods.length + ' yemek');
+                    return true;
+                }
+            } catch (error) {
+                console.error('❌ Veri yükleme hatası:', error);
+            }
+            return false;
+        }
+
+        // Verileri temizle
+        function clearData() {
+            if (confirm('Tüm veriler silinecek. Emin misiniz?')) {
+                localStorage.removeItem('kalorimax-data');
+                state.foods = [];
+                state.dailyCalories = 0;
+                state.macros = { protein: 0, carbs: 0, fat: 0 };
+                updateUI();
+                showNotification('Tüm veriler temizlendi! 🗑️');
+            }
+        }
+
         // Bildirim göster
         function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
@@ -91,6 +137,10 @@
                 state.macros.protein -= deleted.protein;
                 state.macros.carbs -= deleted.carbs;
                 state.macros.fat -= deleted.fat;
+                
+                // Verileri kaydet
+                saveData();
+                
                 updateUI();
                 showNotification(`${deleted.name} silindi!`);
             }
@@ -108,6 +158,12 @@
         // DOM yüklendiğinde
         document.addEventListener('DOMContentLoaded', function() {
             console.log('🚀 KaloriMax başlatılıyor...');
+            
+            // Önceki verileri yükle
+            const hasData = loadData();
+            if (hasData) {
+                showNotification(`Önceki verileriniz yüklendi! 📂`, 'success');
+            }
             
             // Tarihi güncelle
             updateDate();
@@ -146,6 +202,9 @@
                     state.macros.protein += protein;
                     state.macros.carbs += carbs;
                     state.macros.fat += fat;
+                    
+                    // Verileri kaydet
+                    saveData();
                     
                     updateUI();
                     form.reset();
