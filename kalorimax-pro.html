@@ -2,72 +2,202 @@
 <html lang="tr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="manifest" href="manifest.json">
     <title>KaloriMax Pro - Akıllı Besin Takibi</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background: #1a1a2e;
-            color: #e6e6e6;
-            min-height: 100vh;
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
-        .app { max-width: 1200px; margin: 0 auto; padding: 20px; }
+        
+        :root {
+            --primary: #667eea;
+            --primary-dark: #5a67d8;
+            --bg: #1a1a2e;
+            --card-bg: #2a2a3a;
+            --card-hover: #3a3a4a;
+            --text: #e6e6e6;
+            --text-secondary: #a0aec0;
+            --border: #3a3a4a;
+            --success: #4ade80;
+            --danger: #f87171;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        
+        body { 
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .app { 
+            max-width: 600px; 
+            margin: 0 auto; 
+            padding: 16px; 
+            padding-bottom: 80px;
+        }
+        
+        @media (min-width: 600px) {
+            .app {
+                padding: 20px;
+                padding-bottom: 24px;
+            }
+        }
         .header { 
-            background: #2a2a3a; 
+            background: var(--card-bg); 
             backdrop-filter: blur(10px);
-            border-radius: 20px; padding: 30px; margin-bottom: 20px; 
-            text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            border-radius: 16px; 
+            padding: 20px; 
+            margin-bottom: 16px; 
+            text-align: center; 
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 16px;
+            z-index: 10;
+            border: 1px solid var(--border);
         }
         .header h1 { 
-            font-size: 2.5rem; font-weight: 700;
-            background: linear-gradient(135deg, #667eea, #764ba2);
+            font-size: 1.75rem; 
+            font-weight: 700;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, var(--primary), #8b5cf6);
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px; }
-        .stat-card { 
-            background: #2a2a3a; border-radius: 16px; padding: 25px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3); transition: transform 0.3s;
+        .stats { 
+            display: grid; 
+            grid-template-columns: 1fr 1fr; 
+            gap: 12px; 
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
         }
-        .stat-card:hover { transform: translateY(-2px); }
-        .stat-card h3 { color: #a0aec0; }
-        .stat-value { font-size: 2.5rem; font-weight: 700; color: #e6e6e6; }
-        .stat-card p { color: #a0aec0; }
+        .stat-card { 
+            background: var(--card-bg); 
+            border-radius: 14px; 
+            padding: 16px;
+            box-shadow: var(--shadow); 
+            transition: all 0.2s ease;
+            border: 1px solid var(--border);
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card:active { 
+            transform: scale(0.98);
+            background: var(--card-hover);
+        }
+        .stat-card h3 { 
+            color: var(--text-secondary); 
+            font-size: 0.9rem;
+            font-weight: 500;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .stat-value { 
+            font-size: 1.5rem; 
+            font-weight: 700; 
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        .stat-card p { 
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
         .progress-bar { width: 100%; height: 8px; background: #3a3a4a; border-radius: 4px; margin-top: 10px; overflow: hidden; }
         .progress-fill { height: 100%; transition: width 0.5s ease; border-radius: 4px; }
         .protein-fill { background: linear-gradient(90deg, #4ade80, #22c55e); }
         .carbs-fill { background: linear-gradient(90deg, #60a5fa, #3b82f6); }
         .fat-fill { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
-        .main { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 30px; }
+        .main { 
+            display: grid; 
+            grid-template-columns: 1fr; 
+            gap: 16px; 
+            margin-bottom: 20px;
+        }
         .section { 
-            background: #2a2a3a; border-radius: 16px; padding: 25px;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+            background: var(--card-bg); 
+            border-radius: 16px; 
+            padding: 20px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border);
+        }
+        
+        .section h2 {
+            font-size: 1.25rem;
+            margin-bottom: 16px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
         .search-input { 
-            width: 100%; padding: 15px; border: 2px solid #3a3a4a; border-radius: 12px;
-            font-size: 1rem; transition: all 0.3s; background: #2a2a3a; color: #e6e6e6;
+            width: 100%; 
+            padding: 14px 16px; 
+            border: 2px solid var(--border); 
+            border-radius: 12px;
+            font-size: 1rem; 
+            transition: all 0.2s; 
+            background: var(--card-bg); 
+            color: var(--text);
+            font-family: inherit;
+            -webkit-appearance: none;
+            appearance: none;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
         }
         .search-input::placeholder {
-            color: #6b7280;
-            opacity: 1;
+            color: var(--text-secondary);
+            opacity: 0.7;
         }
-        .search-input:focus { outline: none; border-color: #667eea; box-shadow: 0 0 0 3px rgba(102,126,234,0.1); }
+        .search-input:focus { 
+            outline: none; 
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+            background: var(--card-hover);
+        }
         .search-results { 
-            max-height: 300px; overflow-y: auto; border: 1px solid #e2e8f0;
-            border-radius: 12px; background: #2a2a3a; margin-top: 10px; display: none;
+            max-height: 300px; 
+            overflow-y: auto; 
+            border: 1px solid var(--border);
+            border-radius: 12px; 
+            background: var(--card-bg); 
+            margin-top: 10px; 
+            display: none;
+            position: absolute;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
         }
         .search-item { 
-            padding: 15px; border-bottom: 1px solid #3a3a4a; cursor: pointer;
-            transition: all 0.2s; display: flex; justify-content: space-between;
-            color: #e6e6e6;
-            background: #2a2a3a;
+            padding: 14px 16px; 
+            border-bottom: 1px solid var(--border); 
+            cursor: pointer;
+            transition: all 0.2s; 
+            display: flex; 
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text);
+            background: var(--card-bg);
         }
-        .search-item:hover { 
-            background: #3a3a4a;
-            transform: translateX(4px);
+        .search-item:active { 
+            background: var(--card-hover);
         }
         .input-field { 
             width: 100%; padding: 12px; border: 2px solid #3a3a4a; border-radius: 8px;
@@ -75,54 +205,246 @@
         }
         .input-field:focus { outline: none; border-color: #667eea; }
         .btn { 
-            padding: 12px 24px; border: none; border-radius: 8px; font-weight: 600;
-            cursor: pointer; transition: all 0.3s; display: inline-flex; align-items: center; gap: 8px;
+            padding: 14px 20px; 
+            border: none; 
+            border-radius: 12px; 
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer; 
+            transition: all 0.2s; 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center;
+            gap: 8px;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            position: relative;
+            overflow: hidden;
         }
-        .btn-primary { background: linear-gradient(135deg, #667eea, #764ba2); color: white; }
-        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(102,126,234,0.3); }
-        .btn { background: #3a3a4a; color: #e6e6e6; }
-        .btn:hover { background: #4a4a5a; }
+        .btn:active {
+            transform: scale(0.98);
+        }
+        .btn-primary { 
+            background: linear-gradient(135deg, var(--primary), #8b5cf6); 
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(102, 126, 234, 0.3);
+        }
+        .btn-primary:active { 
+            transform: scale(0.98); 
+            box-shadow: 0 2px 8px 0 rgba(102, 126, 234, 0.3);
+        }
+        .btn-secondary { 
+            background: var(--card-bg); 
+            color: var(--text);
+            border: 1px solid var(--border);
+        }
+        .btn-secondary:active { 
+            background: var(--card-hover);
+        }
         .food-list { 
-            background: #1a1a2e; 
-            border: 1px solid #2a2a3a;
+            background: var(--card-bg); 
+            border: 1px solid var(--border);
             border-radius: 16px; 
-            padding: 25px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 20px; 
+            box-shadow: var(--shadow);
+            margin-bottom: 16px;
         }
         .food-item { 
-            background: #2a2a3a; border: 1px solid #3a3a4a; border-radius: 12px; padding: 20px;
-            margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;
+            background: var(--card-bg); 
+            border: 1px solid var(--border); 
+            border-radius: 14px; 
+            padding: 16px;
+            margin-bottom: 12px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            transition: all 0.2s;
         }
-        .food-item h4 { color: #e6e6e6; }
+        .food-item:active {
+            background: var(--card-hover);
+            transform: scale(0.99);
+        }
+        .food-item h4 { 
+            color: var(--text);
+            margin-bottom: 4px;
+        }
+        
+        .food-item p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin: 0;
+        }
         .amount-selector { 
-            display: none; background: #2a2a3a; border: 2px solid #667eea; border-radius: 12px;
-            padding: 20px; margin-top: 15px; box-shadow: 0 8px 25px rgba(0,0,0,0.1);
-        }
-        .amount-selector.show { display: block; animation: fadeIn 0.3s ease; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-        .notification { 
-            position: fixed; top: 20px; right: 20px; z-index: 1000; padding: 15px 20px;
-            border-radius: 12px; font-weight: 500; backdrop-filter: blur(10px);
+            display: none; 
+            background: var(--card-bg); 
+            border: 2px solid var(--primary); 
+            z-index: 1000; 
+            padding: 14px 16px;
+            border-radius: 12px; 
+            font-weight: 500; 
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
             animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
         }
-        .notification.success { background: rgba(72,187,120,0.9); color: white; }
-        .notification.error { background: rgba(245,101,101,0.9); color: white; }
-        @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-        @media (max-width: 768px) { 
-            .main { grid-template-columns: 1fr; }
-            .stats { grid-template-columns: 1fr; }
-            .food-item { flex-direction: column; align-items: flex-start; gap: 10px; }
+        
+        @media (min-width: 400px) {
+            .notification {
+                right: 20px;
+                left: auto;
+                max-width: 320px;
+            }
+            .progress-bar { width: 100%; height: 8px; background: #3a3a4a; border-radius: 4px; margin-top: 10px; overflow: hidden; }
+            .progress-fill { height: 100%; transition: width 0.5s ease; border-radius: 4px; }
+            .protein-fill { background: linear-gradient(90deg, #4ade80, #22c55e); }
+            .carbs-fill { background: linear-gradient(90deg, #60a5fa, #3b82f6); }
+            .fat-fill { background: linear-gradient(90deg, #fbbf24, #f59e0b); }
+            .main { 
+                display: grid; 
+                grid-template-columns: 1fr; 
+                gap: 16px; 
+                margin-bottom: 20px;
+            }
+            .section { 
+                background: var(--card-bg); 
+                border-radius: 16px;
+            }
+        }
+        
+        /* Bottom Navigation */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--card-bg);
+            border-top: 1px solid var(--border);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            padding-bottom: calc(8px + env(safe-area-inset-bottom));
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.7rem;
+            padding: 8px 12px;
+            border-radius: 12px;
+            transition: all 0.2s ease;
+            opacity: 0.7;
+            flex: 1;
+            max-width: 25%;
+            text-align: center;
+        }
+        
+        .nav-item i {
+            font-size: 1.4rem;
+            margin-bottom: 4px;
+            transition: transform 0.2s ease;
+            display: inline-block;
+            width: 1.5em;
+            height: 1.5em;
+            line-height: 1.5em;
+        }
+        
+        .nav-item span {
+            font-size: 0.7rem;
+            font-weight: 500;
+            display: block;
+            transition: color 0.2s ease;
+        }
+        
+        .nav-item.active {
+            color: var(--primary);
+            opacity: 1;
+            transform: translateY(-4px);
+        }
+        
+        .nav-item.active i {
+            transform: scale(1.1);
+        }
+        
+        .nav-item:active {
+            transform: scale(0.95);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* Bottom Navigation Spacing */
+        .container {
+            padding-bottom: 80px; /* Space for bottom nav */
+        }
+        
+        /* Responsive Adjustments */
+        @media (min-width: 768px) {
+            .container {
+                max-width: 800px;
+                margin: 0 auto;
+                padding: 0 20px 20px;
+            }
+            
+            .main {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .stats {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            
+            /* Hide bottom nav on desktop */
+            .bottom-nav {
+                display: none;
+            }
+            
+            /* Remove bottom padding when nav is hidden */
+            .container {
+                padding-bottom: 20px;
+            }
+        }
+        
+        /* Safe area for notched devices */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            .bottom-nav {
+                padding-bottom: calc(8px + env(safe-area-inset-bottom));
+            }
+            
+            .container {
+                padding-bottom: calc(80px + env(safe-area-inset-bottom));
+            }
+        }
+        
+        @media (max-width: 400px) {
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+            
+            .stat-value {
+                font-size: 1.3rem;
+            }
+            
+            .header h1 {
+                font-size: 1.5rem;
+            }
         }
     </style>
 </head>
 <body>
     <div class="app">
-        <header class="header">
+        <header class="header" id="home">
             <h1>KaloriMax Pro</h1>
             <p>Akıllı besin takibi ve kalori yönetimi</p>
         </header>
 
-        <div class="stats">
+        <div class="stats" id="stats">
             <div class="stat-card">
                 <h3>🔥 Günlük Kalori</h3>
                 <div class="stat-value" id="daily-calories">0</div>
@@ -150,7 +472,7 @@
         </div>
 
         <div class="main">
-            <div class="section">
+            <div class="section" id="add-food">
                 <h2>🔍 Besin Ara</h2>
                 <input type="text" class="search-input" id="food-search" placeholder="Besin adı yazın (tavuk, elma, pilav...)">
                 <div class="search-results" id="search-results"></div>
@@ -198,9 +520,76 @@
                 </div>
             </div>
         </div>
+
+        <!-- Bottom Navigation -->
+        <nav class="bottom-nav">
+            <a href="#home" class="nav-item" data-target="home">
+                <i>🏠</i>
+                <span>Ana Sayfa</span>
+            </a>
+            <a href="#stats" class="nav-item" data-target="stats">
+                <i>📊</i>
+                <span>İstatistikler</span>
+            </a>
+            <a href="#add-food" class="nav-item" data-target="add-food">
+                <i>📝</i>
+                <span>Yemek Ekle</span>
+            </a>
+            <a href="#settings" class="nav-item" data-target="settings">
+                <i>⚙️</i>
+                <span>Ayarlar</span>
+            </a>
+        </nav>
     </div>
 
+    <!-- Add Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
     <script>
+        // Bottom navigation functionality
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Remove active class from all nav items
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                // Add active class to clicked item
+                this.classList.add('active');
+                
+                // Get the target section from the data-target attribute
+                const targetId = this.getAttribute('data-target');
+                if (targetId) {
+                    const targetElement = document.getElementById(targetId);
+                    if (targetElement) {
+                        // Smooth scroll to the target section
+                        targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        
+                        // Update URL hash without scrolling (we're using smooth scroll above)
+                        history.pushState(null, null, '#' + targetId);
+                    }
+                }
+            });
+        });
+        
+        // Set initial active nav item based on hash or default to home
+        function setInitialActiveNav() {
+            const hash = window.location.hash.substring(1);
+            let activeItem = document.querySelector('.nav-item[data-target="' + hash + '"]');
+            
+            // If no hash or invalid section, default to home
+            if (!activeItem) {
+                activeItem = document.querySelector('.nav-item[data-target="home"]');
+                if (activeItem) activeItem.classList.add('active');
+            } else {
+                activeItem.classList.add('active');
+            }
+        }
+        
+        // Call on page load
+        setInitialActiveNav();
+        
+        // Update active nav on hash change
+        window.addEventListener('hashchange', setInitialActiveNav);
         // Kapsamlı Besin Veritabanı (100g bazında USDA ve güvenilir kaynaklardan)
         const foodDatabase = [
             // ET VE TAVUK
