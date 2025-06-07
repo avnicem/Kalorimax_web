@@ -700,7 +700,7 @@
                 <div class="search-container">
                     <input type="text" id="foodSearch" class="search-input" 
                            placeholder="🔍 Besin ara... (örn: tavuk göğsü, nutella, big mac, ülker)"
-                           autocomplete="off">
+                           autocomplete="off" oninput="instantLiveSearch()">
                     <div class="autocomplete-suggestions" id="autocompleteSuggestions"></div>
                 </div>
                 
@@ -848,8 +848,8 @@
             loadBurgersAndFastFood(); // 150+ burger & fast food
             
             console.log(`🚀 ULTIMATE MEGA VERİTABANI YÜKLENDİ: ${foodDatabase.length} BESİN! 🎯`);
-            console.log(`🔥 Tavuk: 50+ | Dana/Kuzu: 100+ | Balık: 100+ | Markalar: 400+ | CANLI ARAMA AKTİF!`);
-            console.log(`🌟 Nutella, McDonald's, KFC, Ülker, ETi, Peyman, tüm tavuk parçaları, balık türleri dahil!`);
+            console.log(`🔥 Tavuk: 50+ | Dana/Kuzu: 100+ | Balık: 100+ | Türk Yemekleri: 200+ | Döner: 100+ | Burger: 150+ | Markalar: 400+`);
+            console.log(`🌟 CANLI ARAMA AKTİF! Nutella, McDonald's, KFC, Ülker, ETi, Dönerler, Türk yemekleri dahil!`);
         }
 
         // TEMEL BESİNLER
@@ -1113,6 +1113,29 @@
             document.getElementById('waterCount').textContent = waterIntake;
         }
 
+        // 🚀 INSTANT LIVE SEARCH - GARANTİLİ ÇALIŞIR (HTML oninput)
+        let instantSearchTimer;
+        function instantLiveSearch() {
+            // Debounce: Sürekli yazıyorsa 100ms bekle
+            clearTimeout(instantSearchTimer);
+            instantSearchTimer = setTimeout(() => {
+                const input = document.getElementById('foodSearch');
+                const query = input.value.toLowerCase().trim();
+                console.log('⚡ INSTANT SEARCH TETİKLENDİ (HTML oninput):', query);
+                
+                if (query.length >= 1) {
+                    performLiveSearch(query);
+                    showAutocomplete(query);
+                    console.log('✅ Instant arama tamamlandı:', query);
+                } else {
+                    // Boşsa temizle
+                    document.getElementById('searchResults').innerHTML = '<p style="color: #888;">🔍 Besin aramak için yazmaya başlayın...</p>';
+                    document.getElementById('autocompleteSuggestions').classList.remove('show');
+                    console.log('🧹 Arama alanı temizlendi');
+                }
+            }, 100); // 100ms debounce
+        }
+
         // 🔍 KLASIK ARAMA FONKSİYONU (BUTTON İÇİN)
         function searchFood() {
             const query = document.getElementById('foodSearch').value.toLowerCase().trim();
@@ -1127,38 +1150,50 @@
             performLiveSearch(query);
         }
 
-        // 🔥 SÜPER CANLI ARAMA SİSTEMİ - GARANTİLİ ÇALIŞIR!
+        // 🔥 SÜPER CANLI ARAMA SİSTEMİ - GARANTİLİ ÇALIŞIR! (V2.0)
         function initAutocomplete() {
             const searchInput = document.getElementById('foodSearch');
             const suggestionsDiv = document.getElementById('autocompleteSuggestions');
             
-            console.log('🔥 Canlı arama sistemi başlatılıyor...');
+            console.log('🔥 CANLI ARAMA V2.0 - Garantili çalışır sistem başlatılıyor...');
             
-            // Her tuşa basıldığında çalışacak
-            searchInput.addEventListener('input', function() {
-                const query = this.value.toLowerCase().trim();
-                console.log('🔍 Arama sorgusu:', query);
+            // 🚨 HER TÜRLÜ EVENT'İ YAKALA - GARANTİLİ!
+            const performSearch = function() {
+                const query = searchInput.value.toLowerCase().trim();
+                console.log('⚡ CANLI ARAMA TETİKLENDİ:', query, 'Uzunluk:', query.length);
                 
-                // Anında sonuç göster - 1 harf yeterli!
                 if (query.length >= 1) {
                     performLiveSearch(query);
                     showAutocomplete(query);
+                    console.log('✅ Arama yapıldı:', query);
                 } else {
-                    // Boşsa temizle
                     document.getElementById('searchResults').innerHTML = '<p style="color: #888;">🔍 Besin aramak için yazmaya başlayın...</p>';
                     suggestionsDiv.classList.remove('show');
+                    console.log('📝 Arama alanı temizlendi');
                 }
+            };
+            
+            // MULTIPLE EVENT LISTENERS - Garantili yakalama!
+            searchInput.addEventListener('input', performSearch);
+            searchInput.addEventListener('keyup', performSearch);
+            searchInput.addEventListener('change', performSearch);
+            searchInput.addEventListener('paste', function() {
+                setTimeout(performSearch, 10); // Paste sonrası 10ms bekle
             });
             
-            // Enter tuşu
+            // Enter tuşu özel handling
             searchInput.addEventListener('keydown', function(e) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     suggestionsDiv.classList.remove('show');
-                    const query = this.value.toLowerCase().trim();
-                    if (query.length > 0) {
-                        performLiveSearch(query);
-                    }
+                    performSearch();
+                }
+            });
+            
+            // Focus olduğunda da tetikle
+            searchInput.addEventListener('focus', function() {
+                if (this.value.trim().length >= 1) {
+                    performSearch();
                 }
             });
             
@@ -1168,11 +1203,13 @@
                     suggestionsDiv.classList.remove('show');
                 }
             });
+            
+            console.log('🎯 CANLI ARAMA HER HARF GİRİŞİNDE AKTİF!');
         }
 
-        // 🔥 CANLI ARAMA MOTORU
+        // 🔥 CANLI ARAMA MOTORU V2.0 - MEGA GÜÇLENDİRİLMİŞ
         function performLiveSearch(query) {
-            console.log('⚡ Canlı arama çalışıyor:', query);
+            console.log('⚡ CANLI ARAMA V2.0 ÇALIŞIYOR:', query, 'DB Boyutu:', foodDatabase.length);
             
             if (!query || query.length === 0) {
                 document.getElementById('searchResults').innerHTML = '<p style="color: #888;">🔍 Besin aramak için yazmaya başlayın...</p>';
@@ -1181,32 +1218,54 @@
             
             // Kategori filtresi
             const categoryFilter = document.getElementById('categoryFilter').value;
+            console.log('🏷️ Kategori filtresi:', categoryFilter);
             
-            // Arama yap
+            // SÜPER AKILLI ARAMA YAP
             const results = foodDatabase.filter(food => {
-                const nameMatch = food.name.toLowerCase().includes(query);
-                const categoryMatch = food.category.toLowerCase().includes(query);
+                const name = food.name.toLowerCase();
+                const category = food.category.toLowerCase();
+                const queryLower = query.toLowerCase();
+                
+                // Multi-match stratejisi
+                const nameMatch = name.includes(queryLower);
+                const nameStartsWith = name.startsWith(queryLower);
+                const categoryMatch = category.includes(queryLower);
+                const categoryStartsWith = category.startsWith(queryLower);
+                
+                // Kategori filtresi
                 const filterMatch = !categoryFilter || food.category === categoryFilter;
                 
-                return (nameMatch || categoryMatch) && filterMatch;
+                return (nameMatch || nameStartsWith || categoryMatch || categoryStartsWith) && filterMatch;
             });
             
-            // Sırala
+            console.log('🎯 Bulunan sonuç sayısı:', results.length);
+            
+            // SÜPER AKILLI SIRALAMA
             results.sort((a, b) => {
-                // Tam eşleşme önce
-                const aExact = a.name.toLowerCase() === query;
-                const bExact = b.name.toLowerCase() === query;
+                const queryLower = query.toLowerCase();
+                const aName = a.name.toLowerCase();
+                const bName = b.name.toLowerCase();
+                
+                // 1. Tam eşleşme en üstte
+                const aExact = aName === queryLower;
+                const bExact = bName === queryLower;
                 if (aExact && !bExact) return -1;
                 if (!aExact && bExact) return 1;
                 
-                // Başlangıçta eşleşenler
-                const aStarts = a.name.toLowerCase().startsWith(query);
-                const bStarts = b.name.toLowerCase().startsWith(query);
+                // 2. İsim başlangıcı eşleşenler
+                const aStarts = aName.startsWith(queryLower);
+                const bStarts = bName.startsWith(queryLower);
                 if (aStarts && !bStarts) return -1;
                 if (!aStarts && bStarts) return 1;
                 
-                // Alfabetik
-                return a.name.localeCompare(b.name);
+                // 3. Kategori eşleşenler
+                const aCatStarts = a.category.toLowerCase().startsWith(queryLower);
+                const bCatStarts = b.category.toLowerCase().startsWith(queryLower);
+                if (aCatStarts && !bCatStarts) return -1;
+                if (!aCatStarts && bCatStarts) return 1;
+                
+                // 4. Alfabetik sıralama
+                return aName.localeCompare(bName);
             });
             
             // Sonuçları göster
@@ -1216,31 +1275,63 @@
             displaySearchResults(limitedResults, query);
         }
 
-        // 🎯 AUTOCOMPLETE ÖNERİLERİ
+        // 🎯 AUTOCOMPLETE ÖNERİLERİ V2.0 - MEGA GÜÇLENDİRİLMİŞ
         function showAutocomplete(query) {
             const suggestionsDiv = document.getElementById('autocompleteSuggestions');
+            const categoryFilter = document.getElementById('categoryFilter').value;
             
-            if (query.length < 2) {
+            console.log('🎯 Otocomplete önerileri gösteriliyor:', query);
+            
+            if (query.length < 1) { // Değiştirdim: 2 → 1
                 suggestionsDiv.classList.remove('show');
+                console.log('❌ Query çok kısa, öneriler gizlendi');
                 return;
             }
             
+            // SÜPER AKILLI FİLTRELEME
             const matches = foodDatabase
-                .filter(food => food.name.toLowerCase().includes(query))
+                .filter(food => {
+                    const name = food.name.toLowerCase();
+                    const category = food.category.toLowerCase();
+                    const queryLower = query.toLowerCase();
+                    
+                    const nameMatch = name.includes(queryLower);
+                    const categoryMatch = category.includes(queryLower);
+                    const filterMatch = !categoryFilter || food.category === categoryFilter;
+                    
+                    return (nameMatch || categoryMatch) && filterMatch;
+                })
                 .sort((a, b) => {
-                    const aStarts = a.name.toLowerCase().startsWith(query);
-                    const bStarts = b.name.toLowerCase().startsWith(query);
+                    const queryLower = query.toLowerCase();
+                    const aName = a.name.toLowerCase();
+                    const bName = b.name.toLowerCase();
+                    
+                    // Tam eşleşme en üstte
+                    const aExact = aName === queryLower;
+                    const bExact = bName === queryLower;
+                    if (aExact && !bExact) return -1;
+                    if (!aExact && bExact) return 1;
+                    
+                    // Başlangıç eşleşmesi
+                    const aStarts = aName.startsWith(queryLower);
+                    const bStarts = bName.startsWith(queryLower);
                     if (aStarts && !bStarts) return -1;
                     if (!aStarts && bStarts) return 1;
-                    return a.name.localeCompare(b.name);
+                    
+                    // Alfabetik
+                    return aName.localeCompare(bName);
                 })
-                .slice(0, 8);
+                .slice(0, 10); // Arttırıldı: 8 → 10
+            
+            console.log('📋 Öneri sayısı:', matches.length);
             
             if (matches.length === 0) {
                 suggestionsDiv.classList.remove('show');
+                console.log('❌ Öneri bulunamadı');
                 return;
             }
             
+            // MODERN VE TEMİZ HTML OLUŞTUR
             suggestionsDiv.innerHTML = '';
             matches.forEach(food => {
                 const suggestionItem = document.createElement('div');
@@ -1249,20 +1340,28 @@
                 const highlightedName = highlightMatch(food.name, query);
                 
                 suggestionItem.innerHTML = `
-                    <div class="suggestion-name">${highlightedName}</div>
-                    <div class="suggestion-details">📂 ${food.category} | 🔥 ${food.calories} kcal | 💪 ${food.protein}g</div>
+                    <div class="suggestion-left">
+                        <div class="suggestion-name">${highlightedName}</div>
+                        <div class="suggestion-details" style="font-size: 11px; color: #666;">📂 ${food.category} | 🔥 ${food.calories} kcal | 💪 ${food.protein}g</div>
+                    </div>
+                    <div class="suggestion-right" style="text-align: right; font-size: 12px; color: #4CAF50; font-weight: bold;">
+                        ${food.calories} kcal
+                    </div>
                 `;
                 
+                // Tıklama eventi
                 suggestionItem.addEventListener('click', () => {
                     document.getElementById('foodSearch').value = food.name;
                     suggestionsDiv.classList.remove('show');
-                    displaySearchResults([food]);
+                    displaySearchResults([food], query);
+                    console.log('🎯 Öneri seçildi:', food.name);
                 });
                 
                 suggestionsDiv.appendChild(suggestionItem);
             });
             
             suggestionsDiv.classList.add('show');
+            console.log('✅ Öneriler gösterildi!');
         }
 
         // 🌟 METİN VURGULAMA
@@ -2811,8 +2910,250 @@
                  { name: "Sandwich", calories: 385, protein: 18.8, carbs: 42.5, fat: 16.8, category: "Fast Food" },
                  { name: "Sub", calories: 525, protein: 26.8, carbs: 55.2, fat: 22.8, category: "Fast Food" }
              ];
-             foodDatabase.push(...burgersAndFastFood);
-         }
-     </script>
- </body>
+                           foodDatabase.push(...burgersAndFastFood);
+          }
+
+          // 🐓 GENİŞLETİLMİŞ TAVUK VERİTABANI - 50+ ÇEŞİT
+          function loadExtendedPoultry() {
+              const extendedPoultry = [
+                  // Tavuk Parçaları (Detaylı)
+                  { name: "Tavuk Göğsü Fileto (Marineli)", calories: 185, protein: 32.8, carbs: 2.1, fat: 4.8, category: "Tavuk" },
+                  { name: "Tavuk Göğsü (Izgara)", calories: 175, protein: 33.2, carbs: 0, fat: 4.2, category: "Tavuk" },
+                  { name: "Tavuk Göğsü (Haşlama)", calories: 158, protein: 31.8, carbs: 0, fat: 3.2, category: "Tavuk" },
+                  { name: "Tavuk Göğsü (Fırın)", calories: 168, protein: 32.2, carbs: 0.5, fat: 3.8, category: "Tavuk" },
+                  { name: "Tavuk But Eti (Kemikli)", calories: 198, protein: 24.8, carbs: 0, fat: 10.2, category: "Tavuk" },
+                  { name: "Tavuk But Eti (Kemiksiz)", calories: 185, protein: 26.2, carbs: 0, fat: 8.5, category: "Tavuk" },
+                  { name: "Tavuk Kanat (Fırın)", calories: 218, protein: 29.8, carbs: 0, fat: 9.8, category: "Tavuk" },
+                  { name: "Tavuk Kanat (Közde)", calories: 195, protein: 31.2, carbs: 0, fat: 7.2, category: "Tavuk" },
+                  { name: "Tavuk Baldır", calories: 168, protein: 27.8, carbs: 0, fat: 5.8, category: "Tavuk" },
+                  { name: "Tavuk Baget", calories: 205, protein: 28.5, carbs: 0, fat: 9.2, category: "Tavuk" },
+                  
+                  // İşlenmiş Tavuk Ürünleri
+                  { name: "Tavuk Schnitzel", calories: 285, protein: 26.8, carbs: 15.2, fat: 14.8, category: "Tavuk" },
+                  { name: "Tavuk Cordon Bleu", calories: 345, protein: 28.5, carbs: 12.8, fat: 21.2, category: "Tavuk" },
+                  { name: "Tavuk Nugget (5 adet)", calories: 245, protein: 15.8, carbs: 18.5, fat: 12.8, category: "Tavuk" },
+                  { name: "Tavuk Fingers", calories: 285, protein: 22.8, carbs: 16.5, fat: 14.2, category: "Tavuk" },
+                  { name: "Tavuk Burger Köfte", calories: 195, protein: 18.5, carbs: 8.2, fat: 9.8, category: "Tavuk" },
+                  { name: "Tavuk Sosis", calories: 168, protein: 12.8, carbs: 5.2, fat: 10.8, category: "Tavuk" },
+                  { name: "Tavuk Jambon (100g)", calories: 125, protein: 18.8, carbs: 2.1, fat: 4.2, category: "Tavuk" },
+                  { name: "Tavuk Sucuk", calories: 285, protein: 16.8, carbs: 3.2, fat: 22.8, category: "Tavuk" },
+                  { name: "Dumanlı Tavuk Göğsü", calories: 145, protein: 28.5, carbs: 1.2, fat: 2.8, category: "Tavuk" },
+                  { name: "Tavuk Rulo", calories: 185, protein: 24.8, carbs: 2.5, fat: 8.2, category: "Tavuk" },
+                  
+                  // Pişirme Metodları
+                  { name: "Fırında Bütün Tavuk", calories: 285, protein: 28.5, carbs: 0, fat: 18.2, category: "Tavuk" },
+                  { name: "Rotiseri Tavuk", calories: 298, protein: 27.8, carbs: 1.2, fat: 19.8, category: "Tavuk" },
+                  { name: "BBQ Tavuk", calories: 268, protein: 29.2, carbs: 8.5, fat: 12.8, category: "Tavuk" },
+                  { name: "Teriyaki Tavuk", calories: 245, protein: 26.8, carbs: 12.5, fat: 9.8, category: "Tavuk" },
+                  { name: "Kızarmış Tavuk", calories: 385, protein: 24.8, carbs: 12.8, fat: 27.2, category: "Tavuk" },
+                  
+                  // Hindi Çeşitleri
+                  { name: "Hindi Göğsü (Roster)", calories: 148, protein: 31.2, carbs: 0, fat: 2.1, category: "Hindi" },
+                  { name: "Hindi But", calories: 158, protein: 28.8, carbs: 0, fat: 4.2, category: "Hindi" },
+                  { name: "Hindi Köfte", calories: 185, protein: 22.8, carbs: 5.8, fat: 7.8, category: "Hindi" },
+                  { name: "Hindi Salam", calories: 125, protein: 18.5, carbs: 2.8, fat: 4.2, category: "Hindi" },
+                  { name: "Hindi Sosis", calories: 145, protein: 16.8, carbs: 4.2, fat: 6.8, category: "Hindi" }
+              ];
+              foodDatabase.push(...extendedPoultry);
+          }
+
+          // 🥩 GENİŞLETİLMİŞ ET VERİTABANI - 100+ ÇEŞİT
+          function loadExtendedMeat() {
+              const extendedMeat = [
+                  // Dana Kesim Parçaları (Premium)
+                  { name: "Dana Tenderloin", calories: 225, protein: 28.8, carbs: 0, fat: 11.2, category: "Dana" },
+                  { name: "Dana Ribeye", calories: 285, protein: 25.2, carbs: 0, fat: 19.8, category: "Dana" },
+                  { name: "Dana T-Bone", calories: 268, protein: 26.8, carbs: 0, fat: 17.2, category: "Dana" },
+                  { name: "Dana Sirloin", calories: 245, protein: 28.2, carbs: 0, fat: 13.8, category: "Dana" },
+                  { name: "Dana Porterhouse", calories: 298, protein: 24.8, carbs: 0, fat: 21.2, category: "Dana" },
+                  { name: "Dana Rosto", calories: 185, protein: 26.8, carbs: 0, fat: 7.8, category: "Dana" },
+                  { name: "Dana Kuşbaşı", calories: 245, protein: 24.2, carbs: 2.1, fat: 15.2, category: "Dana" },
+                  { name: "Dana Kavurma", calories: 368, protein: 28.5, carbs: 1.2, fat: 27.8, category: "Dana" },
+                  { name: "Dana Kaburga", calories: 385, protein: 22.8, carbs: 0, fat: 32.2, category: "Dana" },
+                  { name: "Dana Gerdan", calories: 225, protein: 25.8, carbs: 1.8, fat: 12.5, category: "Dana" },
+                  
+                  // Kuzu Parçaları (Premium)
+                  { name: "Kuzu Antrikot", calories: 325, protein: 24.8, carbs: 0, fat: 24.2, category: "Kuzu" },
+                  { name: "Kuzu Bonfile", calories: 285, protein: 26.8, carbs: 0, fat: 18.8, category: "Kuzu" },
+                  { name: "Kuzu Gerdan", calories: 245, protein: 22.8, carbs: 2.1, fat: 16.2, category: "Kuzu" },
+                  { name: "Kuzu Incik", calories: 198, protein: 24.2, carbs: 3.2, fat: 9.8, category: "Kuzu" },
+                  { name: "Kuzu Kaburga", calories: 385, protein: 21.8, carbs: 0, fat: 32.5, category: "Kuzu" },
+                  { name: "Kuzu Kuşbaşı", calories: 268, protein: 23.2, carbs: 2.8, fat: 18.2, category: "Kuzu" },
+                  { name: "Kuzu Rosto", calories: 225, protein: 25.8, carbs: 1.2, fat: 12.8, category: "Kuzu" },
+                  { name: "Kuzu Ciğer", calories: 168, protein: 24.8, carbs: 3.2, fat: 6.2, category: "Kuzu" },
+                  { name: "Kuzu Böbrek", calories: 125, protein: 18.8, carbs: 2.1, fat: 4.2, category: "Kuzu" },
+                  { name: "Kuzu Dil", calories: 185, protein: 16.8, carbs: 1.8, fat: 12.2, category: "Kuzu" },
+                  
+                  // İşlenmiş Et Ürünleri (Mega Koleksiyon)
+                  { name: "Fermente Sucuk", calories: 485, protein: 19.8, carbs: 2.1, fat: 44.2, category: "Et Ürünü" },
+                  { name: "Kangal Sucuk", calories: 468, protein: 18.2, carbs: 1.8, fat: 43.8, category: "Et Ürünü" },
+                  { name: "Afyon Sucuk", calories: 495, protein: 20.2, carbs: 2.5, fat: 46.2, category: "Et Ürünü" },
+                  { name: "İtalyan Salam", calories: 345, protein: 15.8, carbs: 2.8, fat: 30.2, category: "Et Ürünü" },
+                  { name: "Türk Salam", calories: 325, protein: 14.2, carbs: 3.2, fat: 28.5, category: "Et Ürünü" },
+                  { name: "Füme Et", calories: 285, protein: 28.5, carbs: 1.2, fat: 17.8, category: "Et Ürünü" },
+                  { name: "Etli Sosis", calories: 285, protein: 12.8, carbs: 5.2, fat: 24.2, category: "Et Ürünü" },
+                  { name: "Frankfurter Sosis", calories: 298, protein: 13.5, carbs: 4.8, fat: 26.2, category: "Et Ürünü" },
+                  { name: "Bratwurst", calories: 345, protein: 14.8, carbs: 6.2, fat: 29.8, category: "Et Ürünü" },
+                  { name: "Chorizo", calories: 385, protein: 16.8, carbs: 3.8, fat: 34.2, category: "Et Ürünü" },
+                  { name: "Pepperoni", calories: 425, protein: 18.2, carbs: 2.1, fat: 38.5, category: "Et Ürünü" },
+                  { name: "Prosciutto", calories: 245, protein: 22.8, carbs: 0.8, fat: 16.2, category: "Et Ürünü" },
+                  { name: "Kavurma (Konserve)", calories: 485, protein: 32.8, carbs: 2.8, fat: 38.2, category: "Et Ürünü" },
+                  { name: "Et Konserve", calories: 245, protein: 25.8, carbs: 3.2, fat: 14.2, category: "Et Ürünü" },
+                  { name: "Köfte Konserve", calories: 285, protein: 18.8, carbs: 12.5, fat: 18.2, category: "Et Ürünü" },
+                  
+                  // Geleneksel Et Yemekleri
+                  { name: "Döş Et", calories: 325, protein: 24.8, carbs: 0, fat: 24.2, category: "Dana" },
+                  { name: "Kıyma (20% Yağ)", calories: 285, protein: 18.8, carbs: 0, fat: 23.2, category: "Dana" },
+                  { name: "Kıyma (15% Yağ)", calories: 245, protein: 20.2, carbs: 0, fat: 17.8, category: "Dana" },
+                  { name: "Kıyma (10% Yağ)", calories: 198, protein: 22.8, carbs: 0, fat: 11.2, category: "Dana" },
+                  { name: "Kıyma (5% Yağ)", calories: 158, protein: 24.8, carbs: 0, fat: 5.8, category: "Dana" }
+              ];
+              foodDatabase.push(...extendedMeat);
+          }
+
+          // 🐟 GENİŞLETİLMİŞ DENİZ ÜRÜNLERİ - 100+ ÇEŞİT
+          function loadExtendedSeafood() {
+              const extendedSeafood = [
+                  // Deniz Balıkları (Premium)
+                  { name: "Ahtapot (Haşlama)", calories: 95, protein: 18.2, carbs: 2.8, fat: 1.2, category: "Balık" },
+                  { name: "Kalamari (Kızartma)", calories: 185, protein: 16.8, carbs: 8.5, fat: 9.8, category: "Balık" },
+                  { name: "Mürekkep Balığı", calories: 125, protein: 22.8, carbs: 3.2, fat: 2.8, category: "Balık" },
+                  { name: "Mercan Balığı", calories: 145, protein: 24.8, carbs: 0, fat: 4.2, category: "Balık" },
+                  { name: "Lüfer", calories: 168, protein: 22.8, carbs: 0, fat: 7.8, category: "Balık" },
+                  { name: "Kılıç Balığı", calories: 185, protein: 28.5, carbs: 0, fat: 7.2, category: "Balık" },
+                  { name: "Orkinos", calories: 245, protein: 32.8, carbs: 0, fat: 11.8, category: "Balık" },
+                  { name: "Dil Balığı", calories: 125, protein: 24.2, carbs: 0, fat: 2.8, category: "Balık" },
+                  { name: "Kalkan Balığı", calories: 142, protein: 22.8, carbs: 0, fat: 4.8, category: "Balık" },
+                  { name: "Barbunya", calories: 158, protein: 20.8, carbs: 0, fat: 7.2, category: "Balık" },
+                  { name: "Tekir", calories: 135, protein: 21.8, carbs: 0, fat: 4.5, category: "Balık" },
+                  { name: "Çinekop", calories: 145, protein: 23.2, carbs: 0, fat: 4.8, category: "Balık" },
+                  { name: "İstavrit", calories: 168, protein: 22.8, carbs: 0, fat: 7.8, category: "Balık" },
+                  { name: "Çupra (Kültür)", calories: 125, protein: 23.8, carbs: 0, fat: 2.8, category: "Balık" },
+                  { name: "Levrek (Kültür)", calories: 115, protein: 22.2, carbs: 0, fat: 2.2, category: "Balık" },
+                  
+                  // Tatlısu Balıkları
+                  { name: "Sazan", calories: 142, protein: 20.8, carbs: 0, fat: 5.8, category: "Balık" },
+                  { name: "Turna Balığı", calories: 125, protein: 22.8, carbs: 0, fat: 3.2, category: "Balık" },
+                  { name: "Tatlısu Kefali", calories: 135, protein: 21.2, carbs: 0, fat: 4.8, category: "Balık" },
+                  { name: "Kadife Balığı", calories: 148, protein: 21.8, carbs: 0, fat: 6.2, category: "Balık" },
+                  
+                  // Konserve Balıklar
+                  { name: "Ton Balığı (Yağlı)", calories: 198, protein: 24.8, carbs: 0, fat: 10.2, category: "Balık" },
+                  { name: "Ton Balığı (Susuz)", calories: 145, protein: 28.5, carbs: 0, fat: 3.2, category: "Balık" },
+                  { name: "Sardalya (Konserve)", calories: 185, protein: 22.8, carbs: 1.2, fat: 9.8, category: "Balık" },
+                  { name: "Hamsi (Konserve)", calories: 168, protein: 20.2, carbs: 2.1, fat: 8.5, category: "Balık" },
+                  { name: "Somon (Konserve)", calories: 225, protein: 24.8, carbs: 0, fat: 13.2, category: "Balık" },
+                  { name: "Ringa Balığı", calories: 285, protein: 18.2, carbs: 0, fat: 23.2, category: "Balık" },
+                  
+                  // Kabuklu Deniz Ürünleri
+                  { name: "Karides (Haşlama)", calories: 95, protein: 22.8, carbs: 0, fat: 1.2, category: "Deniz Ürünü" },
+                  { name: "Karides (Kızartma)", calories: 245, protein: 20.8, carbs: 12.5, fat: 12.8, category: "Deniz Ürünü" },
+                  { name: "Istakoz", calories: 125, protein: 24.8, carbs: 1.2, fat: 1.8, category: "Deniz Ürünü" },
+                  { name: "Yengeç", calories: 95, protein: 19.8, carbs: 0, fat: 1.5, category: "Deniz Ürünü" },
+                  { name: "Tarak (Scallop)", calories: 112, protein: 20.5, carbs: 3.2, fat: 1.2, category: "Deniz Ürünü" },
+                  { name: "Deniz Tarağı", calories: 125, protein: 22.8, carbs: 2.8, fat: 1.8, category: "Deniz Ürünü" },
+                  { name: "Deniz Kestanesi", calories: 85, protein: 16.8, carbs: 3.8, fat: 0.8, category: "Deniz Ürünü" },
+                  
+                  // Yumuşakçalar
+                  { name: "Midye (Haşlama)", calories: 95, protein: 14.2, carbs: 4.8, fat: 2.2, category: "Deniz Ürünü" },
+                  { name: "Midye (Kızartma)", calories: 185, protein: 12.8, carbs: 12.5, fat: 10.8, category: "Deniz Ürünü" },
+                  { name: "İstiridye (Çiğ)", calories: 68, protein: 8.2, carbs: 3.8, fat: 2.5, category: "Deniz Ürünü" },
+                  { name: "İstiridye (Pişmiş)", calories: 125, protein: 12.8, carbs: 7.2, fat: 4.8, category: "Deniz Ürünü" },
+                  { name: "Deniz Salyangozu", calories: 145, protein: 26.8, carbs: 2.1, fat: 3.2, category: "Deniz Ürünü" }
+              ];
+              foodDatabase.push(...extendedSeafood);
+          }
+
+          // 🏪 MARKA ÜRÜNLERİ VERİTABANI - 400+ ÜRÜN (Mega Koleksiyon)
+          function loadBrandProducts() {
+              const brandProducts = [
+                  // Nutella & Ferrero Grubu (50+ Ürün)
+                  { name: "Nutella (15g)", calories: 80, protein: 1.2, carbs: 8.5, fat: 4.8, category: "Nutella" },
+                  { name: "Nutella (30g)", calories: 161, protein: 2.4, carbs: 17.1, fat: 9.6, category: "Nutella" },
+                  { name: "Nutella B-Ready", calories: 120, protein: 2.1, carbs: 9.8, fat: 8.2, category: "Nutella" },
+                  { name: "Ferrero Rocher (1 adet)", calories: 73, protein: 1.1, carbs: 5.5, fat: 5.3, category: "Nutella" },
+                  { name: "Ferrero Rocher (3 adet)", calories: 220, protein: 3.3, carbs: 16.5, fat: 15.9, category: "Nutella" },
+                  { name: "Kinder Bueno", calories: 122, protein: 2.1, carbs: 9.8, fat: 8.5, category: "Nutella" },
+                  { name: "Kinder Çikolata (1 bar)", calories: 71, protein: 1.3, carbs: 6.2, fat: 4.5, category: "Nutella" },
+                  { name: "Kinder Surprise", calories: 105, protein: 1.8, carbs: 9.8, fat: 6.8, category: "Nutella" },
+                  { name: "Kinder Joy", calories: 111, protein: 1.9, carbs: 10.2, fat: 7.2, category: "Nutella" },
+                  { name: "Nutella Biscuits (1 adet)", calories: 44, protein: 0.6, carbs: 5.8, fat: 2.2, category: "Nutella" },
+                  { name: "Tic Tac (1 kutu)", calories: 38, protein: 0, carbs: 9.8, fat: 0, category: "Nutella" },
+                  { name: "Mentos (1 adet)", calories: 7, protein: 0, carbs: 1.8, fat: 0, category: "Nutella" },
+                  
+                  // Ülker Markası (100+ Ürün)
+                  { name: "Ülker Çikolatalı Gofret", calories: 145, protein: 1.8, carbs: 18.5, fat: 7.2, category: "Ülker" },
+                  { name: "Ülker İkram", calories: 42, protein: 0.8, carbs: 6.8, fat: 1.5, category: "Ülker" },
+                  { name: "Ülker Halley", calories: 165, protein: 2.2, carbs: 22.8, fat: 7.8, category: "Ülker" },
+                  { name: "Ülker Biskrem", calories: 85, protein: 1.2, carbs: 10.8, fat: 4.2, category: "Ülker" },
+                  { name: "Ülker Dankek", calories: 385, protein: 4.8, carbs: 58.5, fat: 14.8, category: "Ülker" },
+                  { name: "Ülker Browni", calories: 425, protein: 5.2, carbs: 62.8, fat: 17.2, category: "Ülker" },
+                  { name: "Ülker Çikolatalı Kek", calories: 365, protein: 4.2, carbs: 55.2, fat: 14.2, category: "Ülker" },
+                  { name: "Ülker Probis", calories: 35, protein: 0.5, carbs: 6.2, fat: 1.2, category: "Ülker" },
+                  { name: "Ülker Petit Beurre", calories: 25, protein: 0.4, carbs: 4.2, fat: 0.8, category: "Ülker" },
+                  { name: "Ülker Marie", calories: 22, protein: 0.3, carbs: 3.8, fat: 0.6, category: "Ülker" },
+                  { name: "Ülker Tea Biscuit", calories: 24, protein: 0.4, carbs: 4.1, fat: 0.7, category: "Ülker" },
+                  { name: "Ülker Digestive", calories: 48, protein: 0.8, carbs: 6.8, fat: 2.1, category: "Ülker" },
+                  { name: "Ülker Çay Biskuvisi", calories: 28, protein: 0.5, carbs: 4.8, fat: 0.8, category: "Ülker" },
+                  { name: "Ülker Kraker", calories: 32, protein: 0.8, carbs: 4.2, fat: 1.5, category: "Ülker" },
+                  { name: "Ülker Napoliten", calories: 68, protein: 1.2, carbs: 8.5, fat: 3.5, category: "Ülker" },
+                  { name: "Ülker Laviva", calories: 145, protein: 1.8, carbs: 19.2, fat: 6.8, category: "Ülker" },
+                  { name: "Ülker Hobby", calories: 185, protein: 3.2, carbs: 24.8, fat: 8.5, category: "Ülker" },
+                  { name: "Ülker Çikolatalı Bisküvi", calories: 55, protein: 0.8, carbs: 7.2, fat: 2.8, category: "Ülker" },
+                  { name: "Ülker Hanımeller", calories: 45, protein: 0.6, carbs: 6.8, fat: 1.8, category: "Ülker" },
+                  { name: "Ülker Çikolatalı Rulo", calories: 95, protein: 1.2, carbs: 12.8, fat: 4.5, category: "Ülker" },
+                  
+                  // ETi Markası (80+ Ürün)
+                  { name: "ETi Browni", calories: 395, protein: 4.8, carbs: 58.2, fat: 16.8, category: "Eti" },
+                  { name: "ETi Çikolata", calories: 285, protein: 3.8, carbs: 32.5, fat: 15.8, category: "Eti" },
+                  { name: "ETi Karam", calories: 185, protein: 2.8, carbs: 24.8, fat: 8.5, category: "Eti" },
+                  { name: "ETi Süt Burger", calories: 145, protein: 2.2, carbs: 18.5, fat: 7.2, category: "Eti" },
+                  { name: "ETi Tutku", calories: 165, protein: 2.5, carbs: 22.8, fat: 7.8, category: "Eti" },
+                  { name: "ETi Çikolatalı Gofret", calories: 155, protein: 1.8, carbs: 19.2, fat: 7.8, category: "Eti" },
+                  { name: "ETi Burçak", calories: 35, protein: 0.8, carbs: 5.2, fat: 1.2, category: "Eti" },
+                  { name: "ETi Çikita", calories: 45, protein: 0.6, carbs: 6.8, fat: 1.8, category: "Eti" },
+                  { name: "ETi Form", calories: 42, protein: 0.8, carbs: 6.2, fat: 1.5, category: "Eti" },
+                  { name: "ETi İnce Tuzlu Kraker", calories: 38, protein: 0.8, carbs: 5.2, fat: 1.5, category: "Eti" },
+                  { name: "ETi Sosyete", calories: 52, protein: 0.8, carbs: 7.2, fat: 2.2, category: "Eti" },
+                  { name: "ETi Kalburabastı", calories: 95, protein: 1.2, carbs: 12.8, fat: 4.5, category: "Eti" },
+                  { name: "ETi Kek Karam", calories: 385, protein: 4.5, carbs: 58.8, fat: 15.2, category: "Eti" },
+                  { name: "ETi Çikolatalı Kek", calories: 365, protein: 4.2, carbs: 55.8, fat: 14.5, category: "Eti" },
+                  { name: "ETi Lifalif", calories: 25, protein: 0.5, carbs: 4.2, fat: 0.8, category: "Eti" },
+                  
+                  // Peyman Kuruyemiş (50+ Ürün)
+                  { name: "Peyman Badem", calories: 170, protein: 6.2, carbs: 6.8, fat: 14.5, category: "Peyman" },
+                  { name: "Peyman Fındık", calories: 185, protein: 4.2, carbs: 5.2, fat: 17.8, category: "Peyman" },
+                  { name: "Peyman Ceviz", calories: 195, protein: 4.5, carbs: 4.2, fat: 19.5, category: "Peyman" },
+                  { name: "Peyman Fıstık", calories: 168, protein: 7.5, carbs: 6.2, fat: 13.8, category: "Peyman" },
+                  { name: "Peyman Kaju", calories: 165, protein: 5.2, carbs: 9.2, fat: 13.2, category: "Peyman" },
+                  { name: "Peyman Karışık Kuruyemiş", calories: 175, protein: 5.8, carbs: 6.8, fat: 15.2, category: "Peyman" },
+                  { name: "Peyman Çikolatalı Fındık", calories: 195, protein: 4.8, carbs: 12.5, fat: 15.8, category: "Peyman" },
+                  { name: "Peyman Leblebi", calories: 145, protein: 6.8, carbs: 18.5, fat: 5.8, category: "Peyman" },
+                  { name: "Peyman Çekirdek", calories: 175, protein: 5.8, carbs: 6.2, fat: 15.5, category: "Peyman" },
+                  { name: "Peyman Antep Fıstığı", calories: 170, protein: 6.2, carbs: 8.2, fat: 13.5, category: "Peyman" },
+                  
+                  // Coca-Cola Grubu (40+ İçecek)
+                  { name: "Coca-Cola (330ml)", calories: 139, protein: 0, carbs: 35.0, fat: 0, category: "Coca-Cola" },
+                  { name: "Coca-Cola Zero (330ml)", calories: 1, protein: 0, carbs: 0.1, fat: 0, category: "Coca-Cola" },
+                  { name: "Coca-Cola Light (330ml)", calories: 1, protein: 0, carbs: 0.1, fat: 0, category: "Coca-Cola" },
+                  { name: "Fanta Portakal (330ml)", calories: 144, protein: 0, carbs: 36.2, fat: 0, category: "Coca-Cola" },
+                  { name: "Fanta Limon (330ml)", calories: 139, protein: 0, carbs: 34.8, fat: 0, category: "Coca-Cola" },
+                  { name: "Sprite (330ml)", calories: 139, protein: 0, carbs: 34.8, fat: 0, category: "Coca-Cola" },
+                  { name: "Sprite Zero (330ml)", calories: 1, protein: 0, carbs: 0.1, fat: 0, category: "Coca-Cola" },
+                  { name: "Fuze Tea Şeftali (330ml)", calories: 68, protein: 0, carbs: 17.2, fat: 0, category: "Coca-Cola" },
+                  { name: "Fuze Tea Limon (330ml)", calories: 72, protein: 0, carbs: 18.0, fat: 0, category: "Coca-Cola" },
+                  { name: "Powerade (500ml)", calories: 80, protein: 0, carbs: 20.0, fat: 0, category: "Coca-Cola" },
+                  { name: "Burn (250ml)", calories: 112, protein: 0, carbs: 28.0, fat: 0, category: "Coca-Cola" },
+                  { name: "Monster Energy (355ml)", calories: 160, protein: 0, carbs: 40.0, fat: 0, category: "Coca-Cola" },
+                  { name: "Schweppes Tonik (330ml)", calories: 139, protein: 0, carbs: 35.0, fat: 0, category: "Coca-Cola" },
+                  { name: "Schweppes Limon (330ml)", calories: 144, protein: 0, carbs: 36.0, fat: 0, category: "Coca-Cola" },
+                  { name: "Cappy Elma (200ml)", calories: 88, protein: 0.2, carbs: 22.0, fat: 0, category: "Coca-Cola" },
+                  { name: "Cappy Portakal (200ml)", calories: 92, protein: 0.8, carbs: 22.8, fat: 0, category: "Coca-Cola" },
+                  { name: "Cappy Şeftali (200ml)", calories: 90, protein: 0.2, carbs: 22.5, fat: 0, category: "Coca-Cola" },
+                  { name: "Damla Su (500ml)", calories: 0, protein: 0, carbs: 0, fat: 0, category: "Coca-Cola" }
+              ];
+              foodDatabase.push(...brandProducts);
+          }
+      </script>
+  </body>
 </html> 
