@@ -14,11 +14,11 @@
     --secondary: #10B981;
     --danger: #EF4444;
     --warning: #F59E0B;
-    --background: #F9FAFB;
-    --surface: #FFFFFF;
-    --text: #1F2937;
-    --text-secondary: #6B7280;
-    --border: #E5E7EB;
+    --background: #111827;
+    --surface: #1F2937;
+    --text: #F9FAFB;
+    --text-secondary: #9CA3AF;
+    --border: #374151;
     --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --shadow-md: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
@@ -26,6 +26,11 @@
     --radius: 0.5rem;
     --radius-lg: 0.75rem;
     --transition: all 0.2s ease-in-out;
+    
+    /* Dark mode input styles */
+    --input-bg: #111827;
+    --input-text: #F9FAFB;
+    --input-border: #374151;
 }
 
 body {
@@ -398,22 +403,12 @@ button:active {
     }
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --background: #111827;
-        --surface: #1F2937;
-        --text: #F9FAFB;
-        --text-secondary: #9CA3AF;
-        --border: #374151;
-    }
-    
-    input[type="text"],
-    input[type="number"] {
-        background: #111827;
-        color: var(--text);
-        border-color: #374151;
-    }
+/* Input styles */
+input[type="text"],
+input[type="number"] {
+    background: var(--input-bg);
+    color: var(--input-text);
+    border-color: var(--input-border);
 }
 
 /* Notifications */
