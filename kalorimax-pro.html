@@ -147,29 +147,30 @@
             width: 100%; 
             padding: 14px 16px; 
             border: 2px solid var(--border); 
-            border-radius: 12px;
+            border-radius: 12px; 
             font-size: 1rem; 
-            transition: all 0.2s; 
+            margin-bottom: 16px; 
             background: var(--card-bg); 
-            color: var(--text);
-            font-family: inherit;
+            color: var(--text); 
+            font-family: inherit; 
             -webkit-appearance: none;
             appearance: none;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            box-shadow: none;
+            transition: all 0.2s ease;
         }
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
-        }
+        
         .search-input::placeholder {
             color: var(--text-secondary);
             opacity: 0.7;
         }
+        
         .search-input:focus { 
             outline: none; 
             border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
             background: var(--card-hover);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
         }
         .search-results { 
             max-height: 300px; 
@@ -204,6 +205,28 @@
             margin-bottom: 15px; transition: border-color 0.3s; background: #2a2a3a; color: #e6e6e6;
         }
         .input-field:focus { outline: none; border-color: #667eea; }
+        .button { 
+            background: var(--primary); 
+            color: white; 
+            border: none; 
+            padding: 14px 20px; 
+            border-radius: 12px; 
+            font-weight: 600; 
+            cursor: pointer; 
+            width: 100%; 
+            font-size: 1rem; 
+            transition: all 0.2s; 
+            margin: 8px 0 0;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .button:active {
+            transform: scale(0.98);
+            background: var(--primary-dark);
+        }
         .btn { 
             padding: 14px 20px; 
             border: none; 
@@ -253,13 +276,16 @@
             background: var(--card-bg); 
             border: 1px solid var(--border); 
             border-radius: 14px; 
-            padding: 16px;
-            margin-bottom: 12px; 
+            padding: 14px 16px;
+            margin-bottom: 10px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center;
             transition: all 0.2s;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
         }
+        
         .food-item:active {
             background: var(--card-hover);
             transform: scale(0.99);
@@ -319,42 +345,49 @@
             bottom: 0;
             left: 0;
             right: 0;
-            background: var(--card-bg);
+            background: rgba(42, 42, 58, 0.95);
             border-top: 1px solid var(--border);
             display: flex;
-            justify-content: space-around;
-            padding: 8px 0;
+            justify-content: space-between;
+            padding: 6px 8px;
             z-index: 1000;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            padding-bottom: calc(8px + env(safe-area-inset-bottom));
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+            padding-bottom: calc(6px + env(safe-area-inset-bottom));
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.2);
+            box-sizing: border-box;
         }
         
         .nav-item {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             color: var(--text-secondary);
             text-decoration: none;
-            font-size: 0.7rem;
-            padding: 8px 12px;
-            border-radius: 12px;
+            font-size: 0.65rem;
+            padding: 6px 4px;
+            margin: 0 2px;
+            border-radius: 10px;
             transition: all 0.2s ease;
             opacity: 0.7;
             flex: 1;
-            max-width: 25%;
+            min-width: 0;
             text-align: center;
+            position: relative;
+            overflow: hidden;
         }
         
         .nav-item i {
-            font-size: 1.4rem;
-            margin-bottom: 4px;
-            transition: transform 0.2s ease;
-            display: inline-block;
-            width: 1.5em;
-            height: 1.5em;
-            line-height: 1.5em;
+            font-size: 1.2rem;
+            margin-bottom: 2px;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            line-height: 1;
         }
         
         .nav-item span {
@@ -367,7 +400,8 @@
         .nav-item.active {
             color: var(--primary);
             opacity: 1;
-            transform: translateY(-4px);
+            transform: translateY(-2px);
+            background: rgba(102, 126, 234, 0.15);
         }
         
         .nav-item.active i {
@@ -375,13 +409,15 @@
         }
         
         .nav-item:active {
-            transform: scale(0.95);
-            background: rgba(255, 255, 255, 0.05);
+            transform: scale(0.95) translateY(0);
+            background: rgba(255, 255, 255, 0.1);
         }
         
         /* Bottom Navigation Spacing */
         .container {
-            padding-bottom: 80px; /* Space for bottom nav */
+            padding-bottom: 70px; /* Space for bottom nav */
+            padding-left: 12px;
+            padding-right: 12px;
         }
         
         /* Responsive Adjustments */
