@@ -18,24 +18,12 @@
             --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
             --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --bg-color: #1a1a2e;
+            --card-color: #16213e;
+            --text-color: #e94560;
             --dark-bg: #1a1a2e;
             --dark-card: #16213e;
             --dark-text: #e94560;
-            --light-bg: #f8f9fa;
-            --light-card: rgba(255, 255, 255, 0.95);
-            --light-text: #333;
-        }
-
-        [data-theme="dark"] {
-            --bg-color: var(--dark-bg);
-            --card-color: var(--dark-card);
-            --text-color: var(--dark-text);
-        }
-
-        [data-theme="light"] {
-            --bg-color: var(--light-bg);
-            --card-color: var(--light-card);
-            --text-color: var(--light-text);
         }
 
         body {
@@ -72,26 +60,6 @@
             font-size: 1.1rem;
             opacity: 0.9;
             margin-bottom: 20px;
-        }
-
-        /* THEME TOGGLE */
-        .theme-toggle {
-            position: absolute;
-            top: 0;
-            right: 0;
-            background: rgba(255,255,255,0.2);
-            border: none;
-            padding: 10px 15px;
-            border-radius: 25px;
-            color: white;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
-        }
-
-        .theme-toggle:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.05);
         }
 
         /* TAB NAVIGATION */
@@ -564,11 +532,11 @@
         }
     </style>
 </head>
-<body data-theme="light">
+<body data-theme="dark">
     <div class="container">
         <!-- HEADER -->
         <header class="header">
-            <button class="theme-toggle" onclick="toggleTheme()">🌙 / ☀️</button>
+
             <h1>🌟 KaloriMax Pro 2.1</h1>
             <p>Ultimate Beslenme Takibi - 3000+ Besin | Grafikler | Geçmiş Takibi | Pro Özellikler</p>
         </header>
@@ -1637,7 +1605,46 @@
             document.querySelectorAll('.category-tab').forEach(tab => tab.classList.remove('active'));
             document.querySelector('.category-tab').classList.add('active');
             
-            filterFavorites('all');
+            let filteredFoods = foodDatabase.filter(food => favorites.includes(food.name));
+            
+            if (categoryFilter) {
+                filteredFoods = filteredFoods.filter(food => food.category === categoryFilter);
+            }
+            
+            displayFavoritesFiltered(filteredFoods);
+        }
+
+        function displayFavoritesFiltered(foods) {
+            const favDiv = document.getElementById('favoritesList');
+            
+            if (foods.length === 0) {
+                favDiv.innerHTML = '<p>Bu kategoride favori besin bulunamadı. 🔍</p>';
+                return;
+            }
+            
+            favDiv.innerHTML = '';
+            
+            foods.forEach(food => {
+                const foodDiv = document.createElement('div');
+                foodDiv.className = 'card';
+                foodDiv.style.margin = '10px 0';
+                
+                // Mixed food formatting
+                const ingredientsText = food.ingredients ? 
+                    `<br><small style="color: #4facfe;">🔄 Karışık: ${food.ingredients.map(ing => `${ing.name} (${ing.amount}g)`).join(', ')}</small>` : '';
+                
+                foodDiv.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${food.name}</strong> (${food.amount}g)
+                            <br><small>${food.time} | ${food.calories} kcal | P:${food.protein}g | K:${food.carbs}g | Y:${food.fat}g</small>
+                            ${ingredientsText}
+                        </div>
+                        <button onclick="removeFood(${dailyFoods.indexOf(food)})" style="background: #ff6b6b; border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">🗑️</button>
+                    </div>
+                `;
+                favDiv.appendChild(foodDiv);
+            });
         }
 
         // DATE SELECTOR FUNCTIONS
@@ -1865,12 +1872,20 @@
                 const foodDiv = document.createElement('div');
                 foodDiv.className = 'card';
                 foodDiv.style.margin = '10px 0';
+                
+                // Mixed food formatting
+                const ingredientsText = food.ingredients ? 
+                    `<br><small style="color: #4facfe;">🔄 Karışık: ${food.ingredients.map(ing => `${ing.name} (${ing.amount}g)`).join(', ')}</small>` : '';
+                
                 foodDiv.innerHTML = `
-                    <h4>${food.name} ⭐</h4>
-                    <p><strong>${food.category}</strong> | Kalori: ${food.calories} | Protein: ${food.protein}g | Karb: ${food.carbs}g | Yağ: ${food.fat}g</p>
-                    <input type="number" id="amount-${food.name.replace(/\s+/g, '')}" placeholder="Gram" min="1" value="100" style="width: 80px; padding: 5px; margin: 10px 5px;">
-                    <button class="btn" onclick="addFood('${food.name}')">Ekle</button>
-                    <button class="btn" onclick="toggleFavorite('${food.name}')" style="background: #ff6b6b;">❤️ Kaldır</button>
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${food.name}</strong> (${food.amount}g)
+                            <br><small>${food.time} | ${food.calories} kcal | P:${food.protein}g | K:${food.carbs}g | Y:${food.fat}g</small>
+                            ${ingredientsText}
+                        </div>
+                        <button onclick="removeFood(${dailyFoods.indexOf(food)})" style="background: #ff6b6b; border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer;">🗑️</button>
+                    </div>
                 `;
                 favDiv.appendChild(foodDiv);
             });
@@ -1977,17 +1992,6 @@
             saveData();
             
             alert(`✅ Hedefler hesaplandı!\nKalori: ${targets.calories}\nProtein: ${targets.protein}g\nKarbonhidrat: ${targets.carbs}g\nYağ: ${targets.fat}g`);
-        }
-
-
-
-        // THEME FUNCTIONS
-        function toggleTheme() {
-            const body = document.body;
-            const currentTheme = body.getAttribute('data-theme');
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            body.setAttribute('data-theme', newTheme);
-            saveData();
         }
 
         // DATA FUNCTIONS
