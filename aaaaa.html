@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KaloriMax - Kalori Takip Uygulaması</title>
+    <meta name="description" content="Günlük kalori ve makro besin takibi yapın, sağlıklı yaşam hedeflerinize ulaşın.">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Basit çalışan JavaScript -->
+    <script>
+        // Uygulama durumu
+        const state = {
+            foods: [],
+            dailyCalories: 0,
+            macros: { protein: 0, carbs: 0, fat: 0 }
+        };
+
+        // Verileri localStorage'a kaydet
+        function saveData() {
+            try {
+                const dataToSave = {
+                    foods: state.foods,
+                    dailyCalories: state.dailyCalories,
+                    macros: state.macros,
+                    lastSaved: new Date().toISOString()
+                };
+                localStorage.setItem('kalorimax-data', JSON.stringify(dataToSave));
+                console.log('💾 Veriler kaydedildi');
+            } catch (error) {
+                console.error('❌ Veri kaydetme hatası:', error);
+            }
+        }
+
+        // Verileri localStorage'dan yükle
+        function loadData() {
+            try {
+                const savedData = localStorage.getItem('kalorimax-data');
+                if (savedData) {
+                    const data = JSON.parse(savedData);
+                    state.foods = data.foods || [];
+                    state.dailyCalories = data.dailyCalories || 0;
+                    state.macros = data.macros || { protein: 0, carbs: 0, fat: 0 };
+                    console.log('📂 Veriler yüklendi:', data.foods.length + ' yemek');
+                    return true;
+                }
+            } catch (error) {
+                console.error('❌ Veri yükleme hatası:', error);
+            }
+            return false;
+        }
+
+        // Verileri temizle
+        function clearData() {
+            if (confirm('Tüm veriler silinecek. Emin misiniz?')) {
+                localStorage.removeItem('kalorimax-data');
+                state.foods = [];
+                state.dailyCalories = 0;
+                state.macros = { protein: 0, carbs: 0, fat: 0 };
+                updateUI();
+                showNotification('Tüm veriler temizlendi! 🗑️');
+            }
+        }
+
+        // Bildirim göster
+        function showNotification(message, type = 'success') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed; top: 20px; right: 20px; z-index: 1000;
+                background: ${type === 'error' ? '#f44336' : '#4CAF50'};
+                color: white; padding: 15px 20px; border-radius: 5px;
+                font-family: 'Poppins', sans-serif; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
+
+        // UI güncelle
+        function updateUI() {
+            // Kalori güncelle
+            const calorieElement = document.querySelector('.calorie-count');
+            if (calorieElement) calorieElement.textContent = state.dailyCalories;
+            
+            // Yemek sayısını güncelle
+            const countElement = document.querySelector('.food-count');
+            if (countElement) countElement.textContent = `${state.foods.length} öğün`;
+            
+            // Makro çubukları güncelle
+            ['protein', 'carbs', 'fat'].forEach(macro => {
+                const bar = document.querySelector(`.macro-${macro} .macro-fill`);
+                const amount = document.querySelector(`.macro-${macro} .macro-amount`);
+                if (bar && amount) {
+                    const goal = macro === 'protein' ? 150 : macro === 'carbs' ? 200 : 65;
+                    const percentage = Math.min((state.macros[macro] / goal) * 100, 100);
+                    bar.style.width = percentage + '%';
+                    amount.textContent = state.macros[macro] + 'g';
+                }
+            });
+            
+            // Yemek listesini güncelle
+            const foodList = document.getElementById('food-items');
+            if (foodList) {
+                if (state.foods.length === 0) {
+                    foodList.innerHTML = `
+                        <li class="empty-state">
+                            <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTMgM0gyMVY1SDFWM1pNMSA5SDExVjExSDFWOVpNMSAxM0gxNVYxNUgxVjEzWk0xIDE3SDE5VjE5SDFWMTdaTTE5IDEzSDE3VjE5SDE5VjEzWk0xOSA5SDE3VjExSDE5VjlaTTE1IDlIMTNWMTFIMTVWOVpNMTEgOUg5VjExSDExVjlaTTcgOUg1VjExSDdWOVoiIGZpbGw9IiNiZGJkYmQiLz4KPC9zdmc+Cg==" alt="">
+                            <p>Henüz yemek eklenmedi</p>
+                        </li>
+                    `;
+                } else {
+                    foodList.innerHTML = state.foods.map(food => `
+                        <li class="food-item">
+                            <span class="food-name">${food.name}</span>
+                            <div class="food-macros">
+                                <span class="food-calories">${food.calories} kcal</span>
+                                <span class="food-protein">P: ${food.protein}g</span>
+                                <span class="food-carbs">K: ${food.carbs}g</span>
+                                <span class="food-fat">Y: ${food.fat}g</span>
+                            </div>
+                            <button class="delete-btn" onclick="deleteFood('${food.id}')">×</button>
+                        </li>
+                    `).join('');
+                }
+            }
+        }
+
+        // Yemek sil
+        function deleteFood(id) {
+            const index = state.foods.findIndex(f => f.id === id);
+            if (index > -1) {
+                const deleted = state.foods[index];
+                state.foods.splice(index, 1);
+                state.dailyCalories -= deleted.calories;
+                state.macros.protein -= deleted.protein;
+                state.macros.carbs -= deleted.carbs;
+                state.macros.fat -= deleted.fat;
+                
+                // Verileri kaydet
+                saveData();
+                
+                updateUI();
+                showNotification(`${deleted.name} silindi!`);
+            }
+        }
+
+        // Tarihi güncelle
+        function updateDate() {
+            const dateElement = document.querySelector('.date');
+            if (dateElement) {
+                const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+                dateElement.textContent = new Date().toLocaleDateString('tr-TR', options);
+            }
+        }
+
+        // DOM yüklendiğinde
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 KaloriMax başlatılıyor...');
+            
+            // Önceki verileri yükle
+            const hasData = loadData();
+            if (hasData) {
+                showNotification(`Önceki verileriniz yüklendi! 📂`, 'success');
+            }
+            
+            // Tarihi güncelle
+            updateDate();
+            
+            // Form event listener
+            const form = document.getElementById('food-form');
+            if (form) {
+                console.log('✅ Form bulundu');
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    console.log('📝 Form gönderildi');
+                    
+                    const name = document.getElementById('food-name').value.trim();
+                    const calories = parseInt(document.getElementById('food-calories').value) || 0;
+                    const protein = parseInt(document.getElementById('food-protein').value) || 0;
+                    const carbs = parseInt(document.getElementById('food-carbs').value) || 0;
+                    const fat = parseInt(document.getElementById('food-fat').value) || 0;
+                    
+                    if (!name) {
+                        showNotification('Lütfen yemek adı girin!', 'error');
+                        return;
+                    }
+                    
+                    if (calories <= 0) {
+                        showNotification('Lütfen geçerli kalori değeri girin!', 'error');
+                        return;
+                    }
+                    
+                    const food = {
+                        id: Date.now().toString(),
+                        name, calories, protein, carbs, fat
+                    };
+                    
+                    state.foods.push(food);
+                    state.dailyCalories += calories;
+                    state.macros.protein += protein;
+                    state.macros.carbs += carbs;
+                    state.macros.fat += fat;
+                    
+                    // Verileri kaydet
+                    saveData();
+                    
+                    updateUI();
+                    form.reset();
+                    document.getElementById('food-name').focus();
+                    showNotification(`${name} eklendi! 🎉`);
+                    
+                    console.log('✅ Yemek eklendi:', food);
+                });
+            } else {
+                console.error('❌ Form bulunamadı!');
+            }
+            
+            // İlk güncelleme
+            updateUI();
+            showNotification('Uygulama hazır! 🚀');
+        });
+
+        // Test fonksiyonları
+        function testSave() {
+            saveData();
+            showNotification('Test: Veriler kaydedildi! 💾');
+        }
+        
+        function testLoad() {
+            const loaded = loadData();
+            if (loaded) {
+                updateUI();
+                showNotification('Test: Veriler yüklendi! 📂');
+            } else {
+                showNotification('Test: Kaydedilmiş veri bulunamadı! ❌', 'error');
+            }
+        }
+        
+        function showStorage() {
+            const data = localStorage.getItem('kalorimax-data');
+            if (data) {
+                const parsed = JSON.parse(data);
+                console.log('💾 localStorage verisi:', parsed);
+                alert(`Storage'da ${parsed.foods.length} yemek var!\n\nKonsol'u açın (F12) detayları görmek için.`);
+            } else {
+                alert('Storage boş! ❌');
+                console.log('❌ localStorage boş');
+            }
+        }
+
+        // Global erişim
+        window.deleteFood = deleteFood;
+        window.appState = state;
+        window.testSave = testSave;
+        window.testLoad = testLoad;
+        window.showStorage = showStorage;
+        window.clearData = clearData;
+    </script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📊</text></svg>">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>KaloriMax</h1>
+            <div class="date">5 Haziran 2025</div>
+        </header>
+
+        <main>
+            <section class="calorie-summary">
+                <div class="summary-card">
+                    <h3>Günlük Kalori</h3>
+                    <div class="calorie-count">0</div>
+                    <div class="calorie-goal">Hedef: 2000 kcal</div>
+                </div>
+                
+                <div class="macros">
+                    <div class="macro macro-protein">
+                        <span class="macro-name">Protein</span>
+                        <div class="macro-bar">
+                            <div class="macro-fill" style="width: 0%;"></div>
+                        </div>
+                        <span class="macro-amount">0g</span>
+                    </div>
+                    
+                    <div class="macro macro-carbs">
+                        <span class="macro-name">Karbonhidrat</span>
+                        <div class="macro-bar">
+                            <div class="macro-fill" style="width: 0%;"></div>
+                        </div>
+                        <span class="macro-amount">0g</span>
+                    </div>
+                    
+                    <div class="macro macro-fat">
+                        <span class="macro-name">Yağ</span>
+                        <div class="macro-bar">
+                            <div class="macro-fill" style="width: 0%;"></div>
+                        </div>
+                        <span class="macro-amount">0g</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="add-food">
+                <h2>Yemek Ekle</h2>
+                <form class="food-input" id="food-form">
+                    <input 
+                        type="text" 
+                        id="food-name" 
+                        placeholder="Yemek adı" 
+                        required
+                        aria-label="Yemek adı"
+                    >
+                    <input 
+                        type="number" 
+                        id="food-calories" 
+                        placeholder="Kalori (kcal)" 
+                        min="0"
+                        required
+                        aria-label="Kalori miktarı"
+                    >
+                    <div class="macro-inputs">
+                        <input 
+                            type="number" 
+                            id="food-protein" 
+                            placeholder="Protein (g)" 
+                            min="0"
+                            aria-label="Protein miktarı"
+                        >
+                        <input 
+                            type="number" 
+                            id="food-carbs" 
+                            placeholder="Karbonhidrat (g)" 
+                            min="0"
+                            aria-label="Karbonhidrat miktarı"
+                        >
+                        <input 
+                            type="number" 
+                            id="food-fat" 
+                            placeholder="Yağ (g)" 
+                            min="0"
+                            aria-label="Yağ miktarı"
+                        >
+                    </div>
+                    <button type="submit" class="add-button">Ekle</button>
+                </form>
+                
+                <!-- Test butonları -->
+                <div style="margin-top: 15px; display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button onclick="testSave()" style="background: #2196F3; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">💾 Test Kaydet</button>
+                    <button onclick="testLoad()" style="background: #FF9800; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">📂 Test Yükle</button>
+                    <button onclick="showStorage()" style="background: #9C27B0; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">🔍 Storage Kontrol</button>
+                    <button onclick="clearData()" style="background: #f44336; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 12px;">🗑️ Temizle</button>
+                </div>
+            </section>
+
+
+            <section class="food-list">
+                <div class="food-list-header">
+                    <h2>Bugünkü Öğünler</h2>
+                    <span class="food-count">0 öğün</span>
+                </div>
+                <ul id="food-items">
+                    <li class="empty-state">
+                        <img src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjQiIGhlaWdodD0iNjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTMgM0gyMVY1SDFWM1pNMSA5SDExVjExSDFWOVpNMSAxM0gxNVYxNUgxVjEzWk0xIDE3SDE5VjE5SDFWMTdaTTE5IDEzSDE3VjE5SDE5VjEzWk0xOSA5SDE3VjExSDE5VjlaTTE1IDlIMTNWMTFIMTVWOVpNMTEgOUg5VjExSDExVjlaTTcgOUg1VjExSDdWOVoiIGZpbGw9IiNiZGJkYmQiLz4KPC9zdmc+Cg==" alt="">
+                        <p>Henüz yemek eklenmedi</p>
+                    </li>
+                </ul>
+            </section>
+        </main>
+    </div>
+</body>
+</html>
