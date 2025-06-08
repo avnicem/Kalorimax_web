@@ -324,28 +324,62 @@
         /* DATE SELECTOR */
         .date-selector {
             display: flex;
-            align-items: center;
-            gap: 8px;
+            flex-direction: column;
+            gap: 10px;
             margin-bottom: 20px;
-            flex-wrap: wrap;
-            padding: 10px 0;
             width: 100%;
         }
         
+        .date-picker-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 8px;
+            width: 100%;
+        }
+        
+        .today-btn {
+            background: #4a6cf7;
+            font-weight: 600;
+            padding: 10px 20px;
+            margin-left: auto;
+        }
+        
+        .nav-btn {
+            flex: 1;
+            text-align: center;
+        }
+        
         @media (max-width: 480px) {
-            .date-selector {
+            .date-picker-row {
+                flex-wrap: wrap;
                 gap: 6px;
             }
             
-            .date-selector button {
-                padding: 8px 10px;
-                font-size: 0.85rem;
-                flex: 1 1 calc(50% - 10px);
+            .date-picker-row label {
+                width: 100%;
             }
             
-            .date-selector input[type="date"] {
-                width: 100%;
-                margin-bottom: 8px;
+            .date-picker-row input[type="date"] {
+                flex: 1;
+                min-width: 0;
+                margin-bottom: 0;
+            }
+            
+            .today-btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+                white-space: nowrap;
+            }
+            
+            .nav-btn {
+                padding: 8px 5px;
+                font-size: 0.85rem;
             }
         }
 
@@ -583,11 +617,15 @@
         <div id="dashboard" class="tab-content active">
             <!-- DATE SELECTOR -->
             <div class="date-selector">
-                <label>📅 Tarih Seç:</label>
-                <input type="date" id="currentDate" onchange="loadDateData()">
-                <button class="btn" onclick="goToToday()">Bugün</button>
-                <button class="btn" onclick="previousDay()">◀ Önceki</button>
-                <button class="btn" onclick="nextDay()">Sonraki ▶</button>
+                <div class="date-picker-row">
+                    <label>📅 Tarih Seç:</label>
+                    <input type="date" id="currentDate" onchange="loadDateData()">
+                    <button class="btn today-btn" onclick="goToToday()">Bugün</button>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn nav-btn" onclick="previousDay()">◀ Önceki</button>
+                    <button class="btn nav-btn" onclick="nextDay()">Sonraki ▶</button>
+                </div>
             </div>
 
             <div class="dashboard">
