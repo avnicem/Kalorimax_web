@@ -44,7 +44,7 @@ const updateMacroBar = (macro, current, goal) => {
 };
 
 // Tarihi güncelle
-const updateDate = () => {
+const updateDate = (date = new Date()) => {
     const options = { 
         year: 'numeric', 
         month: 'long', 

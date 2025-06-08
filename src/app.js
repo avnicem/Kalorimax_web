@@ -340,9 +340,23 @@ function showUndoNotification(food, originalIndex) {
     }, 5000);
 }
 
+// Bileşenleri içe aktar
+import DateSelector from './components/DateSelector.js';
+
 // Uygulamayı başlat
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM yüklendi, uygulama başlatılıyor...');
+    
+    // Tarih seçiciyi başlat
+    const dateSelector = new DateSelector();
+    
+    // Tarih değişikliklerini dinle
+    document.addEventListener('dateChanged', (e) => {
+        console.log('Tarih değişti:', e.detail.date);
+        // Burada tarih değiştiğinde yapılacak işlemler
+        // Örneğin, yeni tarihe ait verileri yükle
+    });
+    
     initializeApp().catch(error => {
         console.error('Uygulama başlatılırken kritik hata:', error);
         showNotification('Uygulama başlatılamadı. Lütfen sayfayı yenileyin.', 'error');
