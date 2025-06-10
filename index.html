@@ -164,22 +164,54 @@
         }
 
         .btn {
-            padding: 15px 25px;
+            padding: 12px 24px;
             border: none;
-            border-radius: 25px;
-            background: var(--secondary-gradient);
+            border-radius: 10px;
+            background: var(--primary-color);
             color: white;
             cursor: pointer;
+            font-size: 15px;
             font-weight: 600;
             transition: all 0.3s ease;
             display: inline-flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
         }
-
+        
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+        
+        .btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .btn-primary {
+            background: #4f46e5;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        }
+        
+        .btn-primary:hover {
+            background: #4338ca;
+            background: linear-gradient(135deg, #4338ca 0%, #6d28d9 100%);
+        }
+
+        .tab-btn.active {
+            background: var(--secondary-gradient);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
         }
 
         /* WATER TRACKER */
@@ -587,57 +619,191 @@
                 font-size: 0.8rem;
             }
         }
-    </style>
-</head>
-<body data-theme="dark">
-    <div id="app">
-        <div class="container">
-            <!-- HEADER -->
-            <header class="header">
+        
+        /* FORM STYLES */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            color: #a0aec0;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 5px 0 0;
+            border: 1px solid #2a2a4a;
+            border-radius: 10px;
+            background: #1a1a2e;
+            color: #e6e6ff;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-control:focus {
+            border-color: #4f46e5;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+        }
+        
+        /* Gender Selection */
+        .gender-selection {
+            display: flex;
+            gap: 10px;
+            margin-top: 5px;
+        }
+        
+        .gender-option {
+            flex: 1;
+            position: relative;
+        }
+        
+        .gender-option input[type="radio"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        
+        .gender-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 10px;
+            background: #1a1a2e;
+            border: 2px solid #2a2a4a;
+            border-radius: 10px;
+            color: #a0aec0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 500;
+        }
+        
+        .gender-option input[type="radio"]:checked + .gender-btn {
+            background: #4f46e5;
+            border-color: #4f46e5;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(79, 70, 229, 0.2);
+        }
+        
+        /* Results Section */
+        #targetResults {
+            background: rgba(26, 26, 46, 0.8);
+            border-radius: 12px;
+            padding: 15px;
+            margin-top: 20px;
+            border: 1px solid #2a2a4a;
+        }
+        
+        #targetResults h4 {
+            margin: 0 0 15px 0;
+            color: #e2e8f0;
+            font-size: 16px;
+            border-bottom: 1px solid #2a2a4a;
+            padding-bottom: 10px;
+        }
+        
+        #targetResults p {
+            margin: 8px 0;
+            color: #a0aec0;
+            font-size: 14px;
+        }
+        
+        #targetResults strong {
+            color: #e2e8f0;
+            font-weight: 500;
+        }
+        
+        /* Notification Toast */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #4f46e5;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            max-width: 320px;
+        }
+        
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+        
+        select.form-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23a0aec0' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 15px center;
+            background-size: 12px;
+            padding-right: 40px;
+        }
+        
+        .category-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .category-tab {
+            padding: 8px 15px;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            border-radius: 20px;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+        
+        .category-tab.active {
+            background: var(--secondary-gradient);
+        }
+        
+        <div id="app">
+            <div class="container">
+                <!-- HEADER -->
+                <header class="header">
 
-                <h1>🌟 KaloriMax Pro 2.1</h1>
+                    <h1>🌟 KaloriMax Pro 2.1</h1>
+                    <p>Ultimate Beslenme Takibi - 3000+ Besin | Grafikler | Geçmiş Takibi | Pro Özellikler</p>
+                </header>
                 <p>Ultimate Beslenme Takibi - 3000+ Besin | Grafikler | Geçmiş Takibi | Pro Özellikler</p>
             </header>
-            <p>Ultimate Beslenme Takibi - 3000+ Besin | Grafikler | Geçmiş Takibi | Pro Özellikler</p>
-        </header>
 
-        <!-- WATER TRACKER -->
-        <div class="water-tracker">
-            <h3>💧 Su Takibi</h3>
-            <p>Günlük hedef: 8 bardak (2L)</p>
-            <div class="water-cups" id="waterCups">
-                <!-- Su bardakları dinamik oluşturulacak -->
-            </div>
-            <p><span id="waterCount">0</span> / 8 bardak içildi</p>
-        </div>
-
-        <!-- TAB NAVIGATION -->
-        <nav class="tab-navigation">
-            <button class="tab-btn active" onclick="openTab('dashboard')">📊 Dashboard</button>
-            <button class="tab-btn" onclick="openTab('search')">🔍 Besin Ekle</button>
-            <button class="tab-btn" onclick="openTab('favorites')">⭐ Favoriler</button>
-            <button class="tab-btn" onclick="openTab('profile')">👤 Profil</button>
-            <button class="tab-btn" onclick="openTab('settings')">⚙️ Ayarlar</button>
-        </nav>
-
-        <!-- DASHBOARD TAB -->
-        <div id="dashboard" class="tab-content active">
-            <!-- DATE SELECTOR -->
-            <div class="date-selector">
-                <div class="date-picker-row">
-                    <label>📅 Tarih Seç:</label>
-                    <input type="date" id="currentDate" onchange="loadDateData()">
-                    <button class="btn today-btn" onclick="goToToday()">Bugün</button>
+            <!-- WATER TRACKER -->
+            <div class="water-tracker">
+                <h3>💧 Su Takibi</h3>
+                <p>Günlük hedef: 8 bardak (2L)</p>
+                <div class="water-cups" id="waterCups">
+                    <!-- Su bardakları dinamik oluşturulacak -->
                 </div>
-                <div class="nav-buttons">
-                    <button class="btn nav-btn" onclick="previousDay()">◀ Önceki</button>
-                    <button class="btn nav-btn" onclick="nextDay()">Sonraki ▶</button>
-                </div>
+                <p><span id="waterCount">0</span> / 8 bardak içildi</p>
             </div>
 
-            <div class="dashboard">
-                <div class="stat-card">
-                    <div class="stat-number" id="totalCalories">0</div>
+            <!-- TAB NAVIGATION -->
+            <nav class="tab-navigation">
+                <button class="tab-btn active" onclick="openTab('dashboard')">📊 Dashboard</button>
+                <button class="tab-btn" onclick="openTab('search')">🔍 Besin Ekle</button>
+                <button class="tab-btn" onclick="openTab('favorites')">⭐ Favoriler</button>
+                <button class="tab-btn" onclick="openTab('profile')">👤 Profil</button>
+                <button class="tab-btn" onclick="openTab('settings')">⚙️ Ayarlar</button>
+            </nav>
                     <div class="stat-label">Kalori</div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="calorieProgress"></div>
@@ -810,12 +976,62 @@
         <div id="profile" class="tab-content">
             <div class="card">
                 <h3>👤 Kullanıcı Profili & Otomatik Hedef Hesaplama</h3>
-                <p><strong>Ad:</strong> <input type="text" id="userName" placeholder="Adınız" style="padding: 8px; border-radius: 8px; border: none; margin-left: 10px;"></p>
-                <p><strong>Yaş:</strong> <input type="number" id="userAge" placeholder="25" style="padding: 8px; border-radius: 8px; border: none; margin-left: 10px; width: 100px;"></p>
-                <p><strong>Boy (cm):</strong> <input type="number" id="userHeight" placeholder="175" style="padding: 8px; border-radius: 8px; border: none; margin-left: 10px; width: 100px;"></p>
-                <p><strong>Kilo (kg):</strong> <input type="number" id="userWeight" placeholder="70" style="padding: 8px; border-radius: 8px; border: none; margin-left: 10px; width: 100px;"></p>
-                <br>
-                <button class="btn" onclick="calculateTargets()">🎯 Hedefleri Hesapla</button>
+                <div class="form-group">
+                    <label for="userName">Ad:</label>
+                    <input type="text" id="userName" class="form-control" placeholder="Adınız">
+                </div>
+                
+                <div class="form-group">
+                    <label>Cinsiyet:</label>
+                    <div class="gender-selection">
+                        <label class="gender-option">
+                            <input type="radio" name="gender" value="male" checked>
+                            <div class="gender-btn">👨 Erkek</div>
+                        </label>
+                        <label class="gender-option">
+                            <input type="radio" name="gender" value="female">
+                            <div class="gender-btn">👩 Kadın</div>
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="userAge">Yaş:</label>
+                    <input type="number" id="userAge" class="form-control" placeholder="25" min="15" max="120">
+                </div>
+                
+                <div class="form-group">
+                    <label for="userHeight">Boy (cm):</label>
+                    <input type="number" id="userHeight" class="form-control" placeholder="175" min="100" max="250">
+                </div>
+                
+                <div class="form-group">
+                    <label for="userWeight">Kilo (kg):</label>
+                    <input type="number" id="userWeight" class="form-control" placeholder="70" min="30" max="300" step="0.1">
+                </div>
+                
+                <div class="form-group">
+                    <label for="activityLevel">Aktivite Seviyesi:</label>
+                    <select id="activityLevel" class="form-control">
+                        <option value="1.2">Hareketsiz (Az veya hiç egzersiz yapmıyorum)</option>
+                        <option value="1.375" selected>Hafif Aktif (Haftada 1-3 gün hafif egzersiz)</option>
+                        <option value="1.55">Orta Aktif (Haftada 3-5 gün orta şiddette egzersiz)</option>
+                        <option value="1.725">Çok Aktif (Haftada 6-7 gün yoğun egzersiz)</option>
+                        <option value="1.9">Aşırı Aktif (Çok ağır egzersiz veya fiziksel iş)</option>
+                    </select>
+                </div>
+                
+                <button class="btn btn-primary" onclick="calculateTargets()" style="width: 100%; margin-top: 15px;">
+                    🎯 Hedefleri Hesapla
+                </button>
+                
+                <div id="targetResults" style="margin-top: 20px; display: none;">
+                    <h4>Hedefleriniz:</h4>
+                    <p>Günlük Kalori İhtiyacı: <strong id="resultCalories">-</strong> kcal</p>
+                    <p>Protein: <strong id="resultProtein">-</strong> g</p>
+                    <p>Karbonhidrat: <strong id="resultCarbs">-</strong> g</p>
+                    <p>Yağ: <strong id="resultFat">-</strong> g</p>
+                </div>
             </div>
         </div>
 
@@ -2034,28 +2250,66 @@
         function calculateTargets() {
             const age = parseInt(document.getElementById('userAge').value) || 25;
             const height = parseInt(document.getElementById('userHeight').value) || 175;
-            const weight = parseInt(document.getElementById('userWeight').value) || 70;
+            const weight = parseFloat(document.getElementById('userWeight').value) || 70;
+            const gender = document.querySelector('input[name="gender"]:checked')?.value || 'male';
+            const activityLevel = parseFloat(document.getElementById('activityLevel').value) || 1.55;
             
-            // Harris-Benedict formülü (erkek)
-            const bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
-            const tdee = bmr * 1.55; // Orta aktif
+            // Harris-Benedict formülü (cinsiyete göre)
+            let bmr;
+            if (gender === 'male') {
+                bmr = 88.362 + (13.397 * weight) + (4.799 * height) - (5.677 * age);
+            } else {
+                bmr = 447.593 + (9.247 * weight) + (3.098 * height) - (4.330 * age);
+            }
             
+            // Aktivite seviyesine göre kalori ihtiyacı
+            const tdee = Math.round(bmr * activityLevel);
+            
+            // Makro hedefleri
+            const protein = Math.round(weight * 2.2); // 2.2g/kg
+            const fat = Math.round((tdee * 0.25) / 9); // %25 yağ
+            const carbs = Math.round((tdee - (protein * 4) - (fat * 9)) / 4); // Kalan kaloriler karbonhidratlardan
+            
+            // Sonuçları kaydet ve göster
             targets = {
-                calories: Math.round(tdee),
-                protein: Math.round(weight * 2.2), // 2.2g/kg
-                carbs: Math.round(tdee * 0.45 / 4), // %45 karbonhidrat
-                fat: Math.round(tdee * 0.25 / 9) // %25 yağ
+                calories: tdee,
+                protein: protein,
+                carbs: carbs,
+                fat: fat
             };
             
-            document.getElementById('calorieTarget').textContent = targets.calories;
-            document.getElementById('proteinTarget').textContent = targets.protein;
-            document.getElementById('carbTarget').textContent = targets.carbs;
-            document.getElementById('fatTarget').textContent = targets.fat;
+            // UI güncelleme
+            document.getElementById('calorieTarget').textContent = tdee;
+            document.getElementById('proteinTarget').textContent = protein;
+            document.getElementById('carbTarget').textContent = carbs;
+            document.getElementById('fatTarget').textContent = fat;
             
+            // Sonuçları göster
+            document.getElementById('resultCalories').textContent = tdee;
+            document.getElementById('resultProtein').textContent = protein + 'g (' + Math.round((protein * 4 / tdee) * 100) + '%)';
+            document.getElementById('resultCarbs').textContent = carbs + 'g (' + Math.round((carbs * 4 / tdee) * 100) + '%)';
+            document.getElementById('resultFat').textContent = fat + 'g (' + Math.round((fat * 9 / tdee) * 100) + '%)';
+            document.getElementById('targetResults').style.display = 'block';
+            
+            // Kaydet ve güncelle
             updateStats();
             saveData();
             
-            alert(`✅ Hedefler hesaplandı!\nKalori: ${targets.calories}\nProtein: ${targets.protein}g\nKarbonhidrat: ${targets.carbs}g\nYağ: ${targets.fat}g`);
+            // Toast bildirimi göster
+            showNotification('Hedefler başarıyla hesaplandı!', 'success');
+        }
+        
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Remove notification after 5 seconds
+            setTimeout(() => {
+                notification.classList.add('fade-out');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
         }
 
         // DATA FUNCTIONS
