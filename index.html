@@ -18,17 +18,50 @@
             --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
             --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --bg-color: #1a1a2e;
-            --card-color: #16213e;
-            --text-color: #e94560;
+            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            
+            /* Açık tema değişkenleri */
+            --light-bg: #f8f9fa;
+            --light-card: rgba(255, 255, 255, 0.95);
+            --light-text: #333;
+            --light-border: rgba(0, 0, 0, 0.1);
+            
+            /* Koyu tema değişkenleri */
+            --dark-bg: #1a1a2e;
+            --dark-card: #16213e;
+            --dark-text: #e94560;
+            --dark-border: rgba(255, 255, 255, 0.1);
+            
+            /* Varsayılan tema (koyu) */
+            --bg-color: var(--dark-bg);
+            --card-color: var(--dark-card);
+            --text-color: var(--dark-text);
+            --border-color: var(--dark-border);
+        }
+
+        /* Açık tema */
+        [data-theme="light"] {
+            --bg-color: var(--light-bg);
+            --card-color: var(--light-card);
+            --text-color: var(--light-text);
+            --border-color: var(--light-border);
+        }
+
+        /* Koyu tema */
+        [data-theme="dark"] {
+            --bg-color: var(--dark-bg);
+            --card-color: var(--dark-card);
+            --text-color: var(--dark-text);
+            --border-color: var(--dark-border);
         }
 
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg-color);
-            color: white;
+            color: var(--text-color);
             min-height: 100vh;
             padding: 20px;
+            transition: all 0.3s ease;
         }
 
         .container {
@@ -36,9 +69,11 @@
             margin: 0 auto;
         }
 
+        /* HEADER */
         .header {
             text-align: center;
             margin-bottom: 40px;
+            position: relative;
         }
 
         .header h1 {
@@ -55,12 +90,50 @@
             opacity: 0.8;
         }
 
+        /* TEMA TOGGLE BUTONU */
+        .theme-toggle {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(255,255,255,0.2);
+            border: none;
+            padding: 12px 16px;
+            border-radius: 25px;
+            color: white;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.05);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        [data-theme="light"] .theme-toggle {
+            background: rgba(0,0,0,0.1);
+            color: #333;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            background: rgba(0,0,0,0.2);
+        }
+
         .card {
             background: var(--card-color);
             padding: 30px;
             border-radius: 20px;
             margin-bottom: 30px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        [data-theme="light"] .card {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         }
 
         .dashboard {
@@ -75,7 +148,14 @@
             padding: 25px;
             border-radius: 15px;
             text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
         }
 
         .stat-number {
@@ -97,6 +177,10 @@
             margin-top: 10px;
         }
 
+        [data-theme="light"] .progress-bar {
+            background: rgba(0,0,0,0.1);
+        }
+
         .progress-fill {
             height: 100%;
             background: var(--success-gradient);
@@ -114,13 +198,38 @@
             border: none;
             border-radius: 10px;
             background: rgba(255,255,255,0.1);
-            color: white;
+            color: var(--text-color);
             font-size: 16px;
             margin-bottom: 20px;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-color);
+        }
+
+        [data-theme="light"] .search-input {
+            background: rgba(0,0,0,0.05);
+            color: var(--text-color);
+        }
+
+        .search-input:focus {
+            outline: none;
+            background: rgba(255,255,255,0.15);
+            border-color: rgba(255,255,255,0.3);
+            box-shadow: 0 0 20px rgba(255,255,255,0.1);
+        }
+
+        [data-theme="light"] .search-input:focus {
+            background: rgba(0,0,0,0.1);
+            border-color: rgba(0,0,0,0.2);
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
         }
 
         .search-input::placeholder {
             color: rgba(255,255,255,0.6);
+        }
+
+        [data-theme="light"] .search-input::placeholder {
+            color: rgba(0,0,0,0.5);
         }
 
         .food-list {
@@ -133,14 +242,24 @@
             background: rgba(255,255,255,0.05);
             padding: 15px;
             border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid var(--border-color);
             cursor: pointer;
             transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        [data-theme="light"] .food-item {
+            background: rgba(0,0,0,0.05);
         }
 
         .food-item:hover {
             background: rgba(255,255,255,0.1);
             transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        [data-theme="light"] .food-item:hover {
+            background: rgba(0,0,0,0.1);
         }
 
         .food-name {
@@ -181,6 +300,22 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            border: 1px solid var(--border-color);
+            transition: all 0.3s ease;
+        }
+
+        [data-theme="light"] .consumed-item {
+            background: rgba(0,0,0,0.05);
+        }
+
+        .consumed-item:hover {
+            background: rgba(255,255,255,0.08);
+            border-color: rgba(255,255,255,0.2);
+        }
+
+        [data-theme="light"] .consumed-item:hover {
+            background: rgba(0,0,0,0.08);
+            border-color: rgba(0,0,0,0.2);
         }
 
         .remove-btn {
@@ -190,8 +325,31 @@
             padding: 5px 10px;
             border-radius: 5px;
             cursor: pointer;
+            transition: all 0.3s ease;
         }
 
+        .remove-btn:hover {
+            background: #d63384;
+            transform: scale(1.05);
+        }
+
+        /* ANIMASYONLAR */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        /* RESPONSIVE */
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2rem;
@@ -204,14 +362,22 @@
             .food-list {
                 grid-template-columns: 1fr;
             }
+            
+            .theme-toggle {
+                position: relative;
+                margin-bottom: 20px;
+            }
         }
     </style>
 </head>
-<body data-theme="light">
+<body data-theme="dark">
     <div class="container">
         <div class="header">
-            <h1>KaloriMax Pro</h1>
-            <p>Akıllı Besin Takibi ve Kalori Hesaplama</p>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Tema Değiştir">
+                <span id="themeIcon">🌙</span>
+            </button>
+            <h1>🌟 KaloriMax Pro 2.0</h1>
+            <p>Ultimate Beslenme Takibi - 3000+ Besin | Markalar | Profesyonel Takip</p>
         </div>
 
         <div class="dashboard">
@@ -261,6 +427,36 @@
     </div>
 
     <script>
+        // TEMA YÖNETİMİ
+        let currentTheme = localStorage.getItem('theme') || 'dark';
+        
+        // Sayfa yüklendiğinde tema ayarla
+        document.addEventListener('DOMContentLoaded', function() {
+            setTheme(currentTheme);
+            initializeApp();
+        });
+
+        // Tema değiştirme fonksiyonu
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(currentTheme);
+            localStorage.setItem('theme', currentTheme);
+        }
+
+        // Tema ayarlama fonksiyonu
+        function setTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (theme === 'dark') {
+                themeIcon.textContent = '🌙';
+                themeIcon.title = 'Açık temaya geç';
+            } else {
+                themeIcon.textContent = '☀️';
+                themeIcon.title = 'Koyu temaya geç';
+            }
+        }
+
         // Basit besin veritabanı
         const foodDatabase = [
             { name: "Elma", calories: 52, protein: 0.3, carbs: 14, fat: 0.2, category: "Meyve" },
@@ -283,6 +479,34 @@
         const foodList = document.getElementById('foodList');
         const consumedList = document.getElementById('consumedList');
 
+        // Uygulamayı başlat
+        function initializeApp() {
+            // Kaydedilmiş verileri yükle
+            loadSavedData();
+            
+            // Besin listesini göster
+            displayFoodList(foodDatabase);
+            
+            // UI'ı güncelle
+            updateUI();
+            
+            // Event listener'ları ekle
+            foodSearch.addEventListener('input', searchFood);
+        }
+
+        // Kaydedilmiş verileri yükle
+        function loadSavedData() {
+            const savedItems = localStorage.getItem('consumedItems');
+            if (savedItems) {
+                consumedItems = JSON.parse(savedItems);
+            }
+        }
+
+        // Verileri kaydet
+        function saveData() {
+            localStorage.setItem('consumedItems', JSON.stringify(consumedItems));
+        }
+
         // Arama fonksiyonu
         function searchFood() {
             const query = foodSearch.value.toLowerCase();
@@ -295,7 +519,7 @@
         // Besin listesini göster
         function displayFoodList(foods) {
             foodList.innerHTML = foods.map(food => `
-                <div class="food-item" onclick="addFood('${food.name}')">
+                <div class="food-item fade-in" onclick="addFood('${food.name}')">
                     <div class="food-name">${food.name}</div>
                     <div class="food-nutrition">
                         ${food.calories} kcal | Protein: ${food.protein}g | Karbonhidrat: ${food.carbs}g | Yağ: ${food.fat}g
@@ -309,13 +533,24 @@
             const food = foodDatabase.find(f => f.name === foodName);
             if (food) {
                 consumedItems.push(food);
+                saveData();
                 updateUI();
+                
+                // Animasyon efekti
+                const foodItem = event.target.closest('.food-item');
+                if (foodItem) {
+                    foodItem.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        foodItem.style.transform = '';
+                    }, 150);
+                }
             }
         }
 
         // Besin kaldır
         function removeFood(index) {
             consumedItems.splice(index, 1);
+            saveData();
             updateUI();
         }
 
@@ -339,7 +574,7 @@
                 consumedList.innerHTML = '<p style="text-align: center; opacity: 0.6;">Henüz hiçbir şey tüketilmedi</p>';
             } else {
                 consumedList.innerHTML = consumedItems.map((item, index) => `
-                    <div class="consumed-item">
+                    <div class="consumed-item fade-in">
                         <div>
                             <div class="food-name">${item.name}</div>
                             <div class="food-nutrition">${item.calories} kcal</div>
@@ -359,15 +594,6 @@
                 fat: totals.fat + item.fat
             }), { calories: 0, protein: 0, carbs: 0, fat: 0 });
         }
-
-        // Event listeners
-        foodSearch.addEventListener('input', searchFood);
-
-        // Sayfa yüklendiğinde
-        document.addEventListener('DOMContentLoaded', () => {
-            displayFoodList(foodDatabase);
-            updateUI();
-        });
     </script>
 </body>
 </html> 
