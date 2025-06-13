@@ -22,6 +22,15 @@
             --light-bg: #f8f9fa;
             --light-card: rgba(255, 255, 255, 0.95);
             --light-text: #333;
+            --light-text-secondary: rgba(0, 0, 0, 0.6);
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --input-text: #333;
+            --input-placeholder: rgba(0, 0, 0, 0.6);
+            --border-color: rgba(0, 0, 0, 0.1);
+            --hover-bg: rgba(0, 0, 0, 0.05);
+            --header-text: #333;
+            --stat-text: #333;
+            --label-text: #333;
         }
 
         [data-theme="dark"] {
@@ -34,6 +43,15 @@
             --bg-color: var(--light-bg);
             --card-color: var(--light-card);
             --text-color: var(--light-text);
+            --text-secondary: var(--light-text-secondary);
+            --input-bg: rgba(255, 255, 255, 0.9);
+            --input-text: #333;
+            --input-placeholder: rgba(0, 0, 0, 0.6);
+            --border-color: rgba(0, 0, 0, 0.1);
+            --hover-bg: rgba(0, 0, 0, 0.05);
+            --header-text: #333;
+            --stat-text: #333;
+            --label-text: #333;
         }
 
         body {
@@ -60,15 +78,13 @@
         .header h1 {
             font-size: 2.5rem;
             margin-bottom: 10px;
-            background: linear-gradient(45deg, #fff, #f0f0f0);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+            color: var(--header-text, #333);
+            text-shadow: 0 4px 8px rgba(0,0,0,0.1);
         }
 
         .header p {
             font-size: 1.1rem;
-            opacity: 0.9;
+            color: var(--text-secondary, #666);
             margin-bottom: 20px;
         }
 
@@ -117,6 +133,7 @@
         .form-group label {
             margin-bottom: 5px;
             font-weight: 600;
+            color: var(--label-text, #333);
         }
 
         .form-group input, .form-group select {
@@ -130,6 +147,12 @@
 
         .form-group input::placeholder {
             color: rgba(255,255,255,0.7);
+        }
+
+        .form-group select option {
+            background: var(--input-bg);
+            color: var(--input-text);
+            padding: 10px;
         }
 
         /* TAB NAVIGATION */
@@ -147,7 +170,7 @@
             padding: 15px 20px;
             border: none;
             background: transparent;
-            color: white;
+            color: var(--text-color, white);
             border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -199,14 +222,12 @@
             font-size: 2.5rem;
             font-weight: bold;
             margin-bottom: 10px;
-            background: var(--secondary-gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            color: var(--stat-text, #333);
         }
 
         .stat-label {
             font-size: 1rem;
-            opacity: 0.8;
+            color: var(--text-secondary, #666);
             margin-bottom: 10px;
         }
 
@@ -268,6 +289,12 @@
             backdrop-filter: blur(10px);
         }
 
+        .category-filter option {
+            background: var(--input-bg);
+            color: var(--input-text);
+            padding: 10px;
+        }
+
         .btn {
             padding: 15px 25px;
             border: none;
@@ -319,6 +346,7 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            color: var(--text-color, #333);
         }
 
         .favorite-btn {
@@ -335,6 +363,7 @@
             gap: 8px;
             margin-bottom: 15px;
             font-size: 0.9rem;
+            color: var(--text-secondary, #666);
         }
 
         .amount-input {
@@ -369,13 +398,14 @@
 
         .history-details {
             flex: 1;
+            color: var(--text-color, #333);
         }
 
         .history-nutrition {
             display: flex;
             gap: 15px;
             font-size: 0.9rem;
-            opacity: 0.8;
+            color: var(--text-secondary, #666);
         }
 
         .delete-btn {
@@ -400,6 +430,16 @@
             border-radius: 20px;
             text-align: center;
             margin-bottom: 20px;
+        }
+
+        .water-tracker h3 {
+            color: white;
+            margin-bottom: 10px;
+        }
+
+        .water-tracker p {
+            color: white;
+            margin-bottom: 10px;
         }
 
         .water-cups {
@@ -495,6 +535,20 @@
             justify-content: center;
             flex-direction: column;
             color: var(--text-color, #333);
+        }
+
+        .macro-center strong {
+            color: var(--text-color, #333);
+        }
+
+        .macro-center small {
+            color: var(--text-secondary, #666);
+        }
+
+        /* HEADINGS */
+        h3 {
+            color: var(--header-text, #333);
+            margin-bottom: 15px;
         }
     </style>
 </head>
@@ -664,6 +718,12 @@
                         <option value="Meyve">🍎 Meyveler</option>
                         <option value="Sebze">🥬 Sebzeler</option>
                         <option value="Tahıl">🌾 Tahıllar</option>
+                        <option value="Baklagil">🫘 Baklagiller</option>
+                        <option value="Kuruyemiş">🥜 Kuruyemişler</option>
+                        <option value="Egzotik">🌍 Egzotik</option>
+                        <option value="Fast Food">🍔 Fast Food</option>
+                        <option value="Tatlı">🍰 Tatlılar</option>
+                        <option value="İçecek">🥤 İçecekler</option>
                         <option value="McDonald's">🍔 McDonald's</option>
                         <option value="KFC">🍗 KFC</option>
                         <option value="Nutella">🍫 Nutella</option>
@@ -913,7 +973,166 @@
             "kahve": { name: "Kahve", calories: 2, protein: 0.3, carbs: 0, fat: 0, category: "İçecek" },
             "ayran": { name: "Ayran", calories: 35, protein: 2, carbs: 3, fat: 1.5, category: "İçecek" },
             "meyve suyu": { name: "Meyve Suyu", calories: 54, protein: 0.5, carbs: 13, fat: 0.1, category: "İçecek" },
-            "limonata": { name: "Limonata", calories: 29, protein: 0.2, carbs: 7, fat: 0.1, category: "İçecek" }
+            "limonata": { name: "Limonata", calories: 29, protein: 0.2, carbs: 7, fat: 0.1, category: "İçecek" },
+            // --- YENİ EKLENENLER ---
+            // ET ÜRÜNLERİ (KESİMLER)
+            "dana antrikot": { name: "Dana Antrikot", calories: 250, protein: 26, carbs: 0, fat: 18, category: "Et" },
+            "dana bonfile": { name: "Dana Bonfile", calories: 200, protein: 28, carbs: 0, fat: 8, category: "Et" },
+            "dana trenç": { name: "Dana Trenç", calories: 220, protein: 25, carbs: 0, fat: 12, category: "Et" },
+            "dana pirzola": { name: "Dana Pirzola", calories: 280, protein: 24, carbs: 0, fat: 22, category: "Et" },
+            "kuzu pirzola": { name: "Kuzu Pirzola", calories: 320, protein: 22, carbs: 0, fat: 28, category: "Et" },
+            "tavuk baget": { name: "Tavuk Baget", calories: 180, protein: 22, carbs: 0, fat: 10, category: "Tavuk" },
+            "ördek göğsü": { name: "Ördek Göğsü", calories: 337, protein: 27, carbs: 0, fat: 25, category: "Et" },
+            "kaz eti": { name: "Kaz Eti", calories: 305, protein: 28, carbs: 0, fat: 22, category: "Et" },
+            // EGZOTİK
+            "manyok": { name: "Manyok", calories: 160, protein: 1.4, carbs: 38, fat: 0.3, category: "Egzotik" },
+            "taro": { name: "Taro", calories: 142, protein: 0.5, carbs: 34, fat: 0.1, category: "Egzotik" },
+            "durian": { name: "Durian", calories: 150, protein: 1.5, carbs: 27, fat: 5, category: "Egzotik" },
+            "jackfruit": { name: "Jackfruit", calories: 95, protein: 1.7, carbs: 23, fat: 0.6, category: "Egzotik" },
+            "kimchi": { name: "Kimchi", calories: 15, protein: 1.1, carbs: 2.4, fat: 0.5, category: "Egzotik" },
+            "ramen": { name: "Ramen", calories: 436, protein: 10, carbs: 60, fat: 17, category: "Egzotik" },
+            "pho": { name: "Pho", calories: 350, protein: 20, carbs: 50, fat: 8, category: "Egzotik" },
+            // SEBZELER
+            "avokado": { name: "Avokado", calories: 160, protein: 2, carbs: 9, fat: 15, category: "Meyve" },
+            "mango": { name: "Mango", calories: 60, protein: 0.8, carbs: 15, fat: 0.4, category: "Meyve" },
+            "nar": { name: "Nar", calories: 83, protein: 1.7, carbs: 19, fat: 1.2, category: "Meyve" },
+            "balkabağı": { name: "Balkabağı", calories: 26, protein: 1, carbs: 7, fat: 0.1, category: "Sebze" },
+            "yer elması": { name: "Yer Elması", calories: 73, protein: 2, carbs: 17, fat: 0.1, category: "Sebze" },
+            "kara lahana": { name: "Kara Lahana", calories: 32, protein: 2, carbs: 7, fat: 0.3, category: "Sebze" },
+            "enginar": { name: "Enginar", calories: 47, protein: 3.3, carbs: 11, fat: 0.2, category: "Sebze" },
+            // BAKLAGİL, TAHIL, KURUYEMİŞ
+            "nohut": { name: "Nohut", calories: 164, protein: 9, carbs: 27, fat: 2.6, category: "Baklagil" },
+            "mercimek": { name: "Mercimek", calories: 116, protein: 9, carbs: 20, fat: 0.4, category: "Baklagil" },
+            "fasulye": { name: "Fasulye", calories: 127, protein: 8.7, carbs: 22, fat: 0.5, category: "Baklagil" },
+            "chia tohumu": { name: "Chia Tohumu", calories: 486, protein: 16, carbs: 42, fat: 31, category: "Kuruyemiş" },
+            "keten tohumu": { name: "Keten Tohumu", calories: 534, protein: 18, carbs: 29, fat: 42, category: "Kuruyemiş" },
+            // FAST FOOD, TATLI, İÇECEK
+            "falafel": { name: "Falafel", calories: 333, protein: 13, carbs: 31, fat: 17, category: "Fast Food" },
+            "burrito": { name: "Burrito", calories: 206, protein: 6, carbs: 33, fat: 5, category: "Fast Food" },
+            "cheesecake": { name: "Cheesecake", calories: 321, protein: 5, carbs: 25, fat: 23, category: "Tatlı" },
+            "bubble tea": { name: "Bubble Tea", calories: 160, protein: 0.5, carbs: 38, fat: 0.2, category: "İçecek" },
+            // DAHA FAZLA SEBZE/MEYVE
+            "kivi": { name: "Kivi", calories: 41, protein: 0.8, carbs: 10, fat: 0.4, category: "Meyve" },
+            "papaya": { name: "Papaya", calories: 43, protein: 0.5, carbs: 11, fat: 0.3, category: "Meyve" },
+            "şalgam": { name: "Şalgam", calories: 20, protein: 0.7, carbs: 4.6, fat: 0.1, category: "Sebze" },
+            "bambus": { name: "Bambu Filizi", calories: 27, protein: 2.6, carbs: 5.2, fat: 0.3, category: "Sebze" },
+            "edamame": { name: "Edamame", calories: 121, protein: 11, carbs: 9, fat: 5, category: "Baklagil" },
+            "karnabahar": { name: "Karnabahar", calories: 25, protein: 1.9, carbs: 5, fat: 0.3, category: "Sebze" },
+            "brüksel lahanası": { name: "Brüksel Lahanası", calories: 43, protein: 3.4, carbs: 9, fat: 0.3, category: "Sebze" },
+            "hindistan cevizi": { name: "Hindistan Cevizi", calories: 354, protein: 3.3, carbs: 15, fat: 33, category: "Meyve" },
+            "böğürtlen": { name: "Böğürtlen", calories: 43, protein: 1.4, carbs: 10, fat: 0.5, category: "Meyve" },
+            "yaban mersini": { name: "Yaban Mersini", calories: 57, protein: 0.7, carbs: 14, fat: 0.3, category: "Meyve" },
+            "goji berry": { name: "Goji Berry", calories: 349, protein: 14, carbs: 77, fat: 0.4, category: "Meyve" },
+            "kavun": { name: "Kavun", calories: 34, protein: 0.8, carbs: 8, fat: 0.2, category: "Meyve" },
+            "karpuz": { name: "Karpuz", calories: 30, protein: 0.6, carbs: 8, fat: 0.2, category: "Meyve" },
+            "incir": { name: "İncir", calories: 74, protein: 0.8, carbs: 19, fat: 0.3, category: "Meyve" },
+            "hurma": { name: "Hurma", calories: 282, protein: 2.5, carbs: 75, fat: 0.4, category: "Meyve" },
+            "ayva": { name: "Ayva", calories: 57, protein: 0.4, carbs: 15, fat: 0.1, category: "Meyve" },
+            "erik": { name: "Erik", calories: 46, protein: 0.7, carbs: 11, fat: 0.3, category: "Meyve" },
+            "greyfurt": { name: "Greyfurt", calories: 42, protein: 0.8, carbs: 11, fat: 0.1, category: "Meyve" },
+            "mandalina": { name: "Mandalina", calories: 53, protein: 0.8, carbs: 13, fat: 0.3, category: "Meyve" },
+            "liçi": { name: "Liçi", calories: 66, protein: 0.8, carbs: 17, fat: 0.4, category: "Meyve" },
+            "ananas": { name: "Ananas", calories: 50, protein: 0.5, carbs: 13, fat: 0.1, category: "Meyve" },
+            // --- DAHA FAZLA ÇEŞİT EKLENDİ ---
+            // AV ETİ & EGZOTİK ETLER
+            "geyik eti": { name: "Geyik Eti", calories: 158, protein: 30, carbs: 0, fat: 3, category: "Et" },
+            "bıldırcın": { name: "Bıldırcın", calories: 134, protein: 22, carbs: 0, fat: 5, category: "Et" },
+            "tavşan eti": { name: "Tavşan Eti", calories: 173, protein: 33, carbs: 0, fat: 4, category: "Et" },
+            "deve eti": { name: "Deve Eti", calories: 108, protein: 20, carbs: 0, fat: 3, category: "Et" },
+            "deve kuşu eti": { name: "Deve Kuşu Eti", calories: 120, protein: 22, carbs: 0, fat: 3, category: "Et" },
+            // DENİZ ÜRÜNLERİ
+            "karides": { name: "Karides", calories: 99, protein: 24, carbs: 0.2, fat: 0.3, category: "Balık" },
+            "midye": { name: "Midye", calories: 86, protein: 12, carbs: 3, fat: 2.2, category: "Balık" },
+            "istiridye": { name: "İstiridye", calories: 68, protein: 7, carbs: 4, fat: 2, category: "Balık" },
+            "kalamar": { name: "Kalamar", calories: 92, protein: 15, carbs: 3, fat: 1, category: "Balık" },
+            "ahtapot": { name: "Ahtapot", calories: 82, protein: 15, carbs: 2.2, fat: 1, category: "Balık" },
+            "yengeç": { name: "Yengeç", calories: 87, protein: 18, carbs: 0, fat: 1, category: "Balık" },
+            "ıstakoz": { name: "Istakoz", calories: 89, protein: 19, carbs: 0, fat: 1, category: "Balık" },
+            "hamsi": { name: "Hamsi", calories: 131, protein: 20, carbs: 0, fat: 5, category: "Balık" },
+            "sardalya": { name: "Sardalya", calories: 208, protein: 25, carbs: 0, fat: 11, category: "Balık" },
+            "alabalık": { name: "Alabalık", calories: 148, protein: 20, carbs: 0, fat: 7, category: "Balık" },
+            "palamut": { name: "Palamut", calories: 168, protein: 23, carbs: 0, fat: 8, category: "Balık" },
+            // MANTARLAR
+            "kültür mantarı": { name: "Kültür Mantarı", calories: 22, protein: 3.1, carbs: 3.3, fat: 0.3, category: "Sebze" },
+            "shiitake": { name: "Shiitake Mantarı", calories: 34, protein: 2.2, carbs: 7, fat: 0.5, category: "Sebze" },
+            "portobello": { name: "Portobello Mantarı", calories: 29, protein: 2.1, carbs: 4.3, fat: 0.3, category: "Sebze" },
+            "istiridye mantarı": { name: "İstiridye Mantarı", calories: 33, protein: 3.3, carbs: 6, fat: 0.4, category: "Sebze" },
+            "trüf mantarı": { name: "Trüf Mantarı", calories: 31, protein: 2.5, carbs: 5.5, fat: 0.5, category: "Sebze" },
+            "enoki": { name: "Enoki Mantarı", calories: 37, protein: 2.7, carbs: 7.8, fat: 0.3, category: "Sebze" },
+            // DAHA FAZLA BAKLAGİL/TAHIL
+            "barbunya": { name: "Barbunya", calories: 127, protein: 8.4, carbs: 23, fat: 0.5, category: "Baklagil" },
+            "börülce": { name: "Börülce", calories: 44, protein: 2.8, carbs: 8.4, fat: 0.3, category: "Baklagil" },
+            "maş fasulyesi": { name: "Maş Fasulyesi", calories: 105, protein: 7, carbs: 19, fat: 0.4, category: "Baklagil" },
+            "siyah fasulye": { name: "Siyah Fasulye", calories: 132, protein: 8.9, carbs: 23, fat: 0.5, category: "Baklagil" },
+            "lima fasulyesi": { name: "Lima Fasulyesi", calories: 115, protein: 7.8, carbs: 20, fat: 0.4, category: "Baklagil" },
+            "kinoa": { name: "Kinoa", calories: 120, protein: 4.1, carbs: 21, fat: 1.9, category: "Tahıl" },
+            "amarant": { name: "Amarant", calories: 102, protein: 3.8, carbs: 19, fat: 1.6, category: "Tahıl" },
+            "teff": { name: "Teff", calories: 101, protein: 3.9, carbs: 20, fat: 0.6, category: "Tahıl" },
+            "darı": { name: "Darı", calories: 119, protein: 3.5, carbs: 23, fat: 1, category: "Tahıl" },
+            "sorgum": { name: "Sorgum", calories: 329, protein: 11, carbs: 72, fat: 3.3, category: "Tahıl" },
+            "arpa": { name: "Arpa", calories: 354, protein: 12, carbs: 73, fat: 2.3, category: "Tahıl" },
+            "karabuğday": { name: "Karabuğday", calories: 343, protein: 13, carbs: 71, fat: 3.4, category: "Tahıl" },
+            // DÜNYA EKMEKLERİ
+            "naan": { name: "Naan", calories: 310, protein: 9, carbs: 54, fat: 6, category: "Tahıl" },
+            "pita": { name: "Pita", calories: 275, protein: 9, carbs: 55, fat: 1, category: "Tahıl" },
+            "baget": { name: "Baget", calories: 270, protein: 8, carbs: 57, fat: 0.5, category: "Tahıl" },
+            "ciabatta": { name: "Ciabatta", calories: 250, protein: 8, carbs: 50, fat: 3, category: "Tahıl" },
+            "simit": { name: "Simit", calories: 272, protein: 9, carbs: 54, fat: 4.5, category: "Tahıl" },
+            "lavaş": { name: "Lavaş", calories: 260, protein: 7, carbs: 54, fat: 1, category: "Tahıl" },
+            "tortilla": { name: "Tortilla", calories: 218, protein: 6, carbs: 45, fat: 2.8, category: "Tahıl" },
+            "chapati": { name: "Chapati", calories: 297, protein: 8, carbs: 49, fat: 6, category: "Tahıl" },
+            "rye bread": { name: "Rye Bread", calories: 259, protein: 8.5, carbs: 48, fat: 3.3, category: "Tahıl" },
+            "focaccia": { name: "Focaccia", calories: 250, protein: 8, carbs: 45, fat: 7, category: "Tahıl" },
+            // TATLILAR
+            "mochi": { name: "Mochi", calories: 96, protein: 1, carbs: 22, fat: 0.2, category: "Tatlı" },
+            "profiterol": { name: "Profiterol", calories: 350, protein: 6, carbs: 35, fat: 22, category: "Tatlı" },
+            "ekler": { name: "Ekler", calories: 285, protein: 5, carbs: 30, fat: 16, category: "Tatlı" },
+            "panna cotta": { name: "Panna Cotta", calories: 223, protein: 4, carbs: 25, fat: 12, category: "Tatlı" },
+            "churros": { name: "Churros", calories: 447, protein: 4, carbs: 51, fat: 25, category: "Tatlı" },
+            "lokma": { name: "Lokma", calories: 350, protein: 5, carbs: 50, fat: 15, category: "Tatlı" },
+            "güllaç": { name: "Güllaç", calories: 120, protein: 2, carbs: 25, fat: 1, category: "Tatlı" },
+            "kadayıf": { name: "Kadayıf", calories: 350, protein: 5, carbs: 60, fat: 10, category: "Tatlı" },
+            "brownie": { name: "Brownie", calories: 466, protein: 5, carbs: 60, fat: 23, category: "Tatlı" },
+            "cupcake": { name: "Cupcake", calories: 305, protein: 3, carbs: 45, fat: 14, category: "Tatlı" },
+            "donut": { name: "Donut", calories: 452, protein: 4, carbs: 51, fat: 25, category: "Tatlı" },
+            // DAHA FAZLA İÇECEK
+            "kombucha": { name: "Kombucha", calories: 16, protein: 0.3, carbs: 4, fat: 0, category: "İçecek" },
+            "kefir": { name: "Kefir", calories: 41, protein: 3.3, carbs: 4.8, fat: 1, category: "İçecek" },
+            "boza": { name: "Boza", calories: 71, protein: 1, carbs: 16, fat: 0.2, category: "İçecek" },
+            "salep": { name: "Salep", calories: 77, protein: 2, carbs: 16, fat: 1, category: "İçecek" },
+            "matcha": { name: "Matcha", calories: 3, protein: 0.3, carbs: 0.4, fat: 0, category: "İçecek" },
+            "espresso": { name: "Espresso", calories: 2, protein: 0.3, carbs: 0, fat: 0, category: "İçecek" },
+            "americano": { name: "Americano", calories: 2, protein: 0.3, carbs: 0, fat: 0, category: "İçecek" },
+            "latte": { name: "Latte", calories: 54, protein: 2.7, carbs: 5, fat: 2, category: "İçecek" },
+            "smoothie": { name: "Smoothie", calories: 60, protein: 1, carbs: 14, fat: 0.5, category: "İçecek" },
+            "milkshake": { name: "Milkshake", calories: 120, protein: 3, carbs: 20, fat: 3, category: "İçecek" },
+            "şalgam suyu": { name: "Şalgam Suyu", calories: 20, protein: 0.7, carbs: 4.6, fat: 0.1, category: "İçecek" },
+            "demirhindi şerbeti": { name: "Demirhindi Şerbeti", calories: 80, protein: 0.5, carbs: 20, fat: 0.1, category: "İçecek" },
+            // DAHA FAZLA MEYVE
+            "rambutan": { name: "Rambutan", calories: 68, protein: 0.9, carbs: 16, fat: 0.2, category: "Meyve" },
+            "mangostan": { name: "Mangostan", calories: 73, protein: 0.4, carbs: 18, fat: 0.6, category: "Meyve" },
+            "yıldız meyvesi": { name: "Yıldız Meyvesi", calories: 31, protein: 1, carbs: 7, fat: 0.3, category: "Meyve" },
+            "guava": { name: "Guava", calories: 68, protein: 2.6, carbs: 14, fat: 1, category: "Meyve" },
+            "passion fruit": { name: "Passion Fruit", calories: 97, protein: 2.2, carbs: 23, fat: 0.4, category: "Meyve" },
+            "pitaya": { name: "Pitaya (Dragon Fruit)", calories: 60, protein: 1.2, carbs: 13, fat: 0.2, category: "Meyve" },
+            "feijoa": { name: "Feijoa", calories: 55, protein: 0.6, carbs: 13, fat: 0.6, category: "Meyve" },
+            "acerola": { name: "Acerola", calories: 32, protein: 0.4, carbs: 8, fat: 0.3, category: "Meyve" },
+            "aronia": { name: "Aronia", calories: 47, protein: 1.4, carbs: 9, fat: 0.5, category: "Meyve" },
+            "gooseberry": { name: "Gooseberry", calories: 44, protein: 1, carbs: 10, fat: 0.6, category: "Meyve" },
+            "kuşburnu": { name: "Kuşburnu", calories: 162, protein: 1.6, carbs: 38, fat: 0.3, category: "Meyve" },
+            "dut": { name: "Dut", calories: 43, protein: 1.4, carbs: 10, fat: 0.4, category: "Meyve" },
+            "hünnap": { name: "Hünnap", calories: 79, protein: 1.2, carbs: 20, fat: 0.2, category: "Meyve" },
+            "zerdali": { name: "Zerdali", calories: 48, protein: 1.4, carbs: 11, fat: 0.4, category: "Meyve" },
+            // DAHA FAZLA KURUYEMİŞ/TOHUM
+            "makademya": { name: "Makademya", calories: 718, protein: 8, carbs: 14, fat: 76, category: "Kuruyemiş" },
+            "brezilya cevizi": { name: "Brezilya Cevizi", calories: 659, protein: 14, carbs: 12, fat: 67, category: "Kuruyemiş" },
+            "çam fıstığı": { name: "Çam Fıstığı", calories: 673, protein: 14, carbs: 13, fat: 68, category: "Kuruyemiş" },
+            "kabak çekirdeği": { name: "Kabak Çekirdeği", calories: 559, protein: 30, carbs: 11, fat: 49, category: "Kuruyemiş" },
+            "ay çekirdeği": { name: "Ay Çekirdeği", calories: 584, protein: 21, carbs: 20, fat: 51, category: "Kuruyemiş" },
+            "susam": { name: "Susam", calories: 573, protein: 18, carbs: 23, fat: 50, category: "Kuruyemiş" },
+            "haşhaş tohumu": { name: "Haşhaş Tohumu", calories: 525, protein: 18, carbs: 28, fat: 42, category: "Kuruyemiş" },
+            "badem ezmesi": { name: "Badem Ezmesi", calories: 614, protein: 21, carbs: 18, fat: 55, category: "Kuruyemiş" },
+            "fıstık ezmesi": { name: "Fıstık Ezmesi", calories: 588, protein: 25, carbs: 20, fat: 50, category: "Kuruyemiş" }
         };
         
         // Sayfa yüklendiğinde çalışacak fonksiyonlar
@@ -923,6 +1142,7 @@
             loadFoodHistory();
             loadFavorites();
             updateDashboard();
+            setupRealTimeSearch();
         });
         
         // BESİN ARAMA
@@ -933,20 +1153,74 @@
             
             resultsContainer.innerHTML = '';
             
+            if (searchTerm.length === 0) {
+                resultsContainer.innerHTML = '<p style="text-align: center; opacity: 0.7;">Besin aramak için yazmaya başlayın...</p>';
+                return;
+            }
+            
             const results = Object.entries(foodDatabase).filter(([key, food]) => {
-                const matchesSearch = key.includes(searchTerm) || food.name.toLowerCase().includes(searchTerm);
+                const matchesSearch = key.includes(searchTerm) || 
+                                    food.name.toLowerCase().includes(searchTerm) ||
+                                    food.category.toLowerCase().includes(searchTerm);
                 const matchesCategory = !categoryFilter || food.category === categoryFilter;
                 return matchesSearch && matchesCategory;
             });
             
-            results.forEach(([key, food]) => {
+            // Sonuçları öncelik sırasına göre sırala
+            results.sort((a, b) => {
+                const aKey = a[0];
+                const bKey = b[0];
+                const aName = a[1].name.toLowerCase();
+                const bName = b[1].name.toLowerCase();
+                
+                // Tam eşleşme öncelikli
+                if (aKey === searchTerm || aName === searchTerm) return -1;
+                if (bKey === searchTerm || bName === searchTerm) return 1;
+                
+                // Başlangıç eşleşmesi öncelikli
+                if (aKey.startsWith(searchTerm) || aName.startsWith(searchTerm)) return -1;
+                if (bKey.startsWith(searchTerm) || bName.startsWith(searchTerm)) return 1;
+                
+                // Alfabetik sıralama
+                return aName.localeCompare(bName);
+            });
+            
+            // İlk 20 sonucu göster
+            const limitedResults = results.slice(0, 20);
+            
+            limitedResults.forEach(([key, food]) => {
                 const foodItem = createFoodItem(food);
                 resultsContainer.appendChild(foodItem);
             });
             
-            if (results.length === 0) {
+            if (limitedResults.length === 0) {
                 resultsContainer.innerHTML = '<p style="text-align: center; opacity: 0.7;">Besin bulunamadı</p>';
+            } else if (results.length > 20) {
+                const moreDiv = document.createElement('div');
+                moreDiv.style.textAlign = 'center';
+                moreDiv.style.marginTop = '15px';
+                moreDiv.style.color = 'var(--text-secondary)';
+                moreDiv.innerHTML = `... ve ${results.length - 20} besin daha. Daha spesifik arama yapın.`;
+                resultsContainer.appendChild(moreDiv);
             }
+        }
+        
+        // Gerçek zamanlı arama
+        function setupRealTimeSearch() {
+            const searchInput = document.getElementById('foodSearch');
+            let searchTimeout;
+            
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    searchFood();
+                }, 300); // 300ms gecikme ile arama
+            });
+            
+            // Kategori değiştiğinde de arama yap
+            document.getElementById('categoryFilter').addEventListener('change', function() {
+                searchFood();
+            });
         }
         
         function createFoodItem(food) {
