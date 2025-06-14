@@ -625,6 +625,7 @@
             <button class="tab-btn active" onclick="openTab('dashboard')">📊 Dashboard</button>
             <button class="tab-btn" onclick="openTab('search')">🔍 Besin Ekle</button>
             <button class="tab-btn" onclick="openTab('favorites')">⭐ Favoriler</button>
+            <button class="tab-btn" onclick="openTab('period')">🌸 Adet Takibi</button>
             <button class="tab-btn" onclick="openTab('stats')">📈 İstatistikler</button>
             <button class="tab-btn" onclick="openTab('settings')">⚙️ Ayarlar</button>
         </nav>
@@ -741,6 +742,116 @@
             <div class="search-section">
                 <h3>⭐ Favori Besinler</h3>
                 <div class="food-results" id="favoritesList"></div>
+            </div>
+        </div>
+
+        <!-- PERIOD TRACKING TAB -->
+        <div id="period" class="tab-content">
+            <div class="search-section">
+                <h3>🌸 Adet Takip Sistemi</h3>
+                <p style="margin-bottom: 20px; color: var(--text-secondary);">Adet döngünüzü takip edin, semptomları kaydedin ve doğurganlık günlerinizi öğrenin</p>
+                
+                <!-- CYCLE INFO -->
+                <div class="cycle-info" style="background: var(--card-color, rgba(255,255,255,0.15)); padding: 20px; border-radius: 15px; margin-bottom: 20px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2);">
+                    <h4 style="color: var(--header-text, #333); margin-bottom: 15px;">📅 Döngü Bilgileri</h4>
+                    <div class="profile-form">
+                        <div class="form-group">
+                            <label>Son Adet Başlangıcı</label>
+                            <input type="date" id="lastPeriodStart" onchange="updateCycleInfo()">
+                        </div>
+                        <div class="form-group">
+                            <label>Ortalama Döngü Süresi (gün)</label>
+                            <input type="number" id="cycleLength" value="28" min="21" max="35" onchange="updateCycleInfo()">
+                        </div>
+                        <div class="form-group">
+                            <label>Ortalama Adet Süresi (gün)</label>
+                            <input type="number" id="periodLength" value="5" min="3" max="7" onchange="updateCycleInfo()">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CYCLE STATUS -->
+                <div class="cycle-status" style="background: var(--card-color, rgba(255,255,255,0.15)); padding: 20px; border-radius: 15px; margin-bottom: 20px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2);">
+                    <h4 style="color: var(--header-text, #333); margin-bottom: 15px;">📊 Döngü Durumu</h4>
+                    <div id="cycleStatus" style="text-align: center; padding: 15px; border-radius: 10px; background: rgba(255,255,255,0.1);">
+                        <!-- Cycle status will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- SYMPTOM TRACKER -->
+                <div class="symptom-tracker" style="background: var(--card-color, rgba(255,255,255,0.15)); padding: 20px; border-radius: 15px; margin-bottom: 20px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2);">
+                    <h4 style="color: var(--header-text, #333); margin-bottom: 15px;">😊 Bugünkü Semptomlar</h4>
+                    <div class="symptom-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 15px;">
+                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer;">
+                            <input type="checkbox" value="cramps" onchange="saveSymptoms()">
+                            <span>Kramp</span>
+                        </label>
+                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer;">
+                            <input type="checkbox" value="headache" onchange="saveSymptoms()">
+                            <span>Baş ağrısı</span>
+                        </label>
+                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer;">
+                            <input type="checkbox" value="bloating" onchange="saveSymptoms()">
+                            <span>Şişkinlik</span>
+                        </label>
+                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer;">
+                            <input type="checkbox" value="fatigue" onchange="saveSymptoms()">
+                            <span>Yorgunluk</span>
+                        </label>
+                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer;">
+                            <input type="checkbox" value="mood_swings" onchange="saveSymptoms()">
+                            <span>Ruh hali</span>
+                        </label>
+                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer;">
+                            <input type="checkbox" value="acne" onchange="saveSymptoms()">
+                            <span>Sivilce</span>
+                        </label>
+                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer;">
+                            <input type="checkbox" value="back_pain" onchange="saveSymptoms()">
+                            <span>Bel ağrısı</span>
+                        </label>
+                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer;">
+                            <input type="checkbox" value="breast_tenderness" onchange="saveSymptoms()">
+                            <span>Göğüs hassasiyeti</span>
+                        </label>
+                    </div>
+                    <div class="form-group">
+                        <label>Notlar</label>
+                        <textarea id="symptomNotes" placeholder="Bugünkü notlarınız..." style="width: 100%; padding: 10px; border: none; border-radius: 10px; background: rgba(255,255,255,0.2); color: white; resize: vertical; min-height: 60px;" onchange="saveSymptoms()"></textarea>
+                    </div>
+                </div>
+
+                <!-- PERIOD LOG -->
+                <div class="period-log" style="background: var(--card-color, rgba(255,255,255,0.15)); padding: 20px; border-radius: 15px; margin-bottom: 20px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2);">
+                    <h4 style="color: var(--header-text, #333); margin-bottom: 15px;">📝 Adet Günlüğü</h4>
+                    <div class="profile-form">
+                        <div class="form-group">
+                            <label>Adet Başlangıcı</label>
+                            <input type="date" id="periodStartDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Adet Bitişi</label>
+                            <input type="date" id="periodEndDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Akış Yoğunluğu</label>
+                            <select id="flowIntensity">
+                                <option value="light">Hafif</option>
+                                <option value="medium">Orta</option>
+                                <option value="heavy">Yoğun</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-success" onclick="logPeriod()" style="margin-top: 10px;">📝 Adet Kaydı Ekle</button>
+                </div>
+
+                <!-- PERIOD HISTORY -->
+                <div class="period-history" style="background: var(--card-color, rgba(255,255,255,0.15)); padding: 20px; border-radius: 15px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2);">
+                    <h4 style="color: var(--header-text, #333); margin-bottom: 15px;">📋 Adet Geçmişi</h4>
+                    <div id="periodHistory" style="max-height: 300px; overflow-y: auto;">
+                        <!-- Period history will be populated by JavaScript -->
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -1143,7 +1254,258 @@
             loadFavorites();
             updateDashboard();
             setupRealTimeSearch();
+            loadPeriodData();
+            updateCycleInfo();
         });
+        
+        // ADET TAKİP SİSTEMİ
+        function loadPeriodData() {
+            // Kayıtlı verileri yükle
+            const savedData = JSON.parse(localStorage.getItem('periodData') || '{}');
+            
+            if (savedData.lastPeriodStart) {
+                document.getElementById('lastPeriodStart').value = savedData.lastPeriodStart;
+            }
+            if (savedData.cycleLength) {
+                document.getElementById('cycleLength').value = savedData.cycleLength;
+            }
+            if (savedData.periodLength) {
+                document.getElementById('periodLength').value = savedData.periodLength;
+            }
+            
+            // Bugünkü semptomları yükle
+            loadTodaySymptoms();
+            
+            // Adet geçmişini yükle
+            loadPeriodHistory();
+        }
+        
+        function updateCycleInfo() {
+            const lastPeriodStart = document.getElementById('lastPeriodStart').value;
+            const cycleLength = parseInt(document.getElementById('cycleLength').value);
+            const periodLength = parseInt(document.getElementById('periodLength').value);
+            
+            if (!lastPeriodStart) {
+                document.getElementById('cycleStatus').innerHTML = '<p>Lütfen son adet başlangıç tarihini girin</p>';
+                return;
+            }
+            
+            // Verileri kaydet
+            const periodData = {
+                lastPeriodStart: lastPeriodStart,
+                cycleLength: cycleLength,
+                periodLength: periodLength
+            };
+            localStorage.setItem('periodData', JSON.stringify(periodData));
+            
+            // Döngü hesaplamaları
+            const startDate = new Date(lastPeriodStart);
+            const today = new Date();
+            const daysSinceStart = Math.floor((today - startDate) / (1000 * 60 * 60 * 24));
+            const currentCycleDay = (daysSinceStart % cycleLength) + 1;
+            
+            // Sonraki adet tahmini
+            const nextPeriodDate = new Date(startDate);
+            nextPeriodDate.setDate(startDate.getDate() + cycleLength);
+            const daysUntilNext = Math.ceil((nextPeriodDate - today) / (1000 * 60 * 60 * 24));
+            
+            // Ovülasyon hesaplama (döngünün ortası)
+            const ovulationDate = new Date(startDate);
+            ovulationDate.setDate(startDate.getDate() + Math.floor(cycleLength / 2));
+            const daysUntilOvulation = Math.ceil((ovulationDate - today) / (1000 * 60 * 60 * 24));
+            
+            // Doğurganlık penceresi (ovülasyondan 5 gün önce ve 1 gün sonra)
+            const fertileStart = new Date(ovulationDate);
+            fertileStart.setDate(ovulationDate.getDate() - 5);
+            const fertileEnd = new Date(ovulationDate);
+            fertileEnd.setDate(ovulationDate.getDate() + 1);
+            
+            let statusHTML = '';
+            
+            // Döngü durumunu belirle
+            if (currentCycleDay <= periodLength) {
+                statusHTML = `
+                    <div style="background: linear-gradient(135deg, #ff6b9d, #c44569); color: white; padding: 15px; border-radius: 10px;">
+                        <h5>🩸 Adet Dönemi</h5>
+                        <p>Döngünün ${currentCycleDay}. günü</p>
+                        <p>Tahmini ${periodLength - currentCycleDay + 1} gün daha sürecek</p>
+                    </div>
+                `;
+            } else if (Math.abs(daysUntilOvulation) <= 2) {
+                statusHTML = `
+                    <div style="background: linear-gradient(135deg, #ff9ff3, #f368e0); color: white; padding: 15px; border-radius: 10px;">
+                        <h5>🥚 Ovülasyon Dönemi</h5>
+                        <p>Döngünün ${currentCycleDay}. günü</p>
+                        <p>Ovülasyon günü veya yakını</p>
+                    </div>
+                `;
+            } else if (today >= fertileStart && today <= fertileEnd) {
+                statusHTML = `
+                    <div style="background: linear-gradient(135deg, #ff9ff3, #f368e0); color: white; padding: 15px; border-radius: 10px;">
+                        <h5>🌸 Doğurganlık Penceresi</h5>
+                        <p>Döngünün ${currentCycleDay}. günü</p>
+                        <p>Ovülasyona ${Math.abs(daysUntilOvulation)} gün kaldı</p>
+                    </div>
+                `;
+            } else {
+                statusHTML = `
+                    <div style="background: linear-gradient(135deg, #a8e6cf, #88d8c0); color: white; padding: 15px; border-radius: 10px;">
+                        <h5>🌱 Foliküler Faz</h5>
+                        <p>Döngünün ${currentCycleDay}. günü</p>
+                        <p>Sonraki adete ${daysUntilNext} gün kaldı</p>
+                    </div>
+                `;
+            }
+            
+            // Ek bilgiler
+            statusHTML += `
+                <div style="margin-top: 15px; display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 10px;">
+                    <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                        <strong>📅 Sonraki Adet:</strong><br>
+                        ${nextPeriodDate.toLocaleDateString('tr-TR')}
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                        <strong>🥚 Ovülasyon:</strong><br>
+                        ${ovulationDate.toLocaleDateString('tr-TR')}
+                    </div>
+                    <div style="background: rgba(255,255,255,0.1); padding: 10px; border-radius: 8px;">
+                        <strong>🌸 Doğurganlık:</strong><br>
+                        ${fertileStart.toLocaleDateString('tr-TR')} - ${fertileEnd.toLocaleDateString('tr-TR')}
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('cycleStatus').innerHTML = statusHTML;
+        }
+        
+        function saveSymptoms() {
+            const checkboxes = document.querySelectorAll('.symptom-checkbox input[type="checkbox"]');
+            const notes = document.getElementById('symptomNotes').value;
+            const today = new Date().toISOString().split('T')[0];
+            
+            const symptoms = [];
+            checkboxes.forEach(checkbox => {
+                if (checkbox.checked) {
+                    symptoms.push(checkbox.value);
+                }
+            });
+            
+            const symptomData = {
+                date: today,
+                symptoms: symptoms,
+                notes: notes
+            };
+            
+            // Bugünkü semptomları kaydet
+            let allSymptoms = JSON.parse(localStorage.getItem('symptomHistory') || '{}');
+            allSymptoms[today] = symptomData;
+            localStorage.setItem('symptomHistory', JSON.stringify(allSymptoms));
+        }
+        
+        function loadTodaySymptoms() {
+            const today = new Date().toISOString().split('T')[0];
+            const allSymptoms = JSON.parse(localStorage.getItem('symptomHistory') || '{}');
+            const todaySymptoms = allSymptoms[today];
+            
+            if (todaySymptoms) {
+                // Checkbox'ları işaretle
+                const checkboxes = document.querySelectorAll('.symptom-checkbox input[type="checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = todaySymptoms.symptoms.includes(checkbox.value);
+                });
+                
+                // Notları yükle
+                document.getElementById('symptomNotes').value = todaySymptoms.notes || '';
+            }
+        }
+        
+        function logPeriod() {
+            const startDate = document.getElementById('periodStartDate').value;
+            const endDate = document.getElementById('periodEndDate').value;
+            const flowIntensity = document.getElementById('flowIntensity').value;
+            
+            if (!startDate) {
+                alert('Lütfen adet başlangıç tarihini girin!');
+                return;
+            }
+            
+            const periodEntry = {
+                startDate: startDate,
+                endDate: endDate || startDate,
+                flowIntensity: flowIntensity,
+                loggedAt: new Date().toISOString()
+            };
+            
+            // Adet geçmişine ekle
+            let periodHistory = JSON.parse(localStorage.getItem('periodHistory') || '[]');
+            periodHistory.push(periodEntry);
+            localStorage.setItem('periodHistory', JSON.stringify(periodHistory));
+            
+            // Son adet başlangıcını güncelle
+            document.getElementById('lastPeriodStart').value = startDate;
+            updateCycleInfo();
+            
+            // Formu temizle
+            document.getElementById('periodStartDate').value = '';
+            document.getElementById('periodEndDate').value = '';
+            document.getElementById('flowIntensity').value = 'light';
+            
+            // Geçmişi yenile
+            loadPeriodHistory();
+            
+            alert('Adet kaydı başarıyla eklendi!');
+        }
+        
+        function loadPeriodHistory() {
+            const periodHistory = JSON.parse(localStorage.getItem('periodHistory') || '[]');
+            const container = document.getElementById('periodHistory');
+            
+            if (periodHistory.length === 0) {
+                container.innerHTML = '<p style="text-align: center; opacity: 0.7;">Henüz adet kaydı yok</p>';
+                return;
+            }
+            
+            // En son kayıtlardan başlayarak sırala
+            periodHistory.sort((a, b) => new Date(b.startDate) - new Date(a.startDate));
+            
+            container.innerHTML = '';
+            periodHistory.slice(0, 10).forEach((period, index) => {
+                const div = document.createElement('div');
+                div.style.cssText = 'background: rgba(255,255,255,0.1); padding: 15px; margin-bottom: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);';
+                
+                const startDate = new Date(period.startDate).toLocaleDateString('tr-TR');
+                const endDate = period.endDate ? new Date(period.endDate).toLocaleDateString('tr-TR') : startDate;
+                
+                const flowEmoji = {
+                    'light': '🟢',
+                    'medium': '🟡', 
+                    'heavy': '🔴'
+                };
+                
+                div.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <strong>${startDate} - ${endDate}</strong>
+                            <div style="font-size: 0.9em; opacity: 0.8; margin-top: 5px;">
+                                ${flowEmoji[period.flowIntensity]} ${period.flowIntensity === 'light' ? 'Hafif' : period.flowIntensity === 'medium' ? 'Orta' : 'Yoğun'}
+                            </div>
+                        </div>
+                        <button onclick="deletePeriodEntry(${index})" style="background: none; border: none; color: #ff6b6b; cursor: pointer; font-size: 1.2em;">🗑️</button>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+        
+        function deletePeriodEntry(index) {
+            if (confirm('Bu adet kaydını silmek istediğinizden emin misiniz?')) {
+                let periodHistory = JSON.parse(localStorage.getItem('periodHistory') || '[]');
+                periodHistory.splice(index, 1);
+                localStorage.setItem('periodHistory', JSON.stringify(periodHistory));
+                loadPeriodHistory();
+            }
+        }
         
         // BESİN ARAMA
         function searchFood() {
