@@ -1855,32 +1855,62 @@
             if (!food) return;
             
             const multiplier = amount / 100;
-            const foodEntry = {
-                name: food.name,
-                calories: Math.round(food.calories * multiplier),
-                protein: Math.round(food.protein * multiplier * 10) / 10,
-                carbs: Math.round(food.carbs * multiplier * 10) / 10,
-                fat: Math.round(food.fat * multiplier * 10) / 10,
-                amount: amount,
-                time: new Date().toLocaleTimeString()
-            };
+            const newCalories = Math.round(food.calories * multiplier);
+            const newProtein = Math.round(food.protein * multiplier * 10) / 10;
+            const newCarbs = Math.round(food.carbs * multiplier * 10) / 10;
+            const newFat = Math.round(food.fat * multiplier * 10) / 10;
             
             let foodHistory = JSON.parse(localStorage.getItem('foodHistory') || '[]');
-            foodHistory.push(foodEntry);
-            localStorage.setItem('foodHistory', JSON.stringify(foodHistory));
             
+            // Aynı besin var mı kontrol et
+            const existingFoodIndex = foodHistory.findIndex(item => item.name === foodName);
+            
+            if (existingFoodIndex !== -1) {
+                // Mevcut besini güncelle
+                const existingFood = foodHistory[existingFoodIndex];
+                existingFood.amount += parseInt(amount);
+                existingFood.calories += newCalories;
+                existingFood.protein += newProtein;
+                existingFood.carbs += newCarbs;
+                existingFood.fat += newFat;
+                existingFood.time = new Date().toLocaleTimeString(); // Son ekleme zamanını güncelle
+                
+                // Success feedback - güncellendi mesajı
+                const btn = event.target;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<span>🔄</span><span>Güncellendi!</span>';
+                btn.style.background = '#2196f3';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '';
+                }, 1000);
+            } else {
+                // Yeni besin ekle
+                const foodEntry = {
+                    name: food.name,
+                    calories: newCalories,
+                    protein: newProtein,
+                    carbs: newCarbs,
+                    fat: newFat,
+                    amount: parseInt(amount),
+                    time: new Date().toLocaleTimeString()
+                };
+                foodHistory.push(foodEntry);
+                
+                // Success feedback - eklendi mesajı
+                const btn = event.target;
+                const originalText = btn.innerHTML;
+                btn.innerHTML = '<span>✅</span><span>Eklendi!</span>';
+                btn.style.background = '#4caf50';
+                setTimeout(() => {
+                    btn.innerHTML = originalText;
+                    btn.style.background = '';
+                }, 1000);
+            }
+            
+            localStorage.setItem('foodHistory', JSON.stringify(foodHistory));
             loadFoodHistory();
             updateDashboard();
-            
-            // Success feedback
-            const btn = event.target;
-            const originalText = btn.innerHTML;
-            btn.innerHTML = '<span>✅</span><span>Eklendi!</span>';
-            btn.style.background = '#4caf50';
-            setTimeout(() => {
-                btn.innerHTML = originalText;
-                btn.style.background = '';
-            }, 1000);
         }
         
         function loadFoodHistory() {
@@ -1904,13 +1934,39 @@
                             <span>🕐 ${food.time}</span>
                         </div>
                     </div>
-                    <button class="delete-btn" onclick="deleteFood(${index})" title="Sil">🗑️</button>
+                    <div style="display: flex; gap: var(--spacing-xs);">
+                        <button class="delete-btn" onclick="deleteFood(${index})" title="Sil">🗑️</button>
+                        <button class="edit-btn" onclick="editFoodAmount(${index})" title="Miktar Düzenle" style="background: none; border: none; color: var(--primary-color); cursor: pointer; font-size: 1.2rem; padding: var(--spacing-xs); border-radius: 50%; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">✏️</button>
+                    </div>
                 `;
                 container.appendChild(div);
             });
             
             if (foodHistory.length === 0) {
                 container.innerHTML = '<p style="text-align: center; opacity: 0.7; padding: var(--spacing-xl);">Henüz besin eklenmemiş</p>';
+            }
+        }
+        
+        function editFoodAmount(index) {
+            const foodHistory = JSON.parse(localStorage.getItem('foodHistory') || '[]');
+            const food = foodHistory[index];
+            
+            const newAmount = prompt(`${food.name} için yeni miktar (gram):`, food.amount);
+            if (newAmount && !isNaN(newAmount) && newAmount > 0) {
+                const foodData = Object.values(foodDatabase).find(f => f.name === food.name);
+                if (foodData) {
+                    const multiplier = newAmount / 100;
+                    food.amount = parseInt(newAmount);
+                    food.calories = Math.round(foodData.calories * multiplier);
+                    food.protein = Math.round(foodData.protein * multiplier * 10) / 10;
+                    food.carbs = Math.round(foodData.carbs * multiplier * 10) / 10;
+                    food.fat = Math.round(foodData.fat * multiplier * 10) / 10;
+                    food.time = new Date().toLocaleTimeString();
+                    
+                    localStorage.setItem('foodHistory', JSON.stringify(foodHistory));
+                    loadFoodHistory();
+                    updateDashboard();
+                }
             }
         }
         
@@ -1934,6 +1990,7 @@
                 return acc;
             }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
             
+            // Ana istatistikler
             document.getElementById('totalCalories').textContent = totals.calories;
             document.getElementById('totalProtein').textContent = totals.protein.toFixed(1);
             document.getElementById('totalCarbs').textContent = totals.carbs.toFixed(1);
@@ -1946,10 +2003,333 @@
             const carbTarget = parseInt(document.getElementById('carbTarget').textContent);
             const fatTarget = parseInt(document.getElementById('fatTarget').textContent);
             
-            document.getElementById('calorieProgress').style.width = Math.min((totals.calories / calorieTarget) * 100, 100) + '%';
-            document.getElementById('proteinProgress').style.width = Math.min((totals.protein / proteinTarget) * 100, 100) + '%';
-            document.getElementById('carbProgress').style.width = Math.min((totals.carbs / carbTarget) * 100, 100) + '%';
-            document.getElementById('fatProgress').style.width = Math.min((totals.fat / fatTarget) * 100, 100) + '%';
+            const calorieProgress = Math.min((totals.calories / calorieTarget) * 100, 100);
+            const proteinProgress = Math.min((totals.protein / proteinTarget) * 100, 100);
+            const carbProgress = Math.min((totals.carbs / carbTarget) * 100, 100);
+            const fatProgress = Math.min((totals.fat / fatTarget) * 100, 100);
+            
+            document.getElementById('calorieProgress').style.width = calorieProgress + '%';
+            document.getElementById('proteinProgress').style.width = proteinProgress + '%';
+            document.getElementById('carbProgress').style.width = carbProgress + '%';
+            document.getElementById('fatProgress').style.width = fatProgress + '%';
+            
+            // Progress bar renklerini güncelle
+            updateProgressBarColor('calorieProgress', calorieProgress);
+            updateProgressBarColor('proteinProgress', proteinProgress);
+            updateProgressBarColor('carbProgress', carbProgress);
+            updateProgressBarColor('fatProgress', fatProgress);
+            
+            // Kalan kalori hesaplama
+            const remainingCalories = calorieTarget - totals.calories;
+            updateRemainingCalories(remainingCalories);
+            
+            // Makro dağılım analizi
+            updateMacroAnalysis(totals, calorieTarget);
+            
+            // En çok yenen besinler
+            updateTopFoods(foodHistory);
+            
+            // Öğün önerileri
+            updateMealSuggestions(remainingCalories, totals);
+            
+            // Yeni özellikler
+            addNutritionInsights();
+            addMealTimingAnalysis();
+            updateMealSummary();
+            updateGoalProgress();
+            addQuickFoodSuggestions();
+        }
+        
+        function updateProgressBarColor(elementId, progress) {
+            const progressBar = document.getElementById(elementId);
+            if (progress >= 100) {
+                progressBar.style.background = 'linear-gradient(90deg, #f44336, #ff5722)'; // Kırmızı
+            } else if (progress >= 80) {
+                progressBar.style.background = 'linear-gradient(90deg, #ff9800, #ff5722)'; // Turuncu
+            } else if (progress >= 60) {
+                progressBar.style.background = 'linear-gradient(90deg, #4caf50, #8bc34a)'; // Yeşil
+            } else {
+                progressBar.style.background = 'linear-gradient(90deg, var(--primary-color), var(--secondary-color))'; // Varsayılan
+            }
+        }
+        
+        function updateRemainingCalories(remaining) {
+            const remainingElement = document.getElementById('remainingCalories');
+            if (!remainingElement) {
+                // Remaining calories elementi yoksa oluştur
+                const calorieCard = document.querySelector('.stat-card');
+                if (calorieCard) {
+                    const remainingDiv = document.createElement('div');
+                    remainingDiv.id = 'remainingCalories';
+                    remainingDiv.style.marginTop = 'var(--spacing-sm)';
+                    remainingDiv.style.fontSize = '0.9rem';
+                    remainingDiv.style.color = remaining >= 0 ? 'var(--primary-color)' : 'var(--error)';
+                    remainingDiv.innerHTML = `Kalan: <strong>${remaining}</strong> kcal`;
+                    calorieCard.appendChild(remainingDiv);
+                }
+            } else {
+                remainingElement.style.color = remaining >= 0 ? 'var(--primary-color)' : 'var(--error)';
+                remainingElement.innerHTML = `Kalan: <strong>${remaining}</strong> kcal`;
+            }
+        }
+        
+        function updateMacroAnalysis(totals, calorieTarget) {
+            const macroAnalysisElement = document.getElementById('macroAnalysis');
+            if (!macroAnalysisElement) {
+                // Macro analysis elementi yoksa oluştur
+                const chartContainer = document.querySelector('.chart-container');
+                if (chartContainer) {
+                    const analysisDiv = document.createElement('div');
+                    analysisDiv.id = 'macroAnalysis';
+                    analysisDiv.style.marginTop = 'var(--spacing-lg)';
+                    analysisDiv.style.padding = 'var(--spacing-md)';
+                    analysisDiv.style.background = 'var(--background)';
+                    analysisDiv.style.borderRadius = 'var(--border-radius-small)';
+                    analysisDiv.style.fontSize = '0.9rem';
+                    
+                    const proteinPercent = ((totals.protein * 4) / calorieTarget * 100).toFixed(1);
+                    const carbPercent = ((totals.carbs * 4) / calorieTarget * 100).toFixed(1);
+                    const fatPercent = ((totals.fat * 9) / calorieTarget * 100).toFixed(1);
+                    
+                    analysisDiv.innerHTML = `
+                        <h4 style="margin-bottom: var(--spacing-sm); color: var(--on-surface);">📊 Makro Dağılım Analizi</h4>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-sm);">
+                            <div style="text-align: center;">
+                                <div style="color: var(--primary-color); font-weight: bold;">${proteinPercent}%</div>
+                                <small>Protein</small>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="color: var(--secondary-color); font-weight: bold;">${carbPercent}%</div>
+                                <small>Karbonhidrat</small>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="color: #ff9800; font-weight: bold;">${fatPercent}%</div>
+                                <small>Yağ</small>
+                            </div>
+                        </div>
+                    `;
+                    chartContainer.appendChild(analysisDiv);
+                }
+            } else {
+                const proteinPercent = ((totals.protein * 4) / calorieTarget * 100).toFixed(1);
+                const carbPercent = ((totals.carbs * 4) / calorieTarget * 100).toFixed(1);
+                const fatPercent = ((totals.fat * 9) / calorieTarget * 100).toFixed(1);
+                
+                macroAnalysisElement.innerHTML = `
+                    <h4 style="margin-bottom: var(--spacing-sm); color: var(--on-surface);">📊 Makro Dağılım Analizi</h4>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-sm);">
+                        <div style="text-align: center;">
+                            <div style="color: var(--primary-color); font-weight: bold;">${proteinPercent}%</div>
+                            <small>Protein</small>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="color: var(--secondary-color); font-weight: bold;">${carbPercent}%</div>
+                            <small>Karbonhidrat</small>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="color: #ff9800; font-weight: bold;">${fatPercent}%</div>
+                            <small>Yağ</small>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+        
+        function updateTopFoods(foodHistory) {
+            const topFoodsElement = document.getElementById('topFoods');
+            if (!topFoodsElement) {
+                // Top foods elementi yoksa oluştur
+                const foodHistoryContainer = document.querySelector('.food-history');
+                if (foodHistoryContainer) {
+                    const topFoodsDiv = document.createElement('div');
+                    topFoodsDiv.id = 'topFoods';
+                    topFoodsDiv.style.marginTop = 'var(--spacing-lg)';
+                    topFoodsDiv.style.padding = 'var(--spacing-md)';
+                    topFoodsDiv.style.background = 'var(--background)';
+                    topFoodsDiv.style.borderRadius = 'var(--border-radius-small)';
+                    
+                    // En çok yenen besinleri hesapla
+                    const foodCounts = {};
+                    foodHistory.forEach(food => {
+                        foodCounts[food.name] = (foodCounts[food.name] || 0) + 1;
+                    });
+                    
+                    const topFoods = Object.entries(foodCounts)
+                        .sort(([,a], [,b]) => b - a)
+                        .slice(0, 3);
+                    
+                    topFoodsDiv.innerHTML = `
+                        <h4 style="margin-bottom: var(--spacing-sm); color: var(--on-surface);">🏆 En Çok Yenen Besinler</h4>
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-xs);">
+                            ${topFoods.map((food, index) => `
+                                <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--spacing-xs); background: var(--surface); border-radius: var(--border-radius-small);">
+                                    <span style="font-weight: 500;">${index + 1}. ${food[0]}</span>
+                                    <span style="color: var(--primary-color); font-weight: bold;">${food[1]} kez</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    foodHistoryContainer.appendChild(topFoodsDiv);
+                }
+            }
+        }
+        
+        function updateMealSuggestions(remainingCalories, totals) {
+            const suggestionsElement = document.getElementById('mealSuggestions');
+            if (!suggestionsElement) {
+                // Meal suggestions elementi yoksa oluştur
+                const dashboardContainer = document.querySelector('#dashboard');
+                if (dashboardContainer) {
+                    const suggestionsDiv = document.createElement('div');
+                    suggestionsDiv.id = 'mealSuggestions';
+                    suggestionsDiv.className = 'chart-container card-hover';
+                    suggestionsDiv.style.marginTop = 'var(--spacing-lg)';
+                    
+                    let suggestionText = '';
+                    let suggestionColor = 'var(--primary-color)';
+                    
+                    if (remainingCalories > 500) {
+                        suggestionText = '🍽️ Öğün önerisi: Ana yemek + yan ürün ekleyebilirsiniz';
+                    } else if (remainingCalories > 200) {
+                        suggestionText = '🥗 Öğün önerisi: Hafif bir salata veya atıştırmalık';
+                    } else if (remainingCalories > 0) {
+                        suggestionText = '🍎 Öğün önerisi: Küçük bir meyve veya kuruyemiş';
+                    } else {
+                        suggestionText = '⚠️ Günlük kalori hedefinizi aştınız';
+                        suggestionColor = 'var(--error)';
+                    }
+                    
+                    suggestionsDiv.innerHTML = `
+                        <h3>💡 Akıllı Öneriler</h3>
+                        <div style="color: ${suggestionColor}; font-weight: 500; margin-bottom: var(--spacing-md);">
+                            ${suggestionText}
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-md);">
+                            <div style="text-align: center; padding: var(--spacing-md); background: var(--background); border-radius: var(--border-radius-small);">
+                                <div style="font-size: 2rem; margin-bottom: var(--spacing-xs);">🔥</div>
+                                <div style="font-weight: bold; color: var(--primary-color);">${totals.calories}</div>
+                                <small>Toplam Kalori</small>
+                            </div>
+                            <div style="text-align: center; padding: var(--spacing-md); background: var(--background); border-radius: var(--border-radius-small);">
+                                <div style="font-size: 2rem; margin-bottom: var(--spacing-xs);">🥩</div>
+                                <div style="font-weight: bold; color: var(--primary-color);">${totals.protein.toFixed(1)}g</div>
+                                <small>Toplam Protein</small>
+                            </div>
+                            <div style="text-align: center; padding: var(--spacing-md); background: var(--background); border-radius: var(--border-radius-small);">
+                                <div style="font-size: 2rem; margin-bottom: var(--spacing-xs);">🍞</div>
+                                <div style="font-weight: bold; color: var(--primary-color);">${totals.carbs.toFixed(1)}g</div>
+                                <small>Toplam Karbonhidrat</small>
+                            </div>
+                        </div>
+                    `;
+                    dashboardContainer.appendChild(suggestionsDiv);
+                }
+            }
+        }
+        
+        // YENİ ÖZELLİKLER
+        function addNutritionInsights() {
+            const insightsElement = document.getElementById('nutritionInsights');
+            if (!insightsElement) {
+                const dashboardContainer = document.querySelector('#dashboard');
+                if (dashboardContainer) {
+                    const insightsDiv = document.createElement('div');
+                    insightsDiv.id = 'nutritionInsights';
+                    insightsDiv.className = 'chart-container card-hover';
+                    insightsDiv.style.marginTop = 'var(--spacing-lg)';
+                    
+                    const foodHistory = JSON.parse(localStorage.getItem('foodHistory') || '[]');
+                    const totals = foodHistory.reduce((acc, food) => {
+                        acc.calories += food.calories;
+                        acc.protein += food.protein;
+                        acc.carbs += food.carbs;
+                        acc.fat += food.fat;
+                        return acc;
+                    }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
+                    
+                    // Beslenme analizi
+                    const insights = [];
+                    
+                    if (totals.protein < 50) {
+                        insights.push('🥩 Protein alımınız düşük. Et, balık, yumurta ekleyin.');
+                    }
+                    if (totals.carbs > 300) {
+                        insights.push('🍞 Karbonhidrat alımınız yüksek. Dikkatli olun.');
+                    }
+                    if (totals.fat > 80) {
+                        insights.push('🥑 Yağ alımınız yüksek. Azaltmayı düşünün.');
+                    }
+                    if (foodHistory.length < 3) {
+                        insights.push('🍽️ Daha çeşitli beslenmeye çalışın.');
+                    }
+                    
+                    if (insights.length === 0) {
+                        insights.push('✅ Beslenmeniz dengeli görünüyor!');
+                    }
+                    
+                    insightsDiv.innerHTML = `
+                        <h3>🧠 Beslenme Analizi</h3>
+                        <div style="display: flex; flex-direction: column; gap: var(--spacing-sm);">
+                            ${insights.map(insight => `
+                                <div style="padding: var(--spacing-sm); background: var(--background); border-radius: var(--border-radius-small); border-left: 4px solid var(--primary-color);">
+                                    ${insight}
+                                </div>
+                            `).join('')}
+                        </div>
+                    `;
+                    dashboardContainer.appendChild(insightsDiv);
+                }
+            }
+        }
+        
+        function addMealTimingAnalysis() {
+            const timingElement = document.getElementById('mealTiming');
+            if (!timingElement) {
+                const dashboardContainer = document.querySelector('#dashboard');
+                if (dashboardContainer) {
+                    const timingDiv = document.createElement('div');
+                    timingDiv.id = 'mealTiming';
+                    timingDiv.className = 'chart-container card-hover';
+                    timingDiv.style.marginTop = 'var(--spacing-lg)';
+                    
+                    const foodHistory = JSON.parse(localStorage.getItem('foodHistory') || '[]');
+                    
+                    // Öğün zamanlaması analizi
+                    const mealTimes = foodHistory.map(food => {
+                        const time = new Date(`2000-01-01 ${food.time}`);
+                        return time.getHours();
+                    });
+                    
+                    const morningMeals = mealTimes.filter(hour => hour >= 6 && hour < 12).length;
+                    const afternoonMeals = mealTimes.filter(hour => hour >= 12 && hour < 18).length;
+                    const eveningMeals = mealTimes.filter(hour => hour >= 18 || hour < 6).length;
+                    
+                    timingDiv.innerHTML = `
+                        <h3>⏰ Öğün Zamanlaması</h3>
+                        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--spacing-md); margin-bottom: var(--spacing-md);">
+                            <div style="text-align: center; padding: var(--spacing-md); background: var(--background); border-radius: var(--border-radius-small);">
+                                <div style="font-size: 1.5rem; margin-bottom: var(--spacing-xs);">🌅</div>
+                                <div style="font-weight: bold; color: var(--primary-color);">${morningMeals}</div>
+                                <small>Sabah</small>
+                            </div>
+                            <div style="text-align: center; padding: var(--spacing-md); background: var(--background); border-radius: var(--border-radius-small);">
+                                <div style="font-size: 1.5rem; margin-bottom: var(--spacing-xs);">☀️</div>
+                                <div style="font-weight: bold; color: var(--primary-color);">${afternoonMeals}</div>
+                                <small>Öğlen</small>
+                            </div>
+                            <div style="text-align: center; padding: var(--spacing-md); background: var(--background); border-radius: var(--border-radius-small);">
+                                <div style="font-size: 1.5rem; margin-bottom: var(--spacing-xs);">🌙</div>
+                                <div style="font-weight: bold; color: var(--primary-color);">${eveningMeals}</div>
+                                <small>Akşam</small>
+                            </div>
+                        </div>
+                        <div style="font-size: 0.9rem; color: var(--on-surface); opacity: 0.7;">
+                            💡 Öneri: Öğünlerinizi düzenli aralıklarla yemeye çalışın
+                        </div>
+                    `;
+                    dashboardContainer.appendChild(timingDiv);
+                }
+            }
         }
         
         // HEDEF HESAPLAMA (BMR - Bazal Metabolizma Hızı)
@@ -2048,6 +2428,204 @@
                 searchFood();
             }
         });
+        
+        // HIZLI BESİN EKLEME
+        function addQuickFood(foodName, presetAmount) {
+            addFood(foodName, presetAmount);
+        }
+        
+        // ÖĞÜN KATEGORİLERİ
+        function categorizeMeals() {
+            const foodHistory = JSON.parse(localStorage.getItem('foodHistory') || '[]');
+            const mealCategories = {
+                breakfast: [],
+                lunch: [],
+                dinner: [],
+                snacks: []
+            };
+            
+            foodHistory.forEach(food => {
+                const hour = new Date(`2000-01-01 ${food.time}`).getHours();
+                
+                if (hour >= 6 && hour < 11) {
+                    mealCategories.breakfast.push(food);
+                } else if (hour >= 11 && hour < 16) {
+                    mealCategories.lunch.push(food);
+                } else if (hour >= 16 && hour < 21) {
+                    mealCategories.dinner.push(food);
+                } else {
+                    mealCategories.snacks.push(food);
+                }
+            });
+            
+            return mealCategories;
+        }
+        
+        // ÖĞÜN ÖZETİ
+        function updateMealSummary() {
+            const mealSummaryElement = document.getElementById('mealSummary');
+            if (!mealSummaryElement) {
+                const dashboardContainer = document.querySelector('#dashboard');
+                if (dashboardContainer) {
+                    const mealCategories = categorizeMeals();
+                    const summaryDiv = document.createElement('div');
+                    summaryDiv.id = 'mealSummary';
+                    summaryDiv.className = 'chart-container card-hover';
+                    summaryDiv.style.marginTop = 'var(--spacing-lg)';
+                    
+                    const mealNames = {
+                        breakfast: 'Kahvaltı',
+                        lunch: 'Öğle Yemeği',
+                        dinner: 'Akşam Yemeği',
+                        snacks: 'Atıştırmalık'
+                    };
+                    
+                    const mealIcons = {
+                        breakfast: '🌅',
+                        lunch: '☀️',
+                        dinner: '🌙',
+                        snacks: '🍎'
+                    };
+                    
+                    let summaryHTML = '<h3>🍽️ Öğün Özeti</h3><div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--spacing-md);">';
+                    
+                    Object.entries(mealCategories).forEach(([meal, foods]) => {
+                        const totalCalories = foods.reduce((sum, food) => sum + food.calories, 0);
+                        const totalProtein = foods.reduce((sum, food) => sum + food.protein, 0);
+                        
+                        summaryHTML += `
+                            <div style="padding: var(--spacing-md); background: var(--background); border-radius: var(--border-radius-small); text-align: center;">
+                                <div style="font-size: 2rem; margin-bottom: var(--spacing-xs);">${mealIcons[meal]}</div>
+                                <div style="font-weight: bold; margin-bottom: var(--spacing-xs);">${mealNames[meal]}</div>
+                                <div style="color: var(--primary-color); font-weight: bold;">${totalCalories} kcal</div>
+                                <div style="font-size: 0.9rem; opacity: 0.7;">${totalProtein.toFixed(1)}g protein</div>
+                                <div style="font-size: 0.8rem; opacity: 0.6; margin-top: var(--spacing-xs);">${foods.length} besin</div>
+                            </div>
+                        `;
+                    });
+                    
+                    summaryHTML += '</div>';
+                    summaryDiv.innerHTML = summaryHTML;
+                    dashboardContainer.appendChild(summaryDiv);
+                }
+            }
+        }
+        
+        // HEDEF BAŞARI ANALİZİ
+        function updateGoalProgress() {
+            const goalProgressElement = document.getElementById('goalProgress');
+            if (!goalProgressElement) {
+                const dashboardContainer = document.querySelector('#dashboard');
+                if (dashboardContainer) {
+                    const progressDiv = document.createElement('div');
+                    progressDiv.id = 'goalProgress';
+                    progressDiv.className = 'chart-container card-hover';
+                    progressDiv.style.marginTop = 'var(--spacing-lg)';
+                    
+                    const foodHistory = JSON.parse(localStorage.getItem('foodHistory') || '[]');
+                    const totals = foodHistory.reduce((acc, food) => {
+                        acc.calories += food.calories;
+                        acc.protein += food.protein;
+                        acc.carbs += food.carbs;
+                        acc.fat += food.fat;
+                        return acc;
+                    }, { calories: 0, protein: 0, carbs: 0, fat: 0 });
+                    
+                    const calorieTarget = parseInt(document.getElementById('calorieTarget').textContent);
+                    const proteinTarget = parseInt(document.getElementById('proteinTarget').textContent);
+                    const carbTarget = parseInt(document.getElementById('carbTarget').textContent);
+                    const fatTarget = parseInt(document.getElementById('fatTarget').textContent);
+                    
+                    const calorieProgress = Math.min((totals.calories / calorieTarget) * 100, 100);
+                    const proteinProgress = Math.min((totals.protein / proteinTarget) * 100, 100);
+                    const carbProgress = Math.min((totals.carbs / carbTarget) * 100, 100);
+                    const fatProgress = Math.min((totals.fat / fatTarget) * 100, 100);
+                    
+                    let overallScore = 0;
+                    let scoreColor = 'var(--error)';
+                    let scoreText = 'Geliştirilmeli';
+                    
+                    if (calorieProgress >= 80 && calorieProgress <= 120) overallScore += 25;
+                    if (proteinProgress >= 80) overallScore += 25;
+                    if (carbProgress >= 60 && carbProgress <= 140) overallScore += 25;
+                    if (fatProgress >= 60 && fatProgress <= 140) overallScore += 25;
+                    
+                    if (overallScore >= 80) {
+                        scoreColor = '#4caf50';
+                        scoreText = 'Mükemmel';
+                    } else if (overallScore >= 60) {
+                        scoreColor = '#ff9800';
+                        scoreText = 'İyi';
+                    } else if (overallScore >= 40) {
+                        scoreColor = '#ff9800';
+                        scoreText = 'Orta';
+                    }
+                    
+                    progressDiv.innerHTML = `
+                        <h3>🎯 Hedef Başarı Analizi</h3>
+                        <div style="text-align: center; margin-bottom: var(--spacing-lg);">
+                            <div style="font-size: 3rem; font-weight: bold; color: ${scoreColor}; margin-bottom: var(--spacing-xs);">${overallScore}%</div>
+                            <div style="font-size: 1.2rem; color: ${scoreColor}; margin-bottom: var(--spacing-sm);">${scoreText}</div>
+                            <div style="width: 100%; height: 8px; background: var(--background); border-radius: 4px; overflow: hidden;">
+                                <div style="width: ${overallScore}%; height: 100%; background: ${scoreColor}; border-radius: 4px; transition: width 0.5s ease;"></div>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--spacing-md);">
+                            <div style="text-align: center;">
+                                <div style="font-weight: bold; color: var(--primary-color);">${calorieProgress.toFixed(1)}%</div>
+                                <small>Kalori Hedefi</small>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-weight: bold; color: var(--primary-color);">${proteinProgress.toFixed(1)}%</div>
+                                <small>Protein Hedefi</small>
+                            </div>
+                        </div>
+                    `;
+                    dashboardContainer.appendChild(progressDiv);
+                }
+            }
+        }
+        
+        // HIZLI BESİN ÖNERİLERİ
+        function addQuickFoodSuggestions() {
+            const suggestionsElement = document.getElementById('quickFoodSuggestions');
+            if (!suggestionsElement) {
+                const searchContainer = document.querySelector('.search-section');
+                if (searchContainer) {
+                    const suggestionsDiv = document.createElement('div');
+                    suggestionsDiv.id = 'quickFoodSuggestions';
+                    suggestionsDiv.style.marginTop = 'var(--spacing-lg)';
+                    suggestionsDiv.style.padding = 'var(--spacing-md)';
+                    suggestionsDiv.style.background = 'var(--surface)';
+                    suggestionsDiv.style.borderRadius = 'var(--border-radius)';
+                    suggestionsDiv.style.boxShadow = 'var(--elevation-1)';
+                    
+                    const quickFoods = [
+                        { name: 'Yumurta', amount: 100, icon: '🥚' },
+                        { name: 'Tavuk Göğsü', amount: 150, icon: '🍗' },
+                        { name: 'Yoğurt', amount: 200, icon: '🥛' },
+                        { name: 'Elma', amount: 150, icon: '🍎' },
+                        { name: 'Muz', amount: 120, icon: '🍌' },
+                        { name: 'Badem', amount: 30, icon: '🥜' }
+                    ];
+                    
+                    suggestionsDiv.innerHTML = `
+                        <h4 style="margin-bottom: var(--spacing-md); color: var(--on-surface);">⚡ Hızlı Besin Ekle</h4>
+                        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--spacing-sm);">
+                            ${quickFoods.map(food => `
+                                <button onclick="addQuickFood('${food.name}', ${food.amount})" 
+                                        style="display: flex; flex-direction: column; align-items: center; padding: var(--spacing-md); background: var(--background); border: none; border-radius: var(--border-radius-small); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
+                                    <div style="font-size: 1.5rem; margin-bottom: var(--spacing-xs);">${food.icon}</div>
+                                    <div style="font-size: 0.8rem; font-weight: 500; margin-bottom: var(--spacing-xs);">${food.name}</div>
+                                    <div style="font-size: 0.7rem; opacity: 0.7;">${food.amount}g</div>
+                                </button>
+                            `).join('')}
+                        </div>
+                    `;
+                    searchContainer.appendChild(suggestionsDiv);
+                }
+            }
+        }
     </script>
 </body>
 </html> 
