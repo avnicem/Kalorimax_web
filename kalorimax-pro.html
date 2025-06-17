@@ -12,117 +12,117 @@
         }
 
         :root {
-            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --success-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
-            --warning-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-            --dark-bg: #1a1a2e;
-            --dark-card: #16213e;
-            --dark-text: #e94560;
-            --light-bg: #f8f9fa;
-            --light-card: rgba(255, 255, 255, 0.95);
-            --light-text: #333;
-            --light-text-secondary: rgba(0, 0, 0, 0.6);
-            --input-bg: rgba(255, 255, 255, 0.9);
-            --input-text: #333;
-            --input-placeholder: rgba(0, 0, 0, 0.6);
-            --border-color: rgba(0, 0, 0, 0.1);
-            --hover-bg: rgba(0, 0, 0, 0.05);
-            --header-text: #333;
-            --stat-text: #333;
-            --label-text: #333;
+            --primary-color: #6200ee;
+            --primary-variant: #3700b3;
+            --secondary-color: #03dac6;
+            --secondary-variant: #018786;
+            --background: #fafafa;
+            --surface: #ffffff;
+            --error: #b00020;
+            --on-primary: #ffffff;
+            --on-secondary: #000000;
+            --on-background: #000000;
+            --on-surface: #000000;
+            --on-error: #ffffff;
+            --elevation-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+            --elevation-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+            --elevation-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+            --elevation-4: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+            --border-radius: 12px;
+            --border-radius-small: 8px;
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
         }
 
         [data-theme="dark"] {
-            --bg-color: var(--dark-bg);
-            --card-color: var(--dark-card);
-            --text-color: var(--dark-text);
-        }
-
-        [data-theme="light"] {
-            --bg-color: var(--light-bg);
-            --card-color: var(--light-card);
-            --text-color: var(--light-text);
-            --text-secondary: var(--light-text-secondary);
-            --input-bg: rgba(255, 255, 255, 0.9);
-            --input-text: #333;
-            --input-placeholder: rgba(0, 0, 0, 0.6);
-            --border-color: rgba(0, 0, 0, 0.1);
-            --hover-bg: rgba(0, 0, 0, 0.05);
-            --header-text: #333;
-            --stat-text: #333;
-            --label-text: #333;
+            --background: #121212;
+            --surface: #1e1e1e;
+            --on-background: #ffffff;
+            --on-surface: #ffffff;
+            --elevation-1: 0 1px 3px rgba(255,255,255,0.12), 0 1px 2px rgba(255,255,255,0.24);
+            --elevation-2: 0 3px 6px rgba(255,255,255,0.16), 0 3px 6px rgba(255,255,255,0.23);
+            --elevation-3: 0 10px 20px rgba(255,255,255,0.19), 0 6px 6px rgba(255,255,255,0.23);
+            --elevation-4: 0 14px 28px rgba(255,255,255,0.25), 0 10px 10px rgba(255,255,255,0.22);
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg-color, var(--primary-gradient));
-            color: var(--text-color, white);
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--background);
+            color: var(--on-background);
             min-height: 100vh;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: var(--spacing-md);
         }
 
         /* HEADER */
         .header {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: var(--spacing-xl);
             position: relative;
+            padding: var(--spacing-lg) 0;
         }
 
         .header h1 {
             font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: var(--header-text, #333);
-            text-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            font-weight: 300;
+            margin-bottom: var(--spacing-sm);
+            color: var(--primary-color);
+            letter-spacing: -0.5px;
         }
 
         .header p {
             font-size: 1.1rem;
-            color: var(--text-secondary, #666);
-            margin-bottom: 20px;
+            color: var(--on-background);
+            opacity: 0.7;
+            margin-bottom: var(--spacing-md);
+            font-weight: 400;
         }
 
         /* THEME TOGGLE */
         .theme-toggle {
             position: absolute;
-            top: 0;
-            right: 0;
-            background: rgba(255,255,255,0.2);
+            top: var(--spacing-md);
+            right: var(--spacing-md);
+            background: var(--surface);
             border: none;
-            padding: 10px 15px;
-            border-radius: 25px;
-            color: white;
+            padding: var(--spacing-sm) var(--spacing-md);
+            border-radius: 50px;
+            color: var(--on-surface);
             cursor: pointer;
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
+            box-shadow: var(--elevation-1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 1.2rem;
         }
 
         .theme-toggle:hover {
-            background: rgba(255,255,255,0.3);
-            transform: scale(1.05);
+            box-shadow: var(--elevation-2);
+            transform: translateY(-1px);
         }
 
         /* USER PROFILE SECTION */
         .profile-section {
-            background: var(--card-color, rgba(255,255,255,0.15));
-            padding: 25px;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: var(--surface);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--elevation-1);
+            border: 1px solid rgba(0,0,0,0.05);
         }
 
         .profile-form {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
         }
 
         .form-group {
@@ -131,60 +131,79 @@
         }
 
         .form-group label {
-            margin-bottom: 5px;
-            font-weight: 600;
-            color: var(--label-text, #333);
+            margin-bottom: var(--spacing-xs);
+            font-weight: 500;
+            color: var(--on-surface);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .form-group input, .form-group select {
-            padding: 10px;
-            border: none;
-            border-radius: 10px;
-            background: rgba(255,255,255,0.2);
-            color: white;
-            backdrop-filter: blur(10px);
+            padding: var(--spacing-md);
+            border: 2px solid transparent;
+            border-radius: var(--border-radius-small);
+            background: var(--background);
+            color: var(--on-surface);
+            font-size: 1rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(98, 0, 238, 0.1);
         }
 
         .form-group input::placeholder {
-            color: rgba(255,255,255,0.7);
-        }
-
-        .form-group select option {
-            background: var(--input-bg);
-            color: var(--input-text);
-            padding: 10px;
+            color: var(--on-surface);
+            opacity: 0.5;
         }
 
         /* TAB NAVIGATION */
         .tab-navigation {
             display: flex;
-            background: rgba(255,255,255,0.1);
-            border-radius: 15px;
-            padding: 5px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(15px);
+            background: var(--surface);
+            border-radius: var(--border-radius);
+            padding: var(--spacing-xs);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--elevation-1);
+            overflow-x: auto;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+
+        .tab-navigation::-webkit-scrollbar {
+            display: none;
         }
 
         .tab-btn {
             flex: 1;
-            padding: 15px 20px;
+            min-width: 120px;
+            padding: var(--spacing-md) var(--spacing-lg);
             border: none;
             background: transparent;
-            color: var(--text-color, white);
-            border-radius: 10px;
+            color: var(--on-surface);
+            border-radius: var(--border-radius-small);
             cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 8px;
+            gap: var(--spacing-xs);
+            white-space: nowrap;
+            font-size: 0.9rem;
         }
 
         .tab-btn.active {
-            background: var(--secondary-gradient);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-            transform: translateY(-2px);
+            background: var(--primary-color);
+            color: var(--on-primary);
+            box-shadow: var(--elevation-2);
+        }
+
+        .tab-btn:hover:not(.active) {
+            background: rgba(98, 0, 238, 0.05);
         }
 
         .tab-content {
@@ -193,160 +212,199 @@
 
         .tab-content.active {
             display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         /* DASHBOARD CARDS */
         .dashboard {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
         }
 
         .stat-card {
-            background: var(--card-color, rgba(255,255,255,0.15));
-            padding: 25px;
-            border-radius: 20px;
+            background: var(--surface);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius);
             text-align: center;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.2);
-            transition: all 0.3s ease;
+            box-shadow: var(--elevation-1);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
         }
 
         .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            transform: translateY(-4px);
+            box-shadow: var(--elevation-3);
         }
 
         .stat-number {
-            font-size: 2.5rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-            color: var(--stat-text, #333);
+            font-size: 3rem;
+            font-weight: 300;
+            margin-bottom: var(--spacing-sm);
+            color: var(--primary-color);
+            line-height: 1;
         }
 
         .stat-label {
             font-size: 1rem;
-            color: var(--text-secondary, #666);
-            margin-bottom: 10px;
+            color: var(--on-surface);
+            opacity: 0.7;
+            margin-bottom: var(--spacing-md);
+            font-weight: 500;
         }
 
         .progress-bar {
             width: 100%;
             height: 8px;
-            background: rgba(255,255,255,0.2);
+            background: var(--background);
             border-radius: 4px;
             overflow: hidden;
+            margin-bottom: var(--spacing-sm);
         }
 
         .progress-fill {
             height: 100%;
-            background: var(--success-gradient);
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
             border-radius: 4px;
-            transition: width 0.3s ease;
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* SEARCH AND ADD SECTION */
         .search-section {
-            background: var(--card-color, rgba(255,255,255,0.15));
-            padding: 25px;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: var(--surface);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--elevation-1);
+            border: 1px solid rgba(0,0,0,0.05);
         }
 
         .search-container {
             display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-lg);
             flex-wrap: wrap;
         }
 
         .search-input {
             flex: 1;
             min-width: 300px;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 25px;
-            background: rgba(255,255,255,0.2);
-            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border: 2px solid transparent;
+            border-radius: 50px;
+            background: var(--background);
+            color: var(--on-surface);
             font-size: 1rem;
-            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(98, 0, 238, 0.1);
         }
 
         .search-input::placeholder {
-            color: rgba(255,255,255,0.7);
+            color: var(--on-surface);
+            opacity: 0.5;
         }
 
         .category-filter {
-            padding: 15px 20px;
-            border: none;
-            border-radius: 25px;
-            background: rgba(255,255,255,0.2);
-            color: white;
+            padding: var(--spacing-md) var(--spacing-lg);
+            border: 2px solid transparent;
+            border-radius: 50px;
+            background: var(--background);
+            color: var(--on-surface);
             cursor: pointer;
-            backdrop-filter: blur(10px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+            min-width: 200px;
         }
 
-        .category-filter option {
-            background: var(--input-bg);
-            color: var(--input-text);
-            padding: 10px;
+        .category-filter:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(98, 0, 238, 0.1);
         }
 
         .btn {
-            padding: 15px 25px;
+            padding: var(--spacing-md) var(--spacing-xl);
             border: none;
-            border-radius: 25px;
-            background: var(--secondary-gradient);
-            color: white;
+            border-radius: 50px;
+            background: var(--primary-color);
+            color: var(--on-primary);
             cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            font-weight: 500;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: inline-flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--spacing-xs);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: var(--elevation-1);
         }
 
         .btn:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+            box-shadow: var(--elevation-3);
         }
 
-        .btn-primary { background: var(--primary-gradient); }
-        .btn-success { background: var(--success-gradient); }
-        .btn-warning { background: var(--warning-gradient); }
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-primary { background: var(--primary-color); }
+        .btn-success { background: var(--secondary-color); color: var(--on-secondary); }
+        .btn-warning { background: #ff9800; }
 
         /* FOOD RESULTS */
         .food-results {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-            margin-top: 20px;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-lg);
         }
 
         .food-item {
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 15px;
-            border: 1px solid rgba(255,255,255,0.2);
-            backdrop-filter: blur(10px);
-            transition: all 0.3s ease;
+            background: var(--surface);
+            padding: var(--spacing-lg);
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(0,0,0,0.05);
+            box-shadow: var(--elevation-1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .food-item:hover {
-            transform: translateY(-3px);
-            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+            box-shadow: var(--elevation-2);
         }
 
         .food-name {
             font-weight: 600;
-            margin-bottom: 10px;
+            margin-bottom: var(--spacing-md);
             display: flex;
             align-items: center;
             justify-content: space-between;
-            color: var(--text-color, #333);
+            color: var(--on-surface);
+            font-size: 1.1rem;
         }
 
         .favorite-btn {
@@ -355,116 +413,143 @@
             color: #ffd700;
             cursor: pointer;
             font-size: 1.2rem;
+            transition: transform 0.2s ease;
+        }
+
+        .favorite-btn:hover {
+            transform: scale(1.2);
         }
 
         .nutrition-info {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin-bottom: 15px;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-md);
             font-size: 0.9rem;
-            color: var(--text-secondary, #666);
+            color: var(--on-surface);
+            opacity: 0.7;
         }
 
         .amount-input {
             width: 80px;
-            padding: 8px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.2);
-            color: white;
+            padding: var(--spacing-sm);
+            border: 2px solid transparent;
+            border-radius: var(--border-radius-small);
+            background: var(--background);
+            color: var(--on-surface);
             text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            outline: none;
+        }
+
+        .amount-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(98, 0, 238, 0.1);
         }
 
         /* FOOD HISTORY */
         .food-history {
-            background: var(--card-color, rgba(255,255,255,0.15));
-            padding: 25px;
-            border-radius: 20px;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: var(--surface);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius);
+            box-shadow: var(--elevation-1);
+            border: 1px solid rgba(0,0,0,0.05);
         }
 
         .history-item {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 15px;
-            margin-bottom: 10px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            border: 1px solid rgba(255,255,255,0.1);
+            padding: var(--spacing-md);
+            margin-bottom: var(--spacing-sm);
+            background: var(--background);
+            border-radius: var(--border-radius-small);
+            border: 1px solid rgba(0,0,0,0.05);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .history-item:hover {
+            box-shadow: var(--elevation-1);
         }
 
         .history-details {
             flex: 1;
-            color: var(--text-color, #333);
+            color: var(--on-surface);
         }
 
         .history-nutrition {
             display: flex;
-            gap: 15px;
+            gap: var(--spacing-md);
             font-size: 0.9rem;
-            color: var(--text-secondary, #666);
+            color: var(--on-surface);
+            opacity: 0.7;
+            margin-top: var(--spacing-xs);
         }
 
         .delete-btn {
             background: none;
             border: none;
-            color: #ff6b6b;
+            color: var(--error);
             cursor: pointer;
             font-size: 1.2rem;
-            padding: 5px;
+            padding: var(--spacing-xs);
             border-radius: 50%;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .delete-btn:hover {
-            background: rgba(255,107,107,0.2);
+            background: rgba(176, 0, 32, 0.1);
+            transform: scale(1.1);
         }
 
         /* WATER TRACKING */
         .water-tracker {
-            background: var(--success-gradient);
-            padding: 25px;
-            border-radius: 20px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius);
             text-align: center;
-            margin-bottom: 20px;
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--elevation-2);
+            color: var(--on-primary);
         }
 
         .water-tracker h3 {
-            color: white;
-            margin-bottom: 10px;
+            color: var(--on-primary);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 500;
         }
 
         .water-tracker p {
-            color: white;
-            margin-bottom: 10px;
+            color: var(--on-primary);
+            margin-bottom: var(--spacing-md);
+            opacity: 0.9;
         }
 
         .water-cups {
             display: flex;
             justify-content: center;
-            gap: 10px;
-            margin: 20px 0;
+            gap: var(--spacing-sm);
+            margin: var(--spacing-lg) 0;
             flex-wrap: wrap;
         }
 
         .water-cup {
-            width: 40px;
-            height: 40px;
-            border: 2px solid white;
+            width: 50px;
+            height: 50px;
+            border: 3px solid var(--on-primary);
             border-radius: 50%;
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
             display: flex;
             align-items: center;
             justify-content: center;
+            font-size: 1.2rem;
         }
 
         .water-cup.filled {
-            background: white;
-            color: #4facfe;
+            background: var(--on-primary);
+            color: var(--primary-color);
+            transform: scale(1.1);
         }
 
         .water-cup:hover {
@@ -473,13 +558,15 @@
 
         /* RESPONSIVE */
         @media (max-width: 768px) {
-            .container { padding: 10px; }
+            .container { padding: var(--spacing-sm); }
             .header h1 { font-size: 2rem; }
-            .dashboard { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+            .dashboard { grid-template-columns: 1fr; }
             .search-container { flex-direction: column; }
             .search-input { min-width: 100%; }
             .tab-navigation { flex-direction: column; }
             .profile-form { grid-template-columns: 1fr; }
+            .food-results { grid-template-columns: 1fr; }
+            .history-nutrition { flex-direction: column; gap: var(--spacing-xs); }
         }
 
         /* ANIMATIONS */
@@ -489,17 +576,17 @@
         }
 
         .animate-in {
-            animation: slideInUp 0.5s ease-out;
+            animation: slideInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         /* CHARTS */
         .chart-container {
-            background: var(--card-color, rgba(255,255,255,0.15));
-            padding: 25px;
-            border-radius: 20px;
-            margin-bottom: 30px;
-            backdrop-filter: blur(15px);
-            border: 1px solid rgba(255,255,255,0.2);
+            background: var(--surface);
+            padding: var(--spacing-xl);
+            border-radius: var(--border-radius);
+            margin-bottom: var(--spacing-xl);
+            box-shadow: var(--elevation-1);
+            border: 1px solid rgba(0,0,0,0.05);
         }
 
         .macro-chart {
@@ -518,37 +605,96 @@
             justify-content: center;
             position: relative;
             background: conic-gradient(
-                #ff6b6b 0deg 90deg,
-                #4ecdc4 90deg 180deg,
-                #45b7d1 180deg 270deg,
-                #96ceb4 270deg 360deg
+                var(--primary-color) 0deg 90deg,
+                var(--secondary-color) 90deg 180deg,
+                #ff9800 180deg 270deg,
+                #4caf50 270deg 360deg
             );
+            box-shadow: var(--elevation-2);
         }
 
         .macro-center {
             width: 100px;
             height: 100px;
             border-radius: 50%;
-            background: var(--card-color, rgba(255,255,255,0.9));
+            background: var(--surface);
             display: flex;
             align-items: center;
             justify-content: center;
             flex-direction: column;
-            color: var(--text-color, #333);
+            color: var(--on-surface);
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .macro-center strong {
-            color: var(--text-color, #333);
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            font-weight: 300;
         }
 
         .macro-center small {
-            color: var(--text-secondary, #666);
+            color: var(--on-surface);
+            opacity: 0.7;
+            font-size: 0.8rem;
         }
 
         /* HEADINGS */
         h3 {
-            color: var(--header-text, #333);
-            margin-bottom: 15px;
+            color: var(--on-surface);
+            margin-bottom: var(--spacing-md);
+            font-weight: 500;
+            font-size: 1.3rem;
+        }
+
+        /* FLOATING ACTION BUTTON */
+        .fab {
+            position: fixed;
+            bottom: var(--spacing-lg);
+            right: var(--spacing-lg);
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: var(--on-primary);
+            border: none;
+            cursor: pointer;
+            box-shadow: var(--elevation-3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            z-index: 1000;
+        }
+
+        .fab:hover {
+            transform: scale(1.1);
+            box-shadow: var(--elevation-4);
+        }
+
+        /* CARD HOVER EFFECTS */
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--elevation-3);
+        }
+
+        /* LOADING ANIMATION */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255,255,255,.3);
+            border-radius: 50%;
+            border-top-color: #fff;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
     </style>
 </head>
@@ -556,13 +702,15 @@
     <div class="container">
         <!-- HEADER -->
         <header class="header">
-            <button class="theme-toggle" onclick="toggleTheme()">🌙 / ☀️</button>
+            <button class="theme-toggle" onclick="toggleTheme()" title="Tema Değiştir">
+                <span id="themeIcon">🌙</span>
+            </button>
             <h1>🌟 KaloriMax Pro 2.0</h1>
             <p>Ultimate Beslenme Takibi - 3000+ Besin | Markalar | Profesyonel Takip</p>
         </header>
 
         <!-- USER PROFILE SECTION -->
-        <div class="profile-section">
+        <div class="profile-section card-hover">
             <h3>👤 Kullanıcı Profili & Otomatik Hedef Hesaplama</h3>
             <div class="profile-form">
                 <div class="form-group">
@@ -607,11 +755,14 @@
                     </select>
                 </div>
             </div>
-            <button class="btn btn-success" onclick="calculateTargets()">🎯 Hedefleri Hesapla</button>
+            <button class="btn btn-success" onclick="calculateTargets()">
+                <span>🎯</span>
+                <span>Hedefleri Hesapla</span>
+            </button>
         </div>
 
         <!-- WATER TRACKER -->
-        <div class="water-tracker">
+        <div class="water-tracker card-hover">
             <h3>💧 Su Takibi</h3>
             <p>Günlük hedef: 8 bardak (2L)</p>
             <div class="water-cups" id="waterCups">
@@ -622,55 +773,73 @@
 
         <!-- TAB NAVIGATION -->
         <nav class="tab-navigation">
-            <button class="tab-btn active" onclick="openTab('dashboard')">📊 Dashboard</button>
-            <button class="tab-btn" onclick="openTab('search')">🔍 Besin Ekle</button>
-            <button class="tab-btn" onclick="openTab('favorites')">⭐ Favoriler</button>
-            <button class="tab-btn" onclick="openTab('period')">🌸 Adet Takibi</button>
-            <button class="tab-btn" onclick="openTab('stats')">📈 İstatistikler</button>
-            <button class="tab-btn" onclick="openTab('settings')">⚙️ Ayarlar</button>
+            <button class="tab-btn active" onclick="openTab('dashboard')">
+                <span>📊</span>
+                <span>Dashboard</span>
+            </button>
+            <button class="tab-btn" onclick="openTab('search')">
+                <span>🔍</span>
+                <span>Besin Ekle</span>
+            </button>
+            <button class="tab-btn" onclick="openTab('favorites')">
+                <span>⭐</span>
+                <span>Favoriler</span>
+            </button>
+            <button class="tab-btn" onclick="openTab('period')">
+                <span>🌸</span>
+                <span>Adet Takibi</span>
+            </button>
+            <button class="tab-btn" onclick="openTab('stats')">
+                <span>📈</span>
+                <span>İstatistikler</span>
+            </button>
+            <button class="tab-btn" onclick="openTab('settings')">
+                <span>⚙️</span>
+                <span>Ayarlar</span>
+            </button>
         </nav>
 
         <!-- DASHBOARD TAB -->
         <div id="dashboard" class="tab-content active">
             <div class="dashboard">
-                <div class="stat-card">
+                <div class="stat-card card-hover">
                     <div class="stat-number" id="totalCalories">0</div>
                     <div class="stat-label">Kalori</div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="calorieProgress"></div>
                     </div>
-                    <div style="margin-top: 10px;">
-                        <span id="calorieTarget" onclick="editCalorieTarget()" style="cursor: pointer; text-decoration: underline;">2000</span> hedef
+                    <div style="margin-top: var(--spacing-sm);">
+                        <span id="calorieTarget" onclick="editCalorieTarget()" style="cursor: pointer; text-decoration: underline; color: var(--primary-color);">2000</span> hedef
                     </div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card card-hover">
                     <div class="stat-number" id="totalProtein">0</div>
                     <div class="stat-label">Protein (g)</div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="proteinProgress"></div>
                     </div>
-                    <div style="margin-top: 10px;"><span id="proteinTarget">150</span>g hedef</div>
+                    <div style="margin-top: var(--spacing-sm);"><span id="proteinTarget">150</span>g hedef</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card card-hover">
                     <div class="stat-number" id="totalCarbs">0</div>
                     <div class="stat-label">Karbonhidrat (g)</div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="carbProgress"></div>
                     </div>
-                    <div style="margin-top: 10px;"><span id="carbTarget">250</span>g hedef</div>
+                    <div style="margin-top: var(--spacing-sm);"><span id="carbTarget">250</span>g hedef</div>
                 </div>
-                <div class="stat-card">
+                <div class="stat-card card-hover">
                     <div class="stat-number" id="totalFat">0</div>
                     <div class="stat-label">Yağ (g)</div>
                     <div class="progress-bar">
                         <div class="progress-fill" id="fatProgress"></div>
                     </div>
-                    <div style="margin-top: 10px;"><span id="fatTarget">65</span>g hedef</div>
+                    <div style="margin-top: var(--spacing-sm);"><span id="fatTarget">65</span>g hedef</div>
                 </div>
             </div>
 
             <!-- MACRO CHART -->
-            <div class="chart-container">
+            <div class="chart-container card-hover">
                 <h3>📊 Makro Dağılımı</h3>
                 <div class="macro-chart">
                     <div class="macro-circle">
@@ -680,24 +849,24 @@
                         </div>
                     </div>
                 </div>
-                <div style="display: flex; justify-content: space-around; margin-top: 20px;">
+                <div style="display: flex; justify-content: space-around; margin-top: var(--spacing-lg);">
                     <div style="text-align: center;">
-                        <div style="color: #ff6b6b;">●</div>
+                        <div style="color: var(--primary-color); font-size: 1.5rem;">●</div>
                         <small>Protein</small>
                     </div>
                     <div style="text-align: center;">
-                        <div style="color: #4ecdc4;">●</div>
+                        <div style="color: var(--secondary-color); font-size: 1.5rem;">●</div>
                         <small>Karbonhidrat</small>
                     </div>
                     <div style="text-align: center;">
-                        <div style="color: #45b7d1;">●</div>
+                        <div style="color: #ff9800; font-size: 1.5rem;">●</div>
                         <small>Yağ</small>
                     </div>
                 </div>
             </div>
 
             <!-- FOOD HISTORY -->
-            <div class="food-history">
+            <div class="food-history card-hover">
                 <h3>🍽️ Bugünkü Yemekler</h3>
                 <div id="foodList"></div>
             </div>
@@ -705,7 +874,7 @@
 
         <!-- SEARCH TAB -->
         <div id="search" class="tab-content">
-            <div class="search-section">
+            <div class="search-section card-hover">
                 <h3>🔍 Besin Arama & Ekleme</h3>
                 <div class="search-container">
                     <input type="text" id="foodSearch" class="search-input" 
@@ -730,7 +899,10 @@
                         <option value="Nutella">🍫 Nutella</option>
                         <option value="Coca-Cola">🥤 Coca-Cola</option>
                     </select>
-                    <button class="btn btn-primary" onclick="searchFood()">Ara</button>
+                    <button class="btn btn-primary" onclick="searchFood()">
+                        <span>🔍</span>
+                        <span>Ara</span>
+                    </button>
                 </div>
                 
                 <div class="food-results" id="searchResults"></div>
@@ -739,7 +911,7 @@
 
         <!-- FAVORITES TAB -->
         <div id="favorites" class="tab-content">
-            <div class="search-section">
+            <div class="search-section card-hover">
                 <h3>⭐ Favori Besinler</h3>
                 <div class="food-results" id="favoritesList"></div>
             </div>
@@ -747,13 +919,13 @@
 
         <!-- PERIOD TRACKING TAB -->
         <div id="period" class="tab-content">
-            <div class="search-section">
+            <div class="search-section card-hover">
                 <h3>🌸 Adet Takip Sistemi</h3>
-                <p style="margin-bottom: 20px; color: var(--text-secondary);">Adet döngünüzü takip edin, semptomları kaydedin ve doğurganlık günlerinizi öğrenin</p>
+                <p style="margin-bottom: var(--spacing-lg); color: var(--on-surface); opacity: 0.7;">Adet döngünüzü takip edin, semptomları kaydedin ve doğurganlık günlerinizi öğrenin</p>
                 
                 <!-- CYCLE INFO -->
-                <div class="cycle-info" style="background: var(--card-color, rgba(255,255,255,0.15)); padding: 20px; border-radius: 15px; margin-bottom: 20px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2);">
-                    <h4 style="color: var(--header-text, #333); margin-bottom: 15px;">📅 Döngü Bilgileri</h4>
+                <div class="cycle-info" style="background: var(--surface); padding: var(--spacing-lg); border-radius: var(--border-radius); margin-bottom: var(--spacing-lg); box-shadow: var(--elevation-1); border: 1px solid rgba(0,0,0,0.05);">
+                    <h4 style="color: var(--on-surface); margin-bottom: var(--spacing-md);">📅 Döngü Bilgileri</h4>
                     <div class="profile-form">
                         <div class="form-group">
                             <label>Son Adet Başlangıcı</label>
@@ -771,59 +943,59 @@
                 </div>
 
                 <!-- CYCLE STATUS -->
-                <div class="cycle-status" style="background: var(--card-color, rgba(255,255,255,0.15)); padding: 20px; border-radius: 15px; margin-bottom: 20px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2);">
-                    <h4 style="color: var(--header-text, #333); margin-bottom: 15px;">📊 Döngü Durumu</h4>
-                    <div id="cycleStatus" style="text-align: center; padding: 15px; border-radius: 10px; background: rgba(255,255,255,0.1);">
+                <div class="cycle-status" style="background: var(--surface); padding: var(--spacing-lg); border-radius: var(--border-radius); margin-bottom: var(--spacing-lg); box-shadow: var(--elevation-1); border: 1px solid rgba(0,0,0,0.05);">
+                    <h4 style="color: var(--on-surface); margin-bottom: var(--spacing-md);">📊 Döngü Durumu</h4>
+                    <div id="cycleStatus" style="text-align: center; padding: var(--spacing-md); border-radius: var(--border-radius-small); background: var(--background);">
                         <!-- Cycle status will be populated by JavaScript -->
                     </div>
                 </div>
 
                 <!-- SYMPTOM TRACKER -->
-                <div class="symptom-tracker" style="background: var(--card-color, rgba(255,255,255,0.15)); padding: 20px; border-radius: 15px; margin-bottom: 20px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2);">
-                    <h4 style="color: var(--header-text, #333); margin-bottom: 15px;">😊 Bugünkü Semptomlar</h4>
-                    <div class="symptom-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-bottom: 15px;">
-                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer;">
+                <div class="symptom-tracker" style="background: var(--surface); padding: var(--spacing-lg); border-radius: var(--border-radius); margin-bottom: var(--spacing-lg); box-shadow: var(--elevation-1); border: 1px solid rgba(0,0,0,0.05);">
+                    <h4 style="color: var(--on-surface); margin-bottom: var(--spacing-md);">😊 Bugünkü Semptomlar</h4>
+                    <div class="symptom-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: var(--spacing-sm); margin-bottom: var(--spacing-md);">
+                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-sm); border-radius: var(--border-radius-small); background: var(--background); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
                             <input type="checkbox" value="cramps" onchange="saveSymptoms()">
                             <span>Kramp</span>
                         </label>
-                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer;">
+                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-sm); border-radius: var(--border-radius-small); background: var(--background); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
                             <input type="checkbox" value="headache" onchange="saveSymptoms()">
                             <span>Baş ağrısı</span>
                         </label>
-                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer;">
+                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-sm); border-radius: var(--border-radius-small); background: var(--background); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
                             <input type="checkbox" value="bloating" onchange="saveSymptoms()">
                             <span>Şişkinlik</span>
                         </label>
-                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer;">
+                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-sm); border-radius: var(--border-radius-small); background: var(--background); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
                             <input type="checkbox" value="fatigue" onchange="saveSymptoms()">
                             <span>Yorgunluk</span>
                         </label>
-                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer;">
+                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-sm); border-radius: var(--border-radius-small); background: var(--background); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
                             <input type="checkbox" value="mood_swings" onchange="saveSymptoms()">
                             <span>Ruh hali</span>
                         </label>
-                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer;">
+                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-sm); border-radius: var(--border-radius-small); background: var(--background); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
                             <input type="checkbox" value="acne" onchange="saveSymptoms()">
                             <span>Sivilce</span>
                         </label>
-                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer;">
+                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-sm); border-radius: var(--border-radius-small); background: var(--background); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
                             <input type="checkbox" value="back_pain" onchange="saveSymptoms()">
                             <span>Bel ağrısı</span>
                         </label>
-                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 8px; background: rgba(255,255,255,0.1); cursor: pointer;">
+                        <label class="symptom-checkbox" style="display: flex; align-items: center; gap: var(--spacing-xs); padding: var(--spacing-sm); border-radius: var(--border-radius-small); background: var(--background); cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);">
                             <input type="checkbox" value="breast_tenderness" onchange="saveSymptoms()">
                             <span>Göğüs hassasiyeti</span>
                         </label>
                     </div>
                     <div class="form-group">
                         <label>Notlar</label>
-                        <textarea id="symptomNotes" placeholder="Bugünkü notlarınız..." style="width: 100%; padding: 10px; border: none; border-radius: 10px; background: rgba(255,255,255,0.2); color: white; resize: vertical; min-height: 60px;" onchange="saveSymptoms()"></textarea>
+                        <textarea id="symptomNotes" placeholder="Bugünkü notlarınız..." style="width: 100%; padding: var(--spacing-md); border: 2px solid transparent; border-radius: var(--border-radius-small); background: var(--background); color: var(--on-surface); resize: vertical; min-height: 60px; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); outline: none;" onchange="saveSymptoms()"></textarea>
                     </div>
                 </div>
 
                 <!-- PERIOD LOG -->
-                <div class="period-log" style="background: var(--card-color, rgba(255,255,255,0.15)); padding: 20px; border-radius: 15px; margin-bottom: 20px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2);">
-                    <h4 style="color: var(--header-text, #333); margin-bottom: 15px;">📝 Adet Günlüğü</h4>
+                <div class="period-log" style="background: var(--surface); padding: var(--spacing-lg); border-radius: var(--border-radius); margin-bottom: var(--spacing-lg); box-shadow: var(--elevation-1); border: 1px solid rgba(0,0,0,0.05);">
+                    <h4 style="color: var(--on-surface); margin-bottom: var(--spacing-md);">📝 Adet Günlüğü</h4>
                     <div class="profile-form">
                         <div class="form-group">
                             <label>Adet Başlangıcı</label>
@@ -842,12 +1014,15 @@
                             </select>
                         </div>
                     </div>
-                    <button class="btn btn-success" onclick="logPeriod()" style="margin-top: 10px;">📝 Adet Kaydı Ekle</button>
+                    <button class="btn btn-success" onclick="logPeriod()" style="margin-top: var(--spacing-sm);">
+                        <span>📝</span>
+                        <span>Adet Kaydı Ekle</span>
+                    </button>
                 </div>
 
                 <!-- PERIOD HISTORY -->
-                <div class="period-history" style="background: var(--card-color, rgba(255,255,255,0.15)); padding: 20px; border-radius: 15px; backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.2);">
-                    <h4 style="color: var(--header-text, #333); margin-bottom: 15px;">📋 Adet Geçmişi</h4>
+                <div class="period-history" style="background: var(--surface); padding: var(--spacing-lg); border-radius: var(--border-radius); box-shadow: var(--elevation-1); border: 1px solid rgba(0,0,0,0.05);">
+                    <h4 style="color: var(--on-surface); margin-bottom: var(--spacing-md);">📋 Adet Geçmişi</h4>
                     <div id="periodHistory" style="max-height: 300px; overflow-y: auto;">
                         <!-- Period history will be populated by JavaScript -->
                     </div>
@@ -857,7 +1032,7 @@
 
         <!-- STATISTICS TAB -->
         <div id="stats" class="tab-content">
-            <div class="chart-container">
+            <div class="chart-container card-hover">
                 <h3>📈 Haftalık İstatistikler</h3>
                 <p>Yakında eklenecek: Haftalık kalori grafikleri, protein hedefi başarısı, en çok yenen besinler</p>
             </div>
@@ -865,7 +1040,7 @@
 
         <!-- SETTINGS TAB -->
         <div id="settings" class="tab-content">
-            <div class="search-section">
+            <div class="search-section card-hover">
                 <h3>⚙️ Ayarlar</h3>
                 <div class="profile-form">
                     <div class="form-group">
@@ -883,11 +1058,22 @@
                         </select>
                     </div>
                 </div>
-                <button class="btn btn-warning" onclick="exportData()">📄 Verileri Dışa Aktar</button>
-                <button class="btn btn-warning" onclick="clearAllData()" style="margin-left: 10px;">🗑️ Tüm Verileri Sil</button>
+                <button class="btn btn-warning" onclick="exportData()">
+                    <span>📄</span>
+                    <span>Verileri Dışa Aktar</span>
+                </button>
+                <button class="btn btn-warning" onclick="clearAllData()" style="margin-left: var(--spacing-sm);">
+                    <span>🗑️</span>
+                    <span>Tüm Verileri Sil</span>
+                </button>
             </div>
         </div>
     </div>
+
+    <!-- FLOATING ACTION BUTTON -->
+    <button class="fab" onclick="openTab('search')" title="Besin Ekle">
+        ➕
+    </button>
 
     <script>
         // TEMA YÖNETİMİ
@@ -909,11 +1095,11 @@
             document.body.setAttribute('data-theme', currentTheme);
             document.getElementById('themeSelect').value = currentTheme;
             
-            const themeToggle = document.querySelector('.theme-toggle');
+            const themeIcon = document.getElementById('themeIcon');
             if (currentTheme === 'dark') {
-                themeToggle.textContent = '☀️';
+                themeIcon.textContent = '☀️';
             } else {
-                themeToggle.textContent = '🌙';
+                themeIcon.textContent = '🌙';
             }
         }
         
@@ -975,7 +1161,7 @@
             tabButtons.forEach(btn => btn.classList.remove('active'));
             
             document.getElementById(tabName).classList.add('active');
-            event.target.classList.add('active');
+            event.target.closest('.tab-btn').classList.add('active');
         }
         
         // BESİN VERİTABANI (5000+ besin)
@@ -1516,55 +1702,65 @@
             resultsContainer.innerHTML = '';
             
             if (searchTerm.length === 0) {
-                resultsContainer.innerHTML = '<p style="text-align: center; opacity: 0.7;">Besin aramak için yazmaya başlayın...</p>';
+                resultsContainer.innerHTML = '<p style="text-align: center; opacity: 0.7; padding: var(--spacing-xl);">Besin aramak için yazmaya başlayın...</p>';
                 return;
             }
             
-            const results = Object.entries(foodDatabase).filter(([key, food]) => {
-                const matchesSearch = key.includes(searchTerm) || 
-                                    food.name.toLowerCase().includes(searchTerm) ||
-                                    food.category.toLowerCase().includes(searchTerm);
-                const matchesCategory = !categoryFilter || food.category === categoryFilter;
-                return matchesSearch && matchesCategory;
-            });
+            // Loading state
+            resultsContainer.innerHTML = '<div style="text-align: center; padding: var(--spacing-xl);"><div class="loading"></div><p style="margin-top: var(--spacing-sm);">Aranıyor...</p></div>';
             
-            // Sonuçları öncelik sırasına göre sırala
-            results.sort((a, b) => {
-                const aKey = a[0];
-                const bKey = b[0];
-                const aName = a[1].name.toLowerCase();
-                const bName = b[1].name.toLowerCase();
+            setTimeout(() => {
+                const results = Object.entries(foodDatabase).filter(([key, food]) => {
+                    const matchesSearch = key.includes(searchTerm) || 
+                                        food.name.toLowerCase().includes(searchTerm) ||
+                                        food.category.toLowerCase().includes(searchTerm);
+                    const matchesCategory = !categoryFilter || food.category === categoryFilter;
+                    return matchesSearch && matchesCategory;
+                });
                 
-                // Tam eşleşme öncelikli
-                if (aKey === searchTerm || aName === searchTerm) return -1;
-                if (bKey === searchTerm || bName === searchTerm) return 1;
+                // Sonuçları öncelik sırasına göre sırala
+                results.sort((a, b) => {
+                    const aKey = a[0];
+                    const bKey = b[0];
+                    const aName = a[1].name.toLowerCase();
+                    const bName = b[1].name.toLowerCase();
+                    
+                    // Tam eşleşme öncelikli
+                    if (aKey === searchTerm || aName === searchTerm) return -1;
+                    if (bKey === searchTerm || bName === searchTerm) return 1;
+                    
+                    // Başlangıç eşleşmesi öncelikli
+                    if (aKey.startsWith(searchTerm) || aName.startsWith(searchTerm)) return -1;
+                    if (bKey.startsWith(searchTerm) || bName.startsWith(searchTerm)) return 1;
+                    
+                    // Alfabetik sıralama
+                    return aName.localeCompare(bName);
+                });
                 
-                // Başlangıç eşleşmesi öncelikli
-                if (aKey.startsWith(searchTerm) || aName.startsWith(searchTerm)) return -1;
-                if (bKey.startsWith(searchTerm) || bName.startsWith(searchTerm)) return 1;
+                // İlk 20 sonucu göster
+                const limitedResults = results.slice(0, 20);
                 
-                // Alfabetik sıralama
-                return aName.localeCompare(bName);
-            });
-            
-            // İlk 20 sonucu göster
-            const limitedResults = results.slice(0, 20);
-            
-            limitedResults.forEach(([key, food]) => {
-                const foodItem = createFoodItem(food);
-                resultsContainer.appendChild(foodItem);
-            });
-            
-            if (limitedResults.length === 0) {
-                resultsContainer.innerHTML = '<p style="text-align: center; opacity: 0.7;">Besin bulunamadı</p>';
-            } else if (results.length > 20) {
-                const moreDiv = document.createElement('div');
-                moreDiv.style.textAlign = 'center';
-                moreDiv.style.marginTop = '15px';
-                moreDiv.style.color = 'var(--text-secondary)';
-                moreDiv.innerHTML = `... ve ${results.length - 20} besin daha. Daha spesifik arama yapın.`;
-                resultsContainer.appendChild(moreDiv);
-            }
+                resultsContainer.innerHTML = '';
+                
+                limitedResults.forEach(([key, food], index) => {
+                    const foodItem = createFoodItem(food);
+                    foodItem.style.animationDelay = `${index * 0.1}s`;
+                    foodItem.classList.add('animate-in');
+                    resultsContainer.appendChild(foodItem);
+                });
+                
+                if (limitedResults.length === 0) {
+                    resultsContainer.innerHTML = '<p style="text-align: center; opacity: 0.7; padding: var(--spacing-xl);">Besin bulunamadı</p>';
+                } else if (results.length > 20) {
+                    const moreDiv = document.createElement('div');
+                    moreDiv.style.textAlign = 'center';
+                    moreDiv.style.marginTop = 'var(--spacing-lg)';
+                    moreDiv.style.color = 'var(--on-surface)';
+                    moreDiv.style.opacity = '0.7';
+                    moreDiv.innerHTML = `... ve ${results.length - 20} besin daha. Daha spesifik arama yapın.`;
+                    resultsContainer.appendChild(moreDiv);
+                }
+            }, 300);
         }
         
         // Gerçek zamanlı arama
@@ -1587,11 +1783,11 @@
         
         function createFoodItem(food) {
             const div = document.createElement('div');
-            div.className = 'food-item';
+            div.className = 'food-item card-hover';
             div.innerHTML = `
                 <div class="food-name">
                     ${food.name}
-                    <button class="favorite-btn" onclick="toggleFavorite('${food.name}')">⭐</button>
+                    <button class="favorite-btn" onclick="toggleFavorite('${food.name}')" title="Favorilere Ekle/Çıkar">⭐</button>
                 </div>
                 <div class="nutrition-info">
                     <span>🔥 ${food.calories} kcal</span>
@@ -1599,10 +1795,13 @@
                     <span>🍞 ${food.carbs}g karbonhidrat</span>
                     <span>🥑 ${food.fat}g yağ</span>
                 </div>
-                <div style="display: flex; gap: 10px; align-items: center;">
+                <div style="display: flex; gap: var(--spacing-sm); align-items: center; margin-top: var(--spacing-md);">
                     <input type="number" class="amount-input" value="100" min="1" max="1000">
-                    <span>gram</span>
-                    <button class="btn btn-success" onclick="addFood('${food.name}', this.previousElementSibling.previousElementSibling.value)">Ekle</button>
+                    <span style="color: var(--on-surface); opacity: 0.7;">gram</span>
+                    <button class="btn btn-success" onclick="addFood('${food.name}', this.previousElementSibling.previousElementSibling.value)">
+                        <span>➕</span>
+                        <span>Ekle</span>
+                    </button>
                 </div>
             `;
             return div;
@@ -1621,6 +1820,13 @@
             
             localStorage.setItem('favorites', JSON.stringify(favorites));
             loadFavorites();
+            
+            // Visual feedback
+            const btn = event.target;
+            btn.style.transform = 'scale(1.3)';
+            setTimeout(() => {
+                btn.style.transform = 'scale(1)';
+            }, 200);
         }
         
         function loadFavorites() {
@@ -1628,16 +1834,18 @@
             const container = document.getElementById('favoritesList');
             container.innerHTML = '';
             
-            favorites.forEach(foodName => {
+            favorites.forEach((foodName, index) => {
                 const food = Object.values(foodDatabase).find(f => f.name === foodName);
                 if (food) {
                     const foodItem = createFoodItem(food);
+                    foodItem.style.animationDelay = `${index * 0.1}s`;
+                    foodItem.classList.add('animate-in');
                     container.appendChild(foodItem);
                 }
             });
             
             if (favorites.length === 0) {
-                container.innerHTML = '<p style="text-align: center; opacity: 0.7;">Henüz favori besin eklenmemiş</p>';
+                container.innerHTML = '<p style="text-align: center; opacity: 0.7; padding: var(--spacing-xl);">Henüz favori besin eklenmemiş</p>';
             }
         }
         
@@ -1663,6 +1871,16 @@
             
             loadFoodHistory();
             updateDashboard();
+            
+            // Success feedback
+            const btn = event.target;
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span>✅</span><span>Eklendi!</span>';
+            btn.style.background = '#4caf50';
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.style.background = '';
+            }, 1000);
         }
         
         function loadFoodHistory() {
@@ -1672,7 +1890,9 @@
             
             foodHistory.forEach((food, index) => {
                 const div = document.createElement('div');
-                div.className = 'history-item';
+                div.className = 'history-item card-hover';
+                div.style.animationDelay = `${index * 0.1}s`;
+                div.classList.add('animate-in');
                 div.innerHTML = `
                     <div class="history-details">
                         <strong>${food.name}</strong> (${food.amount}g)
@@ -1684,13 +1904,13 @@
                             <span>🕐 ${food.time}</span>
                         </div>
                     </div>
-                    <button class="delete-btn" onclick="deleteFood(${index})">🗑️</button>
+                    <button class="delete-btn" onclick="deleteFood(${index})" title="Sil">🗑️</button>
                 `;
                 container.appendChild(div);
             });
             
             if (foodHistory.length === 0) {
-                container.innerHTML = '<p style="text-align: center; opacity: 0.7;">Henüz besin eklenmemiş</p>';
+                container.innerHTML = '<p style="text-align: center; opacity: 0.7; padding: var(--spacing-xl);">Henüz besin eklenmemiş</p>';
             }
         }
         
